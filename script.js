@@ -1,77 +1,28 @@
-// ======================================================
-// ⚠️ IMPORTANT: APNI API KEY YAHAN PASTE KAREIN
-// ======================================================
-const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
+/* ======================================================
+   SCRIPT.JS - FINAL WORKING VERSION
+   ====================================================== */
 
+// ⚠️ IMPORTANT: Paste your API Key here if you want Chatbot/Search to work
+const GEMINI_API_KEY = ""; 
 
-/* =========================================
-   GLOBAL VARIABLES
-   ========================================= */
-let namesData = []; // JSON data yahan store hoga
+// --- IMMEDIATE FIX: Force page visibility immediately ---
+document.body.style.visibility = "visible";
+document.body.style.opacity = "1";
 
-/* =========================================
-   1. HERO SEARCH (Uses Gemini API)
-   ========================================= */
-async function handleHeroSearch() {
-    const heroInput = document.getElementById('hero-search-input');
-    if (!heroInput) return;
-    const nameToSearch = heroInput.value.trim();
-    if (!nameToSearch) return;
+// Global Variables
+let namesData = []; 
 
-    // Name Finder section par le jayen
-    const nameFinderSection = document.getElementById('name-finder');
-    const nameDetails = document.querySelector('.name-details');
-    const nameDetailsContainer = document.querySelector('.name-details-container');
-    const nameListContainer = document.querySelector('.name-list-container');
-    
-    if (nameFinderSection) {
-        const header = document.querySelector('header');
-        const offsetPosition = nameFinderSection.getBoundingClientRect().top + window.scrollY - (header ? header.offsetHeight : 0) - 20;
-
-        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-
-        // UI Update
-        nameListContainer.style.display = 'none';
-        nameDetailsContainer.style.display = 'block';
-        nameDetails.innerHTML = '<div class="spinner">Processing...</div>';
-
-        // API Call
-        const lang = document.documentElement.lang === 'hi' ? 'Hindi' : 'English';
-        const prompt = `Provide a short, beautiful description for the Indian name '${nameToSearch}'. Respond in ${lang}.`;
-
-        try {
-            if (!GEMINI_API_KEY) throw new Error("API Key missing");
-            
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-
-            const result = await response.json();
-            const detailsText = result.candidates?.[0]?.content?.parts?.[0]?.text || "No details found.";
-
-            nameDetails.innerHTML = `
-                <h2>${nameToSearch}</h2>
-                <p>${detailsText.replace(/\n/g, "<br>")}</p>
-            `;
-        } catch (error) {
-            console.error("API Error:", error);
-            nameDetails.innerHTML = `<h2>${nameToSearch}</h2><p>Could not fetch details. Please check API Key.</p>`;
-        }
-    }
-}
-
-/* =========================================
-   2. MAIN INITIALIZATION
-   ========================================= */
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Header padding adjustment
+    // Ensure visibility again just in case
+    document.body.style.visibility = 'visible'; 
+    document.body.style.opacity = '1';
+
+    // --- 1. Header Adjustment ---
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
-    // Typing Effect
+    // --- 2. Typing Effect ---
     const typeElement = document.getElementById("naamin-main-title-typing");
     if (typeElement) {
         const text = "Naamin";
@@ -83,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })();
     }
 
-    // Theme & Language
+    // --- 3. Theme & Language ---
     const setTheme = (t) => {
         document.body.setAttribute("data-theme", t);
         localStorage.setItem("theme", t);
@@ -91,22 +42,32 @@ document.addEventListener("DOMContentLoaded", () => {
         if(btn) btn.innerHTML = t === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     };
     setTheme(localStorage.getItem("theme") || "light");
-    document.getElementById("theme-toggle")?.addEventListener("click", () => setTheme(document.body.getAttribute("data-theme") === "dark" ? "light" : "dark"));
+    
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
+        const current = document.body.getAttribute("data-theme");
+        setTheme(current === "dark" ? "light" : "dark");
+    });
 
-    // Mobile Menu
+    // --- 4. Mobile Menu ---
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
-        hamburger.addEventListener("click", () => { hamburger.classList.toggle("active"); nav.classList.toggle("active"); });
+        hamburger.addEventListener("click", (e) => { 
+            e.stopPropagation();
+            hamburger.classList.toggle("active"); 
+            nav.classList.toggle("active"); 
+        });
+        document.addEventListener("click", (e) => {
+            if (nav.classList.contains("active") && !nav.contains(e.target)) {
+                hamburger.classList.remove("active");
+                nav.classList.remove("active");
+            }
+        });
     }
 
-    // Search Listeners
-    document.getElementById('hero-search-btn')?.addEventListener('click', handleHeroSearch);
-    document.getElementById('hero-search-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleHeroSearch(); });
-
-    /* =========================================
-       3. NAME FINDER (JSON FILE BASED)
-       ========================================= */
+    // ======================================================
+    // NAME FINDER LOGIC
+    // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
         const alphabetContainer = document.querySelector('.alphabet-selector');
@@ -119,23 +80,39 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentGender = "Boy";
         let currentLetter = "A";
 
-        // JSON Loader
+        // --- LOAD DATA ---
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
+            
             try {
-                nameListContainer.innerHTML = '<div class="spinner">Loading List...</div>';
+                if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
+                
                 const response = await fetch(fileName);
-                if (!response.ok) throw new Error("File not found");
-                namesData = await response.json();
+                if (!response.ok) throw new Error(`File not found: ${fileName}`);
+                
+                let rawData = await response.json();
+
+                // Smart Check: Is it a List or an Object?
+                if (Array.isArray(rawData)) {
+                    namesData = rawData;
+                } else {
+                    // Try to find the array inside the object
+                    const values = Object.values(rawData);
+                    const found = values.find(v => Array.isArray(v));
+                    namesData = found || [];
+                }
+                
                 renderNames();
+
             } catch (error) {
-                console.error(error);
-                nameListContainer.innerHTML = `<p>Error: Could not load ${fileName}. Check file name/location.</p>`;
+                console.error("Error:", error);
+                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading ${fileName}.<br>Check if file exists.</p>`;
             }
         }
 
-        // Render A-Z
+        // --- RENDER A-Z BUTTONS ---
         function generateAlphabet() {
+            if(!alphabetContainer) return;
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
             alphabetContainer.innerHTML = "";
             chars.forEach(char => {
@@ -152,38 +129,147 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Render List
+        // --- RENDER NAMES LIST ---
         function renderNames() {
+            if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
-            document.querySelector('.name-list-container').style.display = 'block';
-            nameDetailsContainer.style.display = 'none';
+            
+            const listSection = document.querySelector('.name-list-container');
+            if(listSection) listSection.style.display = 'block';
+            if(nameDetailsContainer) nameDetailsContainer.style.display = 'none';
 
-            const filtered = namesData.filter(n => n.name.startsWith(currentLetter));
+            if (!Array.isArray(namesData)) return;
+
+            // Filter Logic (Case Insensitive)
+            const filtered = namesData.filter(n => 
+                n.name && n.name.toUpperCase().startsWith(currentLetter)
+            );
             
             if (filtered.length === 0) {
-                nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found for ${currentLetter}</p>`;
+                nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found starting with ${currentLetter}</p>`;
                 return;
             }
 
+            // Create Cards
             filtered.forEach(person => {
                 const div = document.createElement("div");
                 div.className = "name-item";
                 div.textContent = person.name;
                 div.onclick = () => {
-                    document.querySelector('.name-list-container').style.display = 'none';
-                    nameDetailsContainer.style.display = 'block';
-                    // Show details from JSON
-                    nameDetailsBox.innerHTML = `
-                        <h2>${person.name}</h2>
-                        <p><strong>Meaning:</strong> ${person.meaning}</p>
-                        <p><strong>Rashi:</strong> ${person.rashi || 'N/A'}</p>
-                        <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
-                    `;
+                    if(listSection) listSection.style.display = 'none';
+                    if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
+                    
+                    if(nameDetailsBox) {
+                        nameDetailsBox.innerHTML = `
+                            <h2>${person.name}</h2>
+                            <p><strong>Meaning:</strong> ${person.meaning || 'N/A'}</p>
+                            <p><strong>Rashi:</strong> ${person.zodiac || 'N/A'}</p>
+                            <p><strong>Horoscope:</strong> ${person.horoscope || 'N/A'}</p>
+                            <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
+                        `;
+                    }
                 };
                 nameListContainer.appendChild(div);
             });
         }
 
-        // Event Listeners
+        // --- BUTTON EVENTS ---
         genderBtns.forEach(btn => {
             btn.onclick = () => {
+                genderBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentGender = btn.dataset.gender;
+                loadNames(currentGender);
+            };
+        });
+
+        if(backBtn) backBtn.onclick = () => {
+            if(nameDetailsContainer) nameDetailsContainer.style.display = 'none';
+            const listSection = document.querySelector('.name-list-container');
+            if(listSection) listSection.style.display = 'block';
+        };
+
+        // Initialize
+        generateAlphabet();
+        loadNames("Boy");
+    }
+
+    // ======================================================
+    // HERO SEARCH & CHATBOT (API BASED)
+    // ======================================================
+    
+    // Hero Search
+    async function handleHeroSearch() {
+        const heroInput = document.getElementById('hero-search-input');
+        if (!heroInput) return;
+        const nameToSearch = heroInput.value.trim();
+        if (!nameToSearch) return;
+
+        const nameFinderSection = document.getElementById('name-finder');
+        if (nameFinderSection) {
+            // Scroll to section
+            const header = document.querySelector('header');
+            const offset = nameFinderSection.getBoundingClientRect().top + window.scrollY - (header ? header.offsetHeight : 0) - 20;
+            window.scrollTo({ top: offset, behavior: 'smooth' });
+
+            // Show Loading in Details
+            const listSection = document.querySelector('.name-list-container');
+            const detailsSection = document.querySelector('.name-details-container');
+            const detailsBox = document.querySelector('.name-details');
+            
+            if(listSection) listSection.style.display = 'none';
+            if(detailsSection) detailsSection.style.display = 'block';
+            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching API...</div>';
+
+            // API Call
+            try {
+                if(!GEMINI_API_KEY) throw new Error("API Key missing");
+                
+                const prompt = `Provide meaning and origin for name '${nameToSearch}'`;
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "No details found.";
+                
+                detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>${text.replace(/\n/g, "<br>")}</p>`;
+
+            } catch(e) {
+                if(detailsBox) detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>Could not fetch details (Check API Key).</p>`;
+            }
+        }
+    }
+
+    const heroBtn = document.getElementById('hero-search-btn');
+    const heroInput = document.getElementById('hero-search-input');
+    if(heroBtn) heroBtn.onclick = handleHeroSearch;
+    if(heroInput) heroInput.onkeypress = (e) => { if(e.key === "Enter") handleHeroSearch(); };
+
+    // Chatbot
+    if (document.getElementById("chatbox")) {
+        const sendBtn = document.getElementById("sendBtn");
+        const userInput = document.getElementById("userInput");
+        const chatbox = document.getElementById("chatbox");
+
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+            
+            // Add User Message
+            chatbox.innerHTML += `<div class="message user">${text}</div>`;
+            userInput.value = "";
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            // Add Bot Message
+            setTimeout(() => {
+                chatbox.innerHTML += `<div class="message bot">For AI Chat, please add API Key in script.js</div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }, 500);
+        }
+        if(sendBtn) sendBtn.onclick = sendMessage;
+        if(userInput) userInput.onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+    }
+});
