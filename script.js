@@ -1,73 +1,20 @@
-// ======================================================
-// ⚠️ IMPORTANT: APNI API KEY YAHAN PASTE KAREIN
-// ======================================================
-const GEMINI_API_KEY = "YOUR_GEMINI_API_KEY_HERE"; 
+/* ======================================================
+   SCRIPT.JS - FINAL VERSION (Safe & Clean)
+   ====================================================== */
 
+const GEMINI_API_KEY = ""; // Yahan API Key daalein agar chahiye
 
-/* =========================================
-   GLOBAL VARIABLES
-   ========================================= */
-let namesData = []; // JSON data yahan store hoga
+// --- 1. Global Variables ---
+let namesData = []; 
 
-/* =========================================
-   1. HERO SEARCH (Uses Gemini API)
-   ========================================= */
-async function handleHeroSearch() {
-    const heroInput = document.getElementById('hero-search-input');
-    if (!heroInput) return;
-    const nameToSearch = heroInput.value.trim();
-    if (!nameToSearch) return;
-
-    // Name Finder section par le jayen
-    const nameFinderSection = document.getElementById('name-finder');
-    const nameDetails = document.querySelector('.name-details');
-    const nameDetailsContainer = document.querySelector('.name-details-container');
-    const nameListContainer = document.querySelector('.name-list-container');
-    
-    if (nameFinderSection) {
-        const header = document.querySelector('header');
-        const offsetPosition = nameFinderSection.getBoundingClientRect().top + window.scrollY - (header ? header.offsetHeight : 0) - 20;
-
-        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-
-        // UI Update
-        nameListContainer.style.display = 'none';
-        nameDetailsContainer.style.display = 'block';
-        nameDetails.innerHTML = '<div class="spinner">Processing...</div>';
-
-        // API Call
-        const lang = document.documentElement.lang === 'hi' ? 'Hindi' : 'English';
-        const prompt = `Provide a short, beautiful description for the Indian name '${nameToSearch}'. Respond in ${lang}.`;
-
-        try {
-            if (!GEMINI_API_KEY) throw new Error("API Key missing");
-            
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-            });
-
-            const result = await response.json();
-            const detailsText = result.candidates?.[0]?.content?.parts?.[0]?.text || "No details found.";
-
-            nameDetails.innerHTML = `
-                <h2>${nameToSearch}</h2>
-                <p>${detailsText.replace(/\n/g, "<br>")}</p>
-            `;
-        } catch (error) {
-            console.error("API Error:", error);
-            nameDetails.innerHTML = `<h2>${nameToSearch}</h2><p>Could not fetch details. Please check API Key.</p>`;
-        }
-    }
-}
-
-/* =========================================
-   2. MAIN INITIALIZATION
-   ========================================= */
+// --- 2. Page Load Hone Par ---
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Header padding adjustment
+    // Sabse pehle page dikhana ensure karein
+    document.body.style.visibility = 'visible'; 
+    document.body.style.opacity = '1';
+
+    // Header Adjustment
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
@@ -91,22 +38,30 @@ document.addEventListener("DOMContentLoaded", () => {
         if(btn) btn.innerHTML = t === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     };
     setTheme(localStorage.getItem("theme") || "light");
-    document.getElementById("theme-toggle")?.addEventListener("click", () => setTheme(document.body.getAttribute("data-theme") === "dark" ? "light" : "dark"));
+    
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
+        const current = document.body.getAttribute("data-theme");
+        setTheme(current === "dark" ? "light" : "dark");
+    });
 
     // Mobile Menu
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
-        hamburger.addEventListener("click", () => { hamburger.classList.toggle("active"); nav.classList.toggle("active"); });
+        hamburger.addEventListener("click", (e) => { 
+            e.stopPropagation();
+            hamburger.classList.toggle("active"); 
+            nav.classList.toggle("active"); 
+        });
+        document.addEventListener("click", (e) => {
+            if (nav.classList.contains("active") && !nav.contains(e.target)) {
+                hamburger.classList.remove("active");
+                nav.classList.remove("active");
+            }
+        });
     }
 
-    // Search Listeners
-    document.getElementById('hero-search-btn')?.addEventListener('click', handleHeroSearch);
-    document.getElementById('hero-search-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleHeroSearch(); });
-
-    /* =========================================
-       3. NAME FINDER (JSON FILE BASED)
-       ========================================= */
+    // --- NAME FINDER LOGIC START ---
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
         const alphabetContainer = document.querySelector('.alphabet-selector');
@@ -123,19 +78,22 @@ document.addEventListener("DOMContentLoaded", () => {
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             try {
-                nameListContainer.innerHTML = '<div class="spinner">Loading List...</div>';
+                if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading List...</div>';
+                
                 const response = await fetch(fileName);
-                if (!response.ok) throw new Error("File not found");
+                if (!response.ok) throw new Error("File missing");
+                
                 namesData = await response.json();
-                renderNames();
+                renderNames(); // List update
             } catch (error) {
                 console.error(error);
-                nameListContainer.innerHTML = `<p>Error: Could not load ${fileName}. Check file name/location.</p>`;
+                if(nameListContainer) nameListContainer.innerHTML = `<p>Error: ${fileName} file nahi mili.<br>Folder check karein.</p>`;
             }
         }
 
-        // Render A-Z
+        // Render A-Z Buttons
         function generateAlphabet() {
+            if(!alphabetContainer) return;
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
             alphabetContainer.innerHTML = "";
             chars.forEach(char => {
@@ -154,10 +112,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Render List
         function renderNames() {
+            if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
-            document.querySelector('.name-list-container').style.display = 'block';
-            nameDetailsContainer.style.display = 'none';
+            
+            // UI Toggle
+            const listSection = document.querySelector('.name-list-container');
+            if(listSection) listSection.style.display = 'block';
+            if(nameDetailsContainer) nameDetailsContainer.style.display = 'none';
 
+            // Filter
             const filtered = namesData.filter(n => n.name.startsWith(currentLetter));
             
             if (filtered.length === 0) {
@@ -165,25 +128,75 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            // Create Items
             filtered.forEach(person => {
                 const div = document.createElement("div");
                 div.className = "name-item";
                 div.textContent = person.name;
                 div.onclick = () => {
-                    document.querySelector('.name-list-container').style.display = 'none';
-                    nameDetailsContainer.style.display = 'block';
-                    // Show details from JSON
-                    nameDetailsBox.innerHTML = `
-                        <h2>${person.name}</h2>
-                        <p><strong>Meaning:</strong> ${person.meaning}</p>
-                        <p><strong>Rashi:</strong> ${person.rashi || 'N/A'}</p>
-                        <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
-                    `;
+                    if(listSection) listSection.style.display = 'none';
+                    if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
+                    
+                    // Show Details
+                    if(nameDetailsBox) {
+                        nameDetailsBox.innerHTML = `
+                            <h2>${person.name}</h2>
+                            <p><strong>Meaning:</strong> ${person.meaning}</p>
+                            <p><strong>Rashi:</strong> ${person.rashi || 'N/A'}</p>
+                            <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
+                        `;
+                    }
                 };
                 nameListContainer.appendChild(div);
             });
         }
 
-        // Event Listeners
+        // Events
         genderBtns.forEach(btn => {
             btn.onclick = () => {
+                genderBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentGender = btn.dataset.gender;
+                loadNames(currentGender);
+            };
+        });
+
+        if(backBtn) backBtn.onclick = () => {
+            if(nameDetailsContainer) nameDetailsContainer.style.display = 'none';
+            const listSection = document.querySelector('.name-list-container');
+            if(listSection) listSection.style.display = 'block';
+        };
+
+        // Init
+        generateAlphabet();
+        loadNames("Boy");
+    }
+    // --- NAME FINDER LOGIC END ---
+
+    // --- CHATBOT LOGIC START ---
+    const chatbox = document.getElementById("chatbox");
+    if (chatbox) {
+        const sendBtn = document.getElementById("sendBtn");
+        const userInput = document.getElementById("userInput");
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            chatbox.innerHTML += `<div class="message user">${text}</div>`;
+            userInput.value = "";
+            chatbox.scrollTop = chatbox.scrollHeight;
+
+            const botMsg = document.createElement("div");
+            botMsg.className = "message bot";
+            botMsg.textContent = "API Key required for Chatbot.";
+            chatbox.appendChild(botMsg);
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        if(sendBtn) sendBtn.onclick = sendMessage;
+        if(userInput) userInput.onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+    }
+    // --- CHATBOT LOGIC END ---
+
+});
