@@ -1,24 +1,21 @@
 /* ======================================================
-   SCRIPT.JS - FINAL VERSION (Safe & Clean)
+   SCRIPT.JS - ERROR FREE VERSION
    ====================================================== */
 
-const GEMINI_API_KEY = ""; // Yahan API Key daalein agar chahiye
-
-// --- 1. Global Variables ---
+// Global Variables
 let namesData = []; 
 
-// --- 2. Page Load Hone Par ---
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Sabse pehle page dikhana ensure karein
+    // --- FIX: Agar page blank hai to use zabardasti dikhayein ---
     document.body.style.visibility = 'visible'; 
     document.body.style.opacity = '1';
 
-    // Header Adjustment
+    // 1. Header Adjustment
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
-    // Typing Effect
+    // 2. Typing Effect
     const typeElement = document.getElementById("naamin-main-title-typing");
     if (typeElement) {
         const text = "Naamin";
@@ -30,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })();
     }
 
-    // Theme & Language
+    // 3. Theme & Language
     const setTheme = (t) => {
         document.body.setAttribute("data-theme", t);
         localStorage.setItem("theme", t);
@@ -44,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTheme(current === "dark" ? "light" : "dark");
     });
 
-    // Mobile Menu
+    // 4. Mobile Menu
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
@@ -74,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentGender = "Boy";
         let currentLetter = "A";
 
-        // JSON Loader
+        // JSON Loader Function
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             try {
@@ -91,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Render A-Z Buttons
+        // Generate A-Z Buttons
         function generateAlphabet() {
             if(!alphabetContainer) return;
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -110,17 +107,16 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Render List
+        // Render List Function
         function renderNames() {
             if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
             
-            // UI Toggle
             const listSection = document.querySelector('.name-list-container');
             if(listSection) listSection.style.display = 'block';
             if(nameDetailsContainer) nameDetailsContainer.style.display = 'none';
 
-            // Filter
+            // Filter names
             const filtered = namesData.filter(n => n.name.startsWith(currentLetter));
             
             if (filtered.length === 0) {
@@ -128,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Create Items
+            // Create Name Items
             filtered.forEach(person => {
                 const div = document.createElement("div");
                 div.className = "name-item";
@@ -137,7 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     if(listSection) listSection.style.display = 'none';
                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
                     
-                    // Show Details
                     if(nameDetailsBox) {
                         nameDetailsBox.innerHTML = `
                             <h2>${person.name}</h2>
@@ -151,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Events
+        // Event Listeners for Gender & Back
         genderBtns.forEach(btn => {
             btn.onclick = () => {
                 genderBtns.forEach(b => b.classList.remove('active'));
@@ -167,13 +162,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if(listSection) listSection.style.display = 'block';
         };
 
-        // Init
+        // Initialize Name Finder
         generateAlphabet();
         loadNames("Boy");
     }
     // --- NAME FINDER LOGIC END ---
 
-    // --- CHATBOT LOGIC START ---
+    // --- CHATBOT LOGIC START (Placeholder) ---
     const chatbox = document.getElementById("chatbox");
     if (chatbox) {
         const sendBtn = document.getElementById("sendBtn");
@@ -182,21 +177,17 @@ document.addEventListener("DOMContentLoaded", () => {
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
-
             chatbox.innerHTML += `<div class="message user">${text}</div>`;
             userInput.value = "";
-            chatbox.scrollTop = chatbox.scrollHeight;
-
-            const botMsg = document.createElement("div");
-            botMsg.className = "message bot";
-            botMsg.textContent = "API Key required for Chatbot.";
-            chatbox.appendChild(botMsg);
+            chatbox.appendChild(Object.assign(document.createElement("div"), {
+                className: "message bot",
+                textContent: "API Key required for Chatbot."
+            }));
             chatbox.scrollTop = chatbox.scrollHeight;
         }
 
         if(sendBtn) sendBtn.onclick = sendMessage;
         if(userInput) userInput.onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
     }
-    // --- CHATBOT LOGIC END ---
 
-});
+}); // Yeh bracket sabse zaroori hai!
