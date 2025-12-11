@@ -2,27 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Naamin - Naming Solutions</title>
-    <meta name="description" content="Naamin - Your trusted partner for naming solutions: Baby Names, Company Names, Startup Names, Mottos, and Mantras." />
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    
-    <link rel="stylesheet" href="style.css">
-
     <script>
         (() => {
             const preferredLang = localStorage.getItem("language") || "hi";
             document.documentElement.lang = preferredLang;
         })();
     </script>
+    <style>body { visibility: hidden; }</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Naamin - Naming Solutions</title>
+    <meta name="description" content="Naamin - Your trusted partner for naming solutions: Baby Names, Company Names, Startup Names, Mottos, and Mantras." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
 </head>
+<body data-theme="light">
 
-<body data-theme="light" style="visibility: visible !important; opacity: 1 !important;">
+    <div id="three-canvas-container"></div>
 
     <header>
         <a class="header-logo" href="index.html">
@@ -62,6 +60,7 @@
                 </div>
                 
                 <p data-en="Your trusted partner for authentic and meaningful names for your baby, company, startup, or for inspiring mottos and powerful mantras." data-hi="आपके शिशु, कंपनी, स्टार्टअप के लिए, या प्रेरक उद्घोषों और शक्तिशाली मंत्रों के लिए प्रामाणिक और सार्थक नामों के लिए आपका विश्वसनीय साथी।"></p>
+                
             </div>
         </section>
 
@@ -124,6 +123,7 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="script.js" type="module"></script>
 
 </body>
