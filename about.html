@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <script>
+        (() => {
+            const preferredLang = localStorage.getItem("language") || "hi";
+            document.documentElement.lang = preferredLang;
+        })();
+    </script>
+    <style>body { visibility: hidden; }</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About - Naamin</title>
+    <meta name="description" content="About Naamin - Your trusted partner for naming solutions." />
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="light">
+
+<header>
+    <a class="header-logo" href="index.html"><span class="header-naam">Naam</span><span class="header-in">in</span></a>
+    <button class="hamburger-menu" id="hamburger-menu" aria-label="Toggle navigation menu"><span class="line line1"></span><span class="line line2"></span><span class="line line3"></span></button>
+    <nav class="main-nav" id="main-nav">
+        <ul class="nav-links">
+            <li><a class="nav-items" href="index.html" data-en="Home" data-hi="होम">Home</a></li>
+            <li><a class="nav-items highlight-pulse" href="chatbot.html" data-en="Naamin AI" data-hi="नामिन ए.आई.">Naamin AI</a></li>
+            <li><a class="nav-items active" href="about.html" data-en="About" data-hi="हमारे बारे में">About</a></li>
+            <li><a class="nav-items" href="services.html" data-en="Services" data-hi="सेवाएं">Services</a></li>
+            <li><a class="nav-items" href="pricing.html" data-en="Aura" data-hi="आभा">Aura</a></li>
+            <li><a class="nav-items" href="careers.html" data-en="Careers" data-hi="करियर">Careers</a></li>
+            <li><a class="nav-items" href="contact.html" data-en="Contact" data-hi="संपर्क करें">Contact</a></li>
+        </ul>
+        <div class="header-controls">
+            <button id="theme-toggle" aria-label="Toggle dark and light mode"><i class="fas fa-moon"></i></button>
+            <button id="language-toggle" aria-label="Toggle language" data-current-lang="en">ENG/HIN</button>
+        </div>
+    </nav>
+</header>
+<main>
+    <section id="about" class="section">
+        <div class="content-wrapper">
+            <h2 data-en="About Naamin" data-hi="नामिन के बारे में">About Naamin</h2>
+            <p data-en="Naamin believes a name is more than just a word — it is an identity, a legacy, and a powerful vibration carrying meaning far beyond its letters. Every name holds a story, a dream waiting to come alive with the right essence and intention.
+
+Guided by the profound wisdom of Sanskrit, the principles of modern branding, and the timeless harmony of the cosmos, we craft names that are not only meaningful and melodious but also infused with positive energy, cultural depth, and strategic value." data-hi="Naamin का विश्वास है कि नाम केवल एक शब्द नहीं, बल्कि एक पहचान, एक विरासत, और एक शक्तिशाली स्पंदन है, जो अपने अक्षरों से कहीं अधिक गहरा अर्थ लिए होता है। हर नाम में एक कहानी होती है — एक सपना, जो सही अर्थ और भावना के साथ जीवन पाता है।
+
+संस्कृत की गहन विद्या, आधुनिक ब्रांडिंग सिद्धांतों, और ब्रह्मांड की अनंत प्रेरणा से मार्गदर्शित होकर हम ऐसे नाम गढ़ते हैं, जो न केवल सार्थक और सुमधुर हों, बल्कि उनमें सकारात्मक ऊर्जा, सांस्कृतिक गहराई, और रणनीतिक मूल्य भी समाहित हो।">
+                Naamin believes a name is more than just a word — it is an identity, a legacy, and a powerful vibration carrying meaning far beyond its letters. Every name holds a story, a dream waiting to come alive with the right essence and intention.
+
+Guided by the profound wisdom of Sanskrit, the principles of modern branding, and the timeless harmony of the cosmos, we craft names that are not only meaningful and melodious but also infused with positive energy, cultural depth, and strategic value.
+            </p>
+            <p data-en="Our team of experts combines linguistic heritage, creative insight, and brand strategy to design names that:
+
+Inspire trust and credibility,
+
+Reflect core values and aspirations,
+
+And create a lasting impact on people and markets alike.
+
+The mission of Naamin is to help individuals, brands, and businesses build identities that are memorable, authentic, and truly radiant." data-hi="हमारी विशेषज्ञ टीम भाषायी परंपरा, रचनात्मक दृष्टि, और ब्रांड रणनीति को मिलाकर ऐसे नाम रचती है, जो:
+
+विश्वास और विश्वसनीयता पैदा करें,
+
+मूल्यों और आकांक्षाओं को प्रतिबिंबित करें,
+
+और लोगों व बाज़ारों पर स्थायी प्रभाव छोड़ें।
+
+Naamin का मिशन है व्यक्तियों, ब्रांडों और व्यवसायों को ऐसी पहचान देना, जो यादगार, प्रामाणिक, और सचमुच उज्ज्वल हो।">
+                Our team of experts combines linguistic heritage, creative insight, and brand strategy to design names that:
+
+Inspire trust and credibility,
+
+Reflect core values and aspirations,
+
+And create a lasting impact on people and markets alike.
+
+The mission of Naamin is to help individuals, brands, and businesses build identities that are memorable, authentic, and truly radiant.
+            </p>
+        </div>
+    </section>
+</main>
+<footer>
+    <div class="footer-grid">
+        <div><h3 data-en="Quick Links" data-hi="त्वरित लिंक">Quick Links</h3><a href="index.html" data-en="Home" data-hi="होम">Home</a><a href="about.html" data-en="About" data-hi="हमारे बारे में">About</a><a href="services.html" data-en="Services" data-hi="सेवाएं">Services</a><a href="contact.html" data-en="Contact" data-hi="संपर्क करें">Contact</a></div>
+        <div><h3 data-en="Our Services" data-hi="हमारी सेवाएं">Our Services</h3><a href="services.html" data-en="Baby Naming" data-hi="शिशु नामकरण">Baby Naming</a><a href="services.html" data-en="Company Naming" data-hi="कंपनी नामकरण">Company Naming</a><a href="services.html" data-en="Motto Creation" data-hi="उद्घोष निर्माण">Motto Creation</a></div>
+        <div><h3 data-en="Follow Us" data-hi="हमें फॉलो करें">Follow Us</h3><p><a href="https://www.linkedin.com/company/naamin/" target="_blank" rel="noopener">LinkedIn</a></p><p><a href="#" target="_blank" rel="noopener">Instagram</a></p><p><a href="#" target="_blank" rel="noopener">Facebook</a></p></div>
+        <div><h3 data-en="Contact" data-hi="संपर्क">Contact</h3><p><a href="tel:+919413678955">+91 94136 78955</a></p><p><a href="mailto:naamin.com@gmail.com">naamin.com@gmail.com</a></p><p data-en="Hyderabad, Telangana, India" data-hi="हैदराबाद, तेलंगाना, भारत">Hyderabad, Telangana, India</p></div>
+    </div>
+    <p class="copyrights" data-en="© 2025 Naamin. All rights reserved." data-hi="© २०२५ नामिन। सभी अधिकार सुरक्षित।">© 2025 Naamin. All rights reserved.</p>
+</footer>
+
+<a href="https://wa.me/9413678955" class="whatsapp-float" target="_blank">
+    <i class="fa-brands fa-whatsapp whatsapp-icon"></i>
+</a>
+<button id="scrollToTopBtn" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></button>
+
+<script src="script.js" type="module"></script>
+</body>
+</html>
