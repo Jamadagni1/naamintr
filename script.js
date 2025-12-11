@@ -1,15 +1,15 @@
 /* ======================================================
-   SCRIPT.JS - FINAL FIXED VERSION (Meaning & Details)
+   SCRIPT.JS - FINAL FIXED VERSION (Undefined Fix)
    ====================================================== */
 
 // --- 1. Force Page Visibility ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-const GEMINI_API_KEY = ""; // API Key (Optional)
+const GEMINI_API_KEY = ""; // Optional
 
 // ======================================================
-// 🌟 ASTRO ENGINE CLASS (Logic for Calculation)
+// 🌟 ASTRO ENGINE CLASS
 // ======================================================
 class AstroEngine {
     constructor() {
@@ -53,6 +53,7 @@ class AstroEngine {
     }
 
     calculateNumerology(name) {
+        if (!name) return 1;
         let cleanName = name.toUpperCase().replace(/[^A-Z]/g, '');
         let total = 0;
         for (let char of cleanName) total += this.numerologyMap[char] || 0;
@@ -65,22 +66,42 @@ class AstroEngine {
     }
 
     calculateRashi(name) {
+        if (!name) return this.rashiMap[0];
         let cleanName = name.toLowerCase().trim();
         for (let rashiObj of this.rashiMap) {
             for (let sound of rashiObj.letters) {
                 if (cleanName.startsWith(sound)) return rashiObj;
             }
         }
-        return this.rashiMap[0]; // Fallback
+        return this.rashiMap[0];
     }
 
+    // --- FIXED PROCESS NAME FUNCTION ---
     processName(nameData) {
+        // Safety Check: Agar nameData undefined hai to crash mat ho
+        if (!nameData || !nameData.name) {
+            return {
+                name: "Unknown",
+                meaning: "N/A",
+                calculatedRashi: "N/A",
+                calculatedNakshatra: "N/A",
+                calculatedPhal: "N/A",
+                calculatedNum: 0,
+                calculatedPlanet: "N/A",
+                calculatedColor: "N/A",
+                calculatedDay: "N/A"
+            };
+        }
+
         const num = this.calculateNumerology(nameData.name);
         const rashiDetails = this.calculateRashi(nameData.name);
-        const luckyInfo = this.astroDetails[num];
+        const luckyInfo = this.astroDetails[num] || this.astroDetails[1]; // Fallback
 
         return {
-            ...nameData, // JSON ka purana data (name, meaning)
+            ...nameData, 
+            // IMPORTANT FIX: Use lowercase keys to match what HTML expects
+            name: nameData.name, // Ensure name is passed correctly
+            meaning: nameData.meaning,
             calculatedRashi: rashiDetails.rashi,
             calculatedNakshatra: rashiDetails.nakshatras.join(", "),
             calculatedPhal: rashiDetails.phal,
@@ -212,6 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const smartData = engine.processName(person);
 
                     if(nameDetailsBox) {
+                        // FIX: Use smartData.name instead of person.name directly to avoid undefined error
                         nameDetailsBox.innerHTML = `
                             <h2>${smartData.name}</h2>
                             <div class="detail-grid">
