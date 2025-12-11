@@ -1,13 +1,15 @@
 /* ======================================================
-   SCRIPT.JS - ALL FEATURES FIXED (Names + Pricing)
+   SCRIPT.JS - UPDATED VERSION (Details + Pricing Fixed)
    ====================================================== */
 
-// --- 1. Force Page Visibility ---
+// --- 1. Force Visibility ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-const GEMINI_API_KEY = ""; // Yahan API Key daalein
+// --- DEBUG MESSAGE (Console me dikhega) ---
+console.log("✅ NEW SCRIPT LOADED: Pricing & Details Fixed");
 
+const GEMINI_API_KEY = ""; 
 let namesData = []; 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -19,72 +21,59 @@ document.addEventListener("DOMContentLoaded", () => {
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
-        hamburger.addEventListener("click", (e) => { 
+        hamburger.onclick = (e) => { 
             e.stopPropagation();
             hamburger.classList.toggle("active"); 
             nav.classList.toggle("active"); 
-        });
-        document.addEventListener("click", (e) => {
+        };
+        document.onclick = (e) => {
             if (nav.classList.contains("active") && !nav.contains(e.target)) {
                 hamburger.classList.remove("active");
                 nav.classList.remove("active");
             }
-        });
+        };
     }
 
     // --- 3. PRICING / AURA PLANS TOGGLE (FIXED) ---
-    // Yeh code wapas daal diya gaya hai taaki click karne par plans khulein
     const pricingHeaders = document.querySelectorAll(".pricing-card-header");
+    
+    // Debug: Check karein ki pricing cards mile ya nahi
+    if(pricingHeaders.length === 0) console.warn("⚠️ Pricing headers nahi mile!");
+
     pricingHeaders.forEach(header => {
         header.addEventListener("click", () => {
+            console.log("Pricing Card Clicked!"); // Check click
             const card = header.closest(".pricing-card");
             if (card) {
-                // Toggle current card
+                // Sirf clicked card ko toggle karein
                 card.classList.toggle("expanded");
-                
-                // Close other cards (Optional: agar ek baar me ek hi kholna ho)
-                document.querySelectorAll(".pricing-card").forEach(otherCard => {
-                    if (otherCard !== card) otherCard.classList.remove("expanded");
-                });
             }
         });
     });
 
-    // --- 4. LANGUAGE LOGIC ---
+    // --- 4. TEXT & LANGUAGE ---
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
-        
         document.querySelectorAll("[data-en]").forEach(el => {
             const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
             if (text) el.textContent = text;
         });
-
         const heroInput = document.getElementById("hero-search-input");
         if(heroInput) heroInput.placeholder = lang === "hi" ? "उदा: आरव, अद्विक..." : "e.g., Aarav, Advik...";
     }
-
     const langBtn = document.getElementById("language-toggle");
     if(langBtn) {
-        langBtn.onclick = () => {
-            const current = localStorage.getItem("language") === "hi" ? "en" : "hi";
-            updateContent(current);
-        };
+        langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
     }
     updateContent(localStorage.getItem("language") || "en");
 
-    // --- 5. THEME LOGIC ---
-    const setTheme = (t) => {
-        document.body.setAttribute("data-theme", t);
-        localStorage.setItem("theme", t);
-        const btn = document.getElementById("theme-toggle");
-        if(btn) btn.innerHTML = t === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    };
-    setTheme(localStorage.getItem("theme") || "light");
-    
+    // --- 5. THEME ---
     document.getElementById("theme-toggle")?.addEventListener("click", () => {
         const current = document.body.getAttribute("data-theme");
-        setTheme(current === "dark" ? "light" : "dark");
+        const next = current === "dark" ? "light" : "dark";
+        document.body.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
     });
 
     // --- 6. TYPING EFFECT ---
@@ -94,13 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
         let i = 0;
         (function type() {
             typeElement.innerHTML = `<span class="naamin-naam">${text.slice(0, 4)}</span><span class="naamin-in">${text.slice(4, i++)}</span>`;
-            if (i <= text.length) setTimeout(type, 150);
-            else setTimeout(() => { i = 0; type(); }, 3000);
+            if (i <= text.length) setTimeout(type, 150); else setTimeout(() => { i = 0; type(); }, 3000);
         })();
     }
 
     // ======================================================
-    // HERO SEARCH (Local JSON + Detailed View)
+    // SEARCH LOGIC
     // ======================================================
     async function handleHeroSearch() {
         const heroInput = document.getElementById('hero-search-input');
@@ -121,13 +109,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching Database...</div>';
 
             try {
-                // Load both files safely
                 const [boysRes, girlsRes] = await Promise.all([
                     fetch('bnames.json').then(res => res.ok ? res.json() : []),
                     fetch('gnames.json').then(res => res.ok ? res.json() : [])
                 ]);
 
-                // Flatten Data
                 let allNames = [].concat(boysRes, girlsRes).flatMap(item => {
                     if (item.name) return item;
                     return Object.values(item).find(v => Array.isArray(v)) || [];
@@ -136,23 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const foundPerson = allNames.find(n => n.name && n.name.toLowerCase() === nameToSearch);
 
                 if (foundPerson) {
-                    // Yahan saari details dikhayi jayengi
-                    detailsBox.innerHTML = `
-                        <h2>${foundPerson.name}</h2>
-                        <p><strong>Meaning:</strong> ${foundPerson.meaning || 'N/A'}</p>
-                        <p><strong>Gender:</strong> ${foundPerson.gender || 'Unknown'}</p>
-                        <p><strong>Origin:</strong> ${foundPerson.origin || 'N/A'}</p>
-                        <p><strong>Rashi (Zodiac):</strong> ${foundPerson.zodiac || 'N/A'}</p>
-                        <p><strong>Nakshatra:</strong> ${foundPerson.nakshatra || 'N/A'}</p>
-                        <p><strong>Numerology:</strong> ${foundPerson.numerology || 'N/A'}</p>
-                        <p><strong>Horoscope:</strong> ${foundPerson.horoscope || 'N/A'}</p>
-                    `;
+                    showDetailsInBox(detailsBox, foundPerson);
                 } else {
-                    detailsBox.innerHTML = `
-                        <h2>${nameToSearch}</h2>
-                        <p>Sorry, name not found in our database.</p>
-                        <button class="back-btn" onclick="location.reload()">Try Another</button>
-                    `;
+                    detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>Name not found.</p><button class="back-btn" onclick="location.reload()">Try Another</button>`;
                 }
             } catch(e) {
                 console.error(e);
@@ -186,10 +158,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             try {
                 if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
-                
                 const response = await fetch(fileName);
                 if (!response.ok) throw new Error(`File missing: ${fileName}`);
-                
                 let rawData = await response.json();
 
                 if (Array.isArray(rawData)) {
@@ -199,9 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const found = values.find(v => Array.isArray(v));
                     namesData = found || [];
                 }
-                
                 renderNames();
-
             } catch (error) {
                 console.error("Load Error:", error);
                 if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading list.</p>`;
@@ -229,16 +197,13 @@ document.addEventListener("DOMContentLoaded", () => {
         function renderNames() {
             if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
-            
             const listSection = document.querySelector('.name-list-container');
             if(listSection) listSection.style.display = 'block';
             if(nameDetailsContainer) nameDetailsContainer.style.display = 'none';
 
             if (!Array.isArray(namesData)) return;
 
-            const filtered = namesData.filter(n => 
-                n.name && n.name.toUpperCase().startsWith(currentLetter)
-            );
+            const filtered = namesData.filter(n => n.name && n.name.toUpperCase().startsWith(currentLetter));
             
             if (filtered.length === 0) {
                 nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found for ${currentLetter}</p>`;
@@ -252,20 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 div.onclick = () => {
                     if(listSection) listSection.style.display = 'none';
                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
-                    
-                    // --- DETAILS UPDATE (Sab kuch dikhayega) ---
-                    if(nameDetailsBox) {
-                        nameDetailsBox.innerHTML = `
-                            <h2>${person.name}</h2>
-                            <p><strong>Meaning:</strong> ${person.meaning || 'N/A'}</p>
-                            <p><strong>Gender:</strong> ${person.gender || currentGender}</p>
-                            <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
-                            <p><strong>Rashi (Zodiac):</strong> ${person.zodiac || 'N/A'}</p>
-                            <p><strong>Nakshatra:</strong> ${person.nakshatra || 'N/A'}</p>
-                            <p><strong>Numerology:</strong> ${person.numerology || 'N/A'}</p>
-                            <p><strong>Horoscope:</strong> ${person.horoscope || 'N/A'}</p>
-                        `;
-                    }
+                    showDetailsInBox(nameDetailsBox, person);
                 };
                 nameListContainer.appendChild(div);
             });
@@ -290,7 +242,24 @@ document.addEventListener("DOMContentLoaded", () => {
         loadNames("Boy");
     }
 
-    // --- CHATBOT PLACEHOLDER ---
+    // --- HELPER: SHOW DETAILS ---
+    function showDetailsInBox(box, person) {
+        if(!box) return;
+        box.innerHTML = `
+            <h2>${person.name}</h2>
+            <div style="text-align: left; margin-top: 15px;">
+                <p><strong>Meaning:</strong> ${person.meaning || 'N/A'}</p>
+                <p><strong>Gender:</strong> ${person.gender || 'N/A'}</p>
+                <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
+                <p><strong>Rashi (Zodiac):</strong> ${person.zodiac || 'N/A'}</p>
+                <p><strong>Numerology:</strong> ${person.numerology || 'N/A'}</p>
+                <p><strong>Horoscope:</strong> ${person.horoscope || 'N/A'}</p>
+                <p><strong>Nakshatra:</strong> ${person.nakshatra || 'N/A'}</p>
+            </div>
+        `;
+    }
+
+    // --- CHATBOT ---
     if (document.getElementById("chatbox")) {
         const sendBtn = document.getElementById("sendBtn");
         const userInput = document.getElementById("userInput");
