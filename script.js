@@ -1,14 +1,14 @@
 /* ======================================================
-   SCRIPT.JS - FINAL FIXED VERSION
+   SCRIPT.JS - RESTORED FEATURES + SMART JSON ENGINE
    ====================================================== */
 
 // Force Visibility
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-const GEMINI_API_KEY = ""; // Optional
+const GEMINI_API_KEY = ""; // API Key
 
-// --- ASTRO ENGINE ---
+// 🌟 ASTRO ENGINE (To calculate missing details)
 class AstroEngine {
     constructor() {
         this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
@@ -34,15 +34,15 @@ class AstroEngine {
     }
     calculateNumerology(name) {
         if(!name) return 1;
-        let total = 0, clean = name.toUpperCase().replace(/[^A-Z]/g, '');
-        for(let c of clean) total += this.numerologyMap[c] || 0;
-        while(total > 9) { let s=0; while(total>0){ s+=total%10; total=Math.floor(total/10); } total=s; }
-        return total || 1;
+        let total=0, clean=name.toUpperCase().replace(/[^A-Z]/g,'');
+        for(let c of clean) total+=this.numerologyMap[c]||0;
+        while(total>9){ let s=0; while(total>0){s+=total%10; total=Math.floor(total/10);} total=s; }
+        return total||1;
     }
     calculateRashi(name) {
         if(!name) return this.rashiMap[0];
-        let n = name.toLowerCase().trim();
-        for(let r of this.rashiMap) { for(let l of r.letters) if(n.startsWith(l)) return r; }
+        let n=name.toLowerCase().trim();
+        for(let r of this.rashiMap){ for(let l of r.letters) if(n.startsWith(l)) return r; }
         return this.rashiMap[0];
     }
     processName(data) {
@@ -52,7 +52,8 @@ class AstroEngine {
         const rashi = this.calculateRashi(safeName);
         const astro = this.astroDetails[num] || this.astroDetails[1];
         return {
-            ...data, name: safeName, meaning: data.meaning || "Meaning available in database.",
+            ...data, name: safeName,
+            meaning: data.meaning || "Meaning available in database.",
             rashi: rashi.rashi, nakshatra: rashi.nakshatras.join(", "), phal: rashi.phal,
             num: num, planet: astro.planet, color: astro.color
         };
@@ -60,15 +61,25 @@ class AstroEngine {
 }
 
 const engine = new AstroEngine();
-let namesData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Header
+    // 1. Header Logic
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
-    // Theme
+    // 2. Typing Effect (RESTORED)
+    const typeElement = document.getElementById("naamin-main-title-typing");
+    if (typeElement) {
+        const text = "Naamin";
+        let i = 0;
+        (function type() {
+            typeElement.innerHTML = `<span class="naamin-naam">${text.slice(0, 4)}</span><span class="naamin-in">${text.slice(4, i++)}</span>`;
+            if (i <= text.length) setTimeout(type, 150); else setTimeout(() => { i = 0; type(); }, 3000);
+        })();
+    }
+
+    // 3. Theme Logic
     const themeBtn = document.getElementById("theme-toggle");
     if(themeBtn) {
         const saved = localStorage.getItem("theme") || "light";
@@ -82,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // Language
+    // 4. Language Logic
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
@@ -97,12 +108,26 @@ document.addEventListener("DOMContentLoaded", () => {
     if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
     updateContent(localStorage.getItem("language") || "en");
 
-    // Pricing / Aura Plans Toggle (FIXED)
-    document.querySelectorAll(".pricing-card-header").forEach(header => {
-        header.onclick = () => header.closest(".pricing-card")?.classList.toggle("expanded");
-    });
+    // 5. Mobile Menu
+    const hamburger = document.getElementById("hamburger-menu");
+    const nav = document.getElementById("main-nav");
+    if(hamburger && nav) {
+        hamburger.onclick = (e) => { e.stopPropagation(); hamburger.classList.toggle("active"); nav.classList.toggle("active"); };
+        document.onclick = (e) => { if (nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
+    }
 
-    // Helper: Show Details
+    // 6. Scroll To Top
+    const scrollBtn = document.getElementById("scrollToTopBtn");
+    if (scrollBtn) {
+        window.addEventListener("scroll", () => {
+            scrollBtn.classList.toggle("show", window.scrollY > 300);
+            scrollBtn.style.opacity = window.scrollY > 300 ? "1" : "0";
+            scrollBtn.style.visibility = window.scrollY > 300 ? "visible" : "hidden";
+        });
+        scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // 7. Show Details Helper
     function showDetails(box, data, gender="Unknown") {
         if(!box || !data) return;
         box.innerHTML = `
@@ -125,11 +150,14 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    // Search Logic
+    // ======================================================
+    // HERO SEARCH (JSON BASED)
+    // ======================================================
     async function handleHeroSearch() {
         const input = document.getElementById('hero-search-input');
         if(!input || !input.value.trim()) return;
         const term = input.value.trim().toLowerCase();
+
         const section = document.getElementById('name-finder');
         const detailsBox = document.querySelector('.name-details');
         const listContainer = document.querySelector('.name-list-container');
@@ -139,14 +167,28 @@ document.addEventListener("DOMContentLoaded", () => {
             window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
             if(listContainer) listContainer.style.display = 'none';
             if(detailsContainer) detailsContainer.style.display = 'block';
-            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching...</div>';
+            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching Database...</div>';
 
             try {
-                const [b, g] = await Promise.all([ fetch('bnames.json').then(r => r.ok?r.json():[]), fetch('gnames.json').then(r => r.ok?r.json():[]) ]);
+                const [b, g] = await Promise.all([ 
+                    fetch('bnames.json').then(r => r.ok?r.json():[]), 
+                    fetch('gnames.json').then(r => r.ok?r.json():[]) 
+                ]);
                 const all = [].concat(b, g).flatMap(i => i.name ? i : (Object.values(i).find(v=>Array.isArray(v))||[]));
                 const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
-                
-                let dataToProcess = found ? found : { name: term.charAt(0).toUpperCase() + term.slice(1), meaning: "Auto-Calculated Analysis", gender: "Unknown" };
+
+                let dataToProcess;
+                if(found) {
+                    dataToProcess = found;
+                } else {
+                    let displayTerm = term.charAt(0).toUpperCase() + term.slice(1);
+                    dataToProcess = { 
+                        name: displayTerm, 
+                        meaning: "Not found in database (Auto-Calculated Analysis)", 
+                        gender: "Unknown", 
+                        origin: "Unknown" 
+                    };
+                }
                 const smartData = engine.processName(dataToProcess);
                 showDetails(detailsBox, smartData, dataToProcess.gender);
             } catch(e) { console.error(e); detailsBox.innerHTML = "<p>Search error.</p>"; }
@@ -157,7 +199,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if(sBtn) sBtn.onclick = handleHeroSearch;
     if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
 
-    // Name Finder List
+    // ======================================================
+    // NAME FINDER (A-Z)
+    // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
         const alphabetContainer = document.querySelector('.alphabet-selector');
@@ -169,6 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         let currentGender = "Boy";
         let currentLetter = "A";
+        let namesData = [];
 
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
@@ -177,7 +222,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const response = await fetch(fileName);
                 if (!response.ok) throw new Error("File missing");
                 let rawData = await response.json();
-                namesData = Array.isArray(rawData) ? rawData : (Object.values(rawData).find(v => Array.isArray(v)) || []);
+                if (Array.isArray(rawData)) { namesData = rawData; } 
+                else { namesData = Object.values(rawData).find(v => Array.isArray(v)) || []; }
                 renderNames();
             } catch (error) { if(nameListContainer) nameListContainer.innerHTML = `<p>Error loading data.</p>`; }
         }
@@ -207,7 +253,10 @@ document.addEventListener("DOMContentLoaded", () => {
             nameDetailsContainer.style.display = 'none';
 
             if (!Array.isArray(namesData)) return;
-            const filtered = namesData.filter(n => (n.name || n.Name).toUpperCase().startsWith(currentLetter));
+            const filtered = namesData.filter(n => {
+                let nName = n.name || n.Name;
+                return nName && nName.toUpperCase().startsWith(currentLetter);
+            });
             
             if (filtered.length === 0) { nameListContainer.innerHTML = `<p>No names found.</p>`; return; }
 
@@ -241,5 +290,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         generateAlphabet();
         loadNames("Boy");
+    }
+
+    // --- CHATBOT UI ---
+    if(document.getElementById("chatbox")) {
+        const btn = document.getElementById("sendBtn");
+        const inp = document.getElementById("userInput");
+        const box = document.getElementById("chatbox");
+        const send = () => {
+            if(!inp.value.trim()) return;
+            box.innerHTML += `<div class="message user">${inp.value}</div>`;
+            inp.value = "";
+            box.scrollTop = box.scrollHeight;
+            box.innerHTML += `<div class="message bot">For AI chat, please add API Key.</div>`;
+        };
+        if(btn) btn.onclick = send;
+        if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
     }
 });
