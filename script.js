@@ -1,66 +1,106 @@
 /* ======================================================
-   SCRIPT.JS - CRASH PROOF VERSION
+   SCRIPT.JS - ALL FEATURES FIXED (Names + Pricing)
    ====================================================== */
 
-// --- 1. Force Visibility ---
+// --- 1. Force Page Visibility ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-const GEMINI_API_KEY = ""; // Optional
+const GEMINI_API_KEY = ""; // Yahan API Key daalein
+
+let namesData = []; 
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- Page Setup ---
+    // --- 2. HEADER & MENU ---
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
-    // --- Language & Text Fix ---
+    const hamburger = document.getElementById("hamburger-menu");
+    const nav = document.getElementById("main-nav");
+    if(hamburger && nav) {
+        hamburger.addEventListener("click", (e) => { 
+            e.stopPropagation();
+            hamburger.classList.toggle("active"); 
+            nav.classList.toggle("active"); 
+        });
+        document.addEventListener("click", (e) => {
+            if (nav.classList.contains("active") && !nav.contains(e.target)) {
+                hamburger.classList.remove("active");
+                nav.classList.remove("active");
+            }
+        });
+    }
+
+    // --- 3. PRICING / AURA PLANS TOGGLE (FIXED) ---
+    // Yeh code wapas daal diya gaya hai taaki click karne par plans khulein
+    const pricingHeaders = document.querySelectorAll(".pricing-card-header");
+    pricingHeaders.forEach(header => {
+        header.addEventListener("click", () => {
+            const card = header.closest(".pricing-card");
+            if (card) {
+                // Toggle current card
+                card.classList.toggle("expanded");
+                
+                // Close other cards (Optional: agar ek baar me ek hi kholna ho)
+                document.querySelectorAll(".pricing-card").forEach(otherCard => {
+                    if (otherCard !== card) otherCard.classList.remove("expanded");
+                });
+            }
+        });
+    });
+
+    // --- 4. LANGUAGE LOGIC ---
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
+        
         document.querySelectorAll("[data-en]").forEach(el => {
             const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
             if (text) el.textContent = text;
         });
+
         const heroInput = document.getElementById("hero-search-input");
         if(heroInput) heroInput.placeholder = lang === "hi" ? "उदा: आरव, अद्विक..." : "e.g., Aarav, Advik...";
     }
+
     const langBtn = document.getElementById("language-toggle");
     if(langBtn) {
-        langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
+        langBtn.onclick = () => {
+            const current = localStorage.getItem("language") === "hi" ? "en" : "hi";
+            updateContent(current);
+        };
     }
     updateContent(localStorage.getItem("language") || "en");
 
-    // --- Typing Effect ---
+    // --- 5. THEME LOGIC ---
+    const setTheme = (t) => {
+        document.body.setAttribute("data-theme", t);
+        localStorage.setItem("theme", t);
+        const btn = document.getElementById("theme-toggle");
+        if(btn) btn.innerHTML = t === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    };
+    setTheme(localStorage.getItem("theme") || "light");
+    
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
+        const current = document.body.getAttribute("data-theme");
+        setTheme(current === "dark" ? "light" : "dark");
+    });
+
+    // --- 6. TYPING EFFECT ---
     const typeElement = document.getElementById("naamin-main-title-typing");
     if (typeElement) {
         const text = "Naamin";
         let i = 0;
         (function type() {
             typeElement.innerHTML = `<span class="naamin-naam">${text.slice(0, 4)}</span><span class="naamin-in">${text.slice(4, i++)}</span>`;
-            if (i <= text.length) setTimeout(type, 150); else setTimeout(() => { i = 0; type(); }, 3000);
+            if (i <= text.length) setTimeout(type, 150);
+            else setTimeout(() => { i = 0; type(); }, 3000);
         })();
     }
 
-    // --- Theme ---
-    document.getElementById("theme-toggle")?.addEventListener("click", () => {
-        const current = document.body.getAttribute("data-theme");
-        const next = current === "dark" ? "light" : "dark";
-        document.body.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
-        document.getElementById("theme-toggle").innerHTML = next === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    });
-
-    // --- Mobile Menu ---
-    const hamburger = document.getElementById("hamburger-menu");
-    const nav = document.getElementById("main-nav");
-    if(hamburger && nav) {
-        hamburger.onclick = (e) => { e.stopPropagation(); hamburger.classList.toggle("active"); nav.classList.toggle("active"); };
-        document.onclick = (e) => { if (nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
-    }
-
     // ======================================================
-    // 🔍 ROBUST SEARCH LOGIC (Fixes Search Issue)
+    // HERO SEARCH (Local JSON + Detailed View)
     // ======================================================
     async function handleHeroSearch() {
         const heroInput = document.getElementById('hero-search-input');
@@ -78,56 +118,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if(listContainer) listContainer.style.display = 'none';
             if(detailsContainer) detailsContainer.style.display = 'block';
-            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Database check kar raha hu...</div>';
+            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching Database...</div>';
 
             try {
-                // Try loading both files individually (Safety Check)
-                let boysData = [];
-                let girlsData = [];
+                // Load both files safely
+                const [boysRes, girlsRes] = await Promise.all([
+                    fetch('bnames.json').then(res => res.ok ? res.json() : []),
+                    fetch('gnames.json').then(res => res.ok ? res.json() : [])
+                ]);
 
-                try {
-                    const bRes = await fetch('bnames.json');
-                    if(bRes.ok) boysData = await bRes.json();
-                } catch(e) { console.warn("Boy names load nahi huye"); }
-
-                try {
-                    const gRes = await fetch('gnames.json');
-                    if(gRes.ok) girlsData = await gRes.json();
-                } catch(e) { console.warn("Girl names load nahi huye"); }
-
-                // Combine Data
-                let allNames = [].concat(boysData, girlsData);
-                
-                // --- FIX: Handle Nested Object Structure if present ---
-                // Agar data [{name:...}] nahi hai aur {names: [...]} hai toh usse fix karo
-                allNames = allNames.flatMap(item => {
-                    if (item.name) return item; // Sahi hai
-                    return Object.values(item).find(v => Array.isArray(v)) || []; // Object ke andar dhoondo
+                // Flatten Data
+                let allNames = [].concat(boysRes, girlsRes).flatMap(item => {
+                    if (item.name) return item;
+                    return Object.values(item).find(v => Array.isArray(v)) || [];
                 });
 
-                // Search
                 const foundPerson = allNames.find(n => n.name && n.name.toLowerCase() === nameToSearch);
 
                 if (foundPerson) {
+                    // Yahan saari details dikhayi jayengi
                     detailsBox.innerHTML = `
                         <h2>${foundPerson.name}</h2>
-                        <p><strong>Meaning:</strong> ${foundPerson.meaning}</p>
+                        <p><strong>Meaning:</strong> ${foundPerson.meaning || 'N/A'}</p>
                         <p><strong>Gender:</strong> ${foundPerson.gender || 'Unknown'}</p>
-                        <p><strong>Rashi:</strong> ${foundPerson.zodiac || 'N/A'}</p>
                         <p><strong>Origin:</strong> ${foundPerson.origin || 'N/A'}</p>
+                        <p><strong>Rashi (Zodiac):</strong> ${foundPerson.zodiac || 'N/A'}</p>
+                        <p><strong>Nakshatra:</strong> ${foundPerson.nakshatra || 'N/A'}</p>
+                        <p><strong>Numerology:</strong> ${foundPerson.numerology || 'N/A'}</p>
+                        <p><strong>Horoscope:</strong> ${foundPerson.horoscope || 'N/A'}</p>
                     `;
                 } else {
-                    // Agar Local me nahi mila, toh API try karo (Optional)
                     detailsBox.innerHTML = `
                         <h2>${nameToSearch}</h2>
-                        <p>Yeh naam database mein nahi mila.</p>
+                        <p>Sorry, name not found in our database.</p>
                         <button class="back-btn" onclick="location.reload()">Try Another</button>
                     `;
                 }
-
             } catch(e) {
                 console.error(e);
-                detailsBox.innerHTML = `<p>Search error: ${e.message}</p>`;
+                detailsBox.innerHTML = `<p>Error searching data.</p>`;
             }
         }
     }
@@ -139,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ======================================================
-    // 📂 NAME FINDER LIST LOGIC (Fixes "Error Loading List")
+    // NAME FINDER LOGIC (A-Z)
     // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
@@ -152,22 +181,17 @@ document.addEventListener("DOMContentLoaded", () => {
         
         let currentGender = "Boy";
         let currentLetter = "A";
-        let namesData = [];
 
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
-            
             try {
                 if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
                 
                 const response = await fetch(fileName);
-                if (!response.ok) {
-                    throw new Error(`File nahi mili: ${fileName}`);
-                }
+                if (!response.ok) throw new Error(`File missing: ${fileName}`);
                 
                 let rawData = await response.json();
 
-                // --- SMART DATA FIX ---
                 if (Array.isArray(rawData)) {
                     namesData = rawData;
                 } else {
@@ -180,13 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch (error) {
                 console.error("Load Error:", error);
-                if(nameListContainer) nameListContainer.innerHTML = `
-                    <div style="color: red; padding: 20px;">
-                        <h3>Error Loading Data</h3>
-                        <p>File: <b>${fileName}</b> load nahi ho payi.</p>
-                        <p>Reason: ${error.message}</p>
-                        <p>Make sure file exists in the folder.</p>
-                    </div>`;
+                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading list.</p>`;
             }
         }
 
@@ -223,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
             
             if (filtered.length === 0) {
-                nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found for '${currentLetter}'</p>`;
+                nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found for ${currentLetter}</p>`;
                 return;
             }
 
@@ -235,12 +253,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     if(listSection) listSection.style.display = 'none';
                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
                     
+                    // --- DETAILS UPDATE (Sab kuch dikhayega) ---
                     if(nameDetailsBox) {
                         nameDetailsBox.innerHTML = `
                             <h2>${person.name}</h2>
                             <p><strong>Meaning:</strong> ${person.meaning || 'N/A'}</p>
-                            <p><strong>Rashi:</strong> ${person.zodiac || 'N/A'}</p>
+                            <p><strong>Gender:</strong> ${person.gender || currentGender}</p>
                             <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
+                            <p><strong>Rashi (Zodiac):</strong> ${person.zodiac || 'N/A'}</p>
+                            <p><strong>Nakshatra:</strong> ${person.nakshatra || 'N/A'}</p>
+                            <p><strong>Numerology:</strong> ${person.numerology || 'N/A'}</p>
+                            <p><strong>Horoscope:</strong> ${person.horoscope || 'N/A'}</p>
                         `;
                     }
                 };
@@ -265,5 +288,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
         generateAlphabet();
         loadNames("Boy");
+    }
+
+    // --- CHATBOT PLACEHOLDER ---
+    if (document.getElementById("chatbox")) {
+        const sendBtn = document.getElementById("sendBtn");
+        const userInput = document.getElementById("userInput");
+        const chatbox = document.getElementById("chatbox");
+
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+            chatbox.innerHTML += `<div class="message user">${text}</div>`;
+            userInput.value = "";
+            chatbox.scrollTop = chatbox.scrollHeight;
+            chatbox.innerHTML += `<div class="message bot">API Key required for chat.</div>`;
+        }
+        if(sendBtn) sendBtn.onclick = sendMessage;
+        if(userInput) userInput.onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
     }
 });
