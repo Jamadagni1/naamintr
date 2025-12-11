@@ -1,15 +1,16 @@
 /* ======================================================
-   SCRIPT.JS - FINAL FIXED VERSION (Undefined Fix)
+   SCRIPT.JS - FINAL MASTER VERSION
+   (Search, Theme, Scroll & Smart Details Fixed)
    ====================================================== */
 
-// --- 1. Force Page Visibility ---
+// --- 1. Force Page Visibility (Safety) ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
 const GEMINI_API_KEY = ""; // Optional
 
 // ======================================================
-// 🌟 ASTRO ENGINE CLASS
+// 🌟 ASTRO ENGINE CLASS (Logic for Calculation)
 // ======================================================
 class AstroEngine {
     constructor() {
@@ -76,32 +77,18 @@ class AstroEngine {
         return this.rashiMap[0];
     }
 
-    // --- FIXED PROCESS NAME FUNCTION ---
     processName(nameData) {
-        // Safety Check: Agar nameData undefined hai to crash mat ho
-        if (!nameData || !nameData.name) {
-            return {
-                name: "Unknown",
-                meaning: "N/A",
-                calculatedRashi: "N/A",
-                calculatedNakshatra: "N/A",
-                calculatedPhal: "N/A",
-                calculatedNum: 0,
-                calculatedPlanet: "N/A",
-                calculatedColor: "N/A",
-                calculatedDay: "N/A"
-            };
-        }
+        // Safety Check
+        if (!nameData || !nameData.name) return null;
 
         const num = this.calculateNumerology(nameData.name);
         const rashiDetails = this.calculateRashi(nameData.name);
-        const luckyInfo = this.astroDetails[num] || this.astroDetails[1]; // Fallback
+        const luckyInfo = this.astroDetails[num] || this.astroDetails[1];
 
         return {
             ...nameData, 
-            // IMPORTANT FIX: Use lowercase keys to match what HTML expects
-            name: nameData.name, // Ensure name is passed correctly
-            meaning: nameData.meaning,
+            name: nameData.name, // Ensure lowercase key
+            meaning: nameData.meaning || "Meaning not available in database.",
             calculatedRashi: rashiDetails.rashi,
             calculatedNakshatra: rashiDetails.nakshatras.join(", "),
             calculatedPhal: rashiDetails.phal,
@@ -122,9 +109,11 @@ const engine = new AstroEngine();
 
 document.addEventListener("DOMContentLoaded", () => {
     
+    // --- 1. Header Adjustment ---
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
+    // --- 2. Mobile Menu ---
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
@@ -132,7 +121,44 @@ document.addEventListener("DOMContentLoaded", () => {
         document.onclick = (e) => { if (nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
     }
 
-    // --- Language Fix ---
+    // --- 3. Scroll To Top Button (FIXED) ---
+    const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+    if (scrollToTopBtn) {
+        window.addEventListener("scroll", () => {
+            if (window.scrollY > 300) {
+                scrollToTopBtn.classList.add("show");
+                scrollToTopBtn.style.opacity = "1"; // Force show
+                scrollToTopBtn.style.visibility = "visible";
+            } else {
+                scrollToTopBtn.classList.remove("show");
+                scrollToTopBtn.style.opacity = "0";
+                scrollToTopBtn.style.visibility = "hidden";
+            }
+        });
+        scrollToTopBtn.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    }
+
+    // --- 4. Theme & Language (FIXED) ---
+    const themeBtn = document.getElementById("theme-toggle");
+    
+    // Apply saved theme on load
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.body.setAttribute("data-theme", savedTheme);
+    if(themeBtn) themeBtn.innerHTML = savedTheme === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+    // Theme Toggle Listener
+    if (themeBtn) {
+        themeBtn.onclick = () => {
+            const current = document.body.getAttribute("data-theme");
+            const next = current === "dark" ? "light" : "dark";
+            document.body.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+            themeBtn.innerHTML = next === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        };
+    }
+
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
@@ -140,18 +166,107 @@ document.addEventListener("DOMContentLoaded", () => {
             const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
             if (text) el.textContent = text;
         });
+        const heroInput = document.getElementById("hero-search-input");
+        if(heroInput) heroInput.placeholder = lang === "hi" ? "उदा: आरव, अद्विक..." : "e.g., Aarav, Advik...";
     }
     const langBtn = document.getElementById("language-toggle");
     if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
     updateContent(localStorage.getItem("language") || "en");
 
-    // --- Pricing Toggle ---
+    // --- 5. Pricing Toggle ---
     document.querySelectorAll(".pricing-card-header").forEach(header => {
         header.onclick = () => header.closest(".pricing-card")?.classList.toggle("expanded");
     });
 
+    // --- 6. Helper: Render Details HTML (Used by both Search & List) ---
+    function renderDetailHTML(box, smartData, gender = "Unknown") {
+        if(!box) return;
+        box.innerHTML = `
+            <h2>${smartData.name}</h2>
+            <div class="detail-grid">
+                <p><strong>Meaning:</strong> ${smartData.meaning}</p>
+                <p><strong>Gender:</strong> ${smartData.gender || gender}</p>
+                <p><strong>Origin:</strong> ${smartData.origin || 'Sanskrit/Indian'}</p>
+                <hr>
+                <h3>🔮 Vedic Analysis</h3>
+                <p><strong>Rashi:</strong> ${smartData.calculatedRashi}</p>
+                <p><strong>Nakshatra:</strong> ${smartData.calculatedNakshatra}</p>
+                <p><strong>Personality:</strong> ${smartData.calculatedPhal}</p>
+                <hr>
+                <h3>🔢 Numerology</h3>
+                <p><strong>Number:</strong> ${smartData.calculatedNum}</p>
+                <p><strong>Planet:</strong> ${smartData.calculatedPlanet}</p>
+                <p><strong>Lucky Color:</strong> ${smartData.calculatedColor}</p>
+                <p><strong>Lucky Day:</strong> ${smartData.calculatedDay}</p>
+            </div>
+        `;
+    }
+
     // ======================================================
-    // NAME FINDER 
+    // SEARCH LOGIC (FIXED: Uses AstroEngine for EVERYTHING)
+    // ======================================================
+    async function handleHeroSearch() {
+        const input = document.getElementById('hero-search-input');
+        if(!input || !input.value.trim()) return;
+        const term = input.value.trim().toLowerCase();
+        
+        // Scroll to details section
+        const section = document.getElementById('name-finder');
+        const header = document.querySelector('header');
+        if(section) window.scrollTo({ top: section.offsetTop - (header ? header.offsetHeight : 0) - 20, behavior: 'smooth' });
+
+        const detailsBox = document.querySelector('.name-details');
+        const listContainer = document.querySelector('.name-list-container');
+        const detailsContainer = document.querySelector('.name-details-container');
+
+        if(listContainer) listContainer.style.display = 'none';
+        if(detailsContainer) detailsContainer.style.display = 'block';
+        if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Analyzing Name...</div>';
+
+        try {
+            // Load Database
+            const [b, g] = await Promise.all([ 
+                fetch('bnames.json').then(r => r.ok ? r.json() : []), 
+                fetch('gnames.json').then(r => r.ok ? r.json() : []) 
+            ]);
+            
+            // Flatten Data
+            const all = [].concat(b, g).flatMap(i => i.name ? i : Object.values(i).find(v => Array.isArray(v))||[]);
+            
+            // Find Name
+            const found = all.find(n => n.name.toLowerCase() === term);
+            
+            // --- MAIN FIX: Use AstroEngine for BOTH found and not-found names ---
+            let dataToProcess;
+            if (found) {
+                dataToProcess = found;
+            } else {
+                // Agar name database mein nahi hai, tab bhi engine se calculate karo
+                dataToProcess = { 
+                    name: input.value.trim(), 
+                    meaning: "Name not found in database (Auto-Calculated Analysis)",
+                    gender: "Unknown",
+                    origin: "Unknown"
+                };
+            }
+
+            const smartData = engine.processName(dataToProcess);
+            renderDetailHTML(detailsBox, smartData, dataToProcess.gender);
+
+        } catch(e) {
+            console.error(e);
+            detailsBox.innerHTML = "<p>Search error. Please check console.</p>";
+        }
+    }
+
+    const sBtn = document.getElementById('hero-search-btn');
+    const sInp = document.getElementById('hero-search-input');
+    if(sBtn) sBtn.onclick = handleHeroSearch;
+    if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
+
+
+    // ======================================================
+    // NAME FINDER (A-Z LIST)
     // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
@@ -229,31 +344,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     if(listSection) listSection.style.display = 'none';
                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
                     
-                    // --- SMART DATA PROCESS ---
+                    // Use the centralized render function
                     const smartData = engine.processName(person);
-
-                    if(nameDetailsBox) {
-                        // FIX: Use smartData.name instead of person.name directly to avoid undefined error
-                        nameDetailsBox.innerHTML = `
-                            <h2>${smartData.name}</h2>
-                            <div class="detail-grid">
-                                <p><strong>Meaning:</strong> ${smartData.meaning}</p>
-                                <p><strong>Gender:</strong> ${currentGender}</p>
-                                <p><strong>Origin:</strong> Sanskrit/Indian</p>
-                                <hr>
-                                <h3>🔮 Vedic Analysis</h3>
-                                <p><strong>Rashi:</strong> ${smartData.calculatedRashi}</p>
-                                <p><strong>Nakshatra:</strong> ${smartData.calculatedNakshatra}</p>
-                                <p><strong>Personality:</strong> ${smartData.calculatedPhal}</p>
-                                <hr>
-                                <h3>🔢 Numerology</h3>
-                                <p><strong>Number:</strong> ${smartData.calculatedNum}</p>
-                                <p><strong>Planet:</strong> ${smartData.calculatedPlanet}</p>
-                                <p><strong>Lucky Color:</strong> ${smartData.calculatedColor}</p>
-                                <p><strong>Lucky Day:</strong> ${smartData.calculatedDay}</p>
-                            </div>
-                        `;
-                    }
+                    renderDetailHTML(nameDetailsBox, smartData, currentGender);
                 };
                 nameListContainer.appendChild(div);
             });
@@ -278,59 +371,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadNames("Boy");
     }
 
-    // --- Search Logic (Case Sensitive Fix) ---
-    async function handleHeroSearch() {
-        const input = document.getElementById('hero-search-input');
-        if(!input || !input.value.trim()) return;
-        const term = input.value.trim().toLowerCase();
-        
-        const section = document.getElementById('name-finder');
-        if(section) window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
-
-        const detailsBox = document.querySelector('.name-details');
-        const listContainer = document.querySelector('.name-list-container');
-        const detailsContainer = document.querySelector('.name-details-container');
-
-        if(listContainer) listContainer.style.display = 'none';
-        if(detailsContainer) detailsContainer.style.display = 'block';
-        if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Analyzing...</div>';
-
-        try {
-            const [b, g] = await Promise.all([ fetch('bnames.json').then(r=>r.json()), fetch('gnames.json').then(r=>r.json()) ]);
-            const all = [].concat(b, g).flatMap(i => i.name ? i : Object.values(i).find(v => Array.isArray(v))||[]);
-            
-            const found = all.find(n => n.name.toLowerCase() === term);
-            
-            if(found) {
-                const smartData = engine.processName(found);
-                detailsBox.innerHTML = `
-                    <h2>${smartData.name}</h2>
-                    <p><strong>Meaning:</strong> ${smartData.meaning}</p>
-                    <p><strong>Rashi:</strong> ${smartData.calculatedRashi}</p>
-                    <p><strong>Numerology:</strong> ${smartData.calculatedNum} (${smartData.calculatedPlanet})</p>
-                    <p><strong>Lucky Color:</strong> ${smartData.calculatedColor}</p>
-                `;
-            } else {
-                const smartData = engine.processName({ name: input.value, meaning: "Not found in database" });
-                detailsBox.innerHTML = `
-                    <h2>${smartData.name}</h2>
-                    <p><em>(Auto-Analysis generated)</em></p>
-                    <p><strong>Rashi:</strong> ${smartData.calculatedRashi}</p>
-                    <p><strong>Nakshatra:</strong> ${smartData.calculatedNakshatra}</p>
-                    <p><strong>Numerology:</strong> ${smartData.calculatedNum} (${smartData.calculatedPlanet})</p>
-                `;
-            }
-        } catch(e) {
-            detailsBox.innerHTML = "<p>Search error.</p>";
-        }
-    }
-
-    const sBtn = document.getElementById('hero-search-btn');
-    const sInp = document.getElementById('hero-search-input');
-    if(sBtn) sBtn.onclick = handleHeroSearch;
-    if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
-
-    // Chatbot placeholder
+    // --- CHATBOT PLACEHOLDER ---
     if(document.getElementById("chatbox")) {
         const btn = document.getElementById("sendBtn");
         const inp = document.getElementById("userInput");
