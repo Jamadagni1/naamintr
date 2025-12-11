@@ -1,52 +1,67 @@
 /* ======================================================
-   SCRIPT.JS - COMPLETE FIX (Text, Buttons & Search)
+   SCRIPT.JS - CRASH PROOF VERSION
    ====================================================== */
 
-// --- 1. Force Page Visibility (Safety) ---
+// --- 1. Force Visibility ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-let namesData = []; 
+const GEMINI_API_KEY = ""; // Optional
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- 2. TEXT & LANGUAGE FIX (Problems 1 & 2 Solved) ---
+    // --- Page Setup ---
+    const header = document.querySelector('header');
+    if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
+
+    // --- Language & Text Fix ---
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
-        
-        // Sabhi elements jinke paas data-en hai, unhe dhoondo
         document.querySelectorAll("[data-en]").forEach(el => {
             const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
-            
-            if (text) {
-                // Agar element button hai ya heading hai, toh seedha text badal do
-                // Yeh logic Buttons aur Headings ko wapas le aayega
-                el.textContent = text;
-            }
+            if (text) el.textContent = text;
         });
-
-        // Search Placeholder update
         const heroInput = document.getElementById("hero-search-input");
-        if(heroInput) {
-            heroInput.placeholder = lang === "hi" ? "उदा: आरव, अद्विक..." : "e.g., Aarav, Advik...";
-        }
+        if(heroInput) heroInput.placeholder = lang === "hi" ? "उदा: आरव, अद्विक..." : "e.g., Aarav, Advik...";
     }
-
-    // Language Toggle Logic
     const langBtn = document.getElementById("language-toggle");
     if(langBtn) {
-        langBtn.onclick = () => {
-            const current = localStorage.getItem("language") === "hi" ? "en" : "hi";
-            updateContent(current);
-        };
+        langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
     }
-
-    // Load Default Language
     updateContent(localStorage.getItem("language") || "en");
 
+    // --- Typing Effect ---
+    const typeElement = document.getElementById("naamin-main-title-typing");
+    if (typeElement) {
+        const text = "Naamin";
+        let i = 0;
+        (function type() {
+            typeElement.innerHTML = `<span class="naamin-naam">${text.slice(0, 4)}</span><span class="naamin-in">${text.slice(4, i++)}</span>`;
+            if (i <= text.length) setTimeout(type, 150); else setTimeout(() => { i = 0; type(); }, 3000);
+        })();
+    }
 
-    // --- 3. HERO SEARCH - LOCAL JSON VERSION (Problem 3 Solved) ---
+    // --- Theme ---
+    document.getElementById("theme-toggle")?.addEventListener("click", () => {
+        const current = document.body.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        document.body.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        document.getElementById("theme-toggle").innerHTML = next === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    });
+
+    // --- Mobile Menu ---
+    const hamburger = document.getElementById("hamburger-menu");
+    const nav = document.getElementById("main-nav");
+    if(hamburger && nav) {
+        hamburger.onclick = (e) => { e.stopPropagation(); hamburger.classList.toggle("active"); nav.classList.toggle("active"); };
+        document.onclick = (e) => { if (nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
+    }
+
+    // ======================================================
+    // 🔍 ROBUST SEARCH LOGIC (Fixes Search Issue)
+    // ======================================================
     async function handleHeroSearch() {
         const heroInput = document.getElementById('hero-search-input');
         if (!heroInput || !heroInput.value.trim()) return;
@@ -58,32 +73,40 @@ document.addEventListener("DOMContentLoaded", () => {
         const listContainer = document.querySelector('.name-list-container');
 
         if (nameFinderSection) {
-            // Scroll to section
             const header = document.querySelector('header');
             window.scrollTo({ top: nameFinderSection.offsetTop - (header ? header.offsetHeight : 0), behavior: 'smooth' });
 
-            // UI Show Loading
             if(listContainer) listContainer.style.display = 'none';
             if(detailsContainer) detailsContainer.style.display = 'block';
-            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching Database...</div>';
+            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Database check kar raha hu...</div>';
 
             try {
-                // Dono files (Boy & Girl) load karein
-                const [boysRes, girlsRes] = await Promise.all([
-                    fetch('bnames.json'),
-                    fetch('gnames.json')
-                ]);
+                // Try loading both files individually (Safety Check)
+                let boysData = [];
+                let girlsData = [];
 
-                const boysData = await boysRes.json();
-                const girlsData = await girlsRes.json();
+                try {
+                    const bRes = await fetch('bnames.json');
+                    if(bRes.ok) boysData = await bRes.json();
+                } catch(e) { console.warn("Boy names load nahi huye"); }
 
-                // Dono lists ko milayein (Safe Checks ke sath)
-                let allNames = [];
-                if(Array.isArray(boysData)) allNames = allNames.concat(boysData);
-                if(Array.isArray(girlsData)) allNames = allNames.concat(girlsData);
+                try {
+                    const gRes = await fetch('gnames.json');
+                    if(gRes.ok) girlsData = await gRes.json();
+                } catch(e) { console.warn("Girl names load nahi huye"); }
 
-                // Naam dhoondein
-                const foundPerson = allNames.find(n => n.name.toLowerCase() === nameToSearch);
+                // Combine Data
+                let allNames = [].concat(boysData, girlsData);
+                
+                // --- FIX: Handle Nested Object Structure if present ---
+                // Agar data [{name:...}] nahi hai aur {names: [...]} hai toh usse fix karo
+                allNames = allNames.flatMap(item => {
+                    if (item.name) return item; // Sahi hai
+                    return Object.values(item).find(v => Array.isArray(v)) || []; // Object ke andar dhoondo
+                });
+
+                // Search
+                const foundPerson = allNames.find(n => n.name && n.name.toLowerCase() === nameToSearch);
 
                 if (foundPerson) {
                     detailsBox.innerHTML = `
@@ -91,20 +114,20 @@ document.addEventListener("DOMContentLoaded", () => {
                         <p><strong>Meaning:</strong> ${foundPerson.meaning}</p>
                         <p><strong>Gender:</strong> ${foundPerson.gender || 'Unknown'}</p>
                         <p><strong>Rashi:</strong> ${foundPerson.zodiac || 'N/A'}</p>
-                        <p><strong>Horoscope:</strong> ${foundPerson.horoscope || 'N/A'}</p>
                         <p><strong>Origin:</strong> ${foundPerson.origin || 'N/A'}</p>
                     `;
                 } else {
+                    // Agar Local me nahi mila, toh API try karo (Optional)
                     detailsBox.innerHTML = `
                         <h2>${nameToSearch}</h2>
-                        <p>Sorry, this name is not in our database yet.</p>
+                        <p>Yeh naam database mein nahi mila.</p>
                         <button class="back-btn" onclick="location.reload()">Try Another</button>
                     `;
                 }
 
             } catch(e) {
                 console.error(e);
-                detailsBox.innerHTML = `<p>Error searching data. Check JSON files.</p>`;
+                detailsBox.innerHTML = `<p>Search error: ${e.message}</p>`;
             }
         }
     }
@@ -115,55 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if(heroInp) heroInp.onkeypress = (e) => { if(e.key === "Enter") handleHeroSearch(); };
 
 
-    // --- 4. TYPING EFFECT (Styling) ---
-    const typeElement = document.getElementById("naamin-main-title-typing");
-    if (typeElement) {
-        const text = "Naamin";
-        let i = 0;
-        (function type() {
-            typeElement.innerHTML = `<span class="naamin-naam">${text.slice(0, 4)}</span><span class="naamin-in">${text.slice(4, i++)}</span>`;
-            if (i <= text.length) setTimeout(type, 150);
-            else setTimeout(() => { i = 0; type(); }, 3000);
-        })();
-    }
-
-    // --- 5. THEME & MENU ---
-    const setTheme = (t) => {
-        document.body.setAttribute("data-theme", t);
-        localStorage.setItem("theme", t);
-        const btn = document.getElementById("theme-toggle");
-        if(btn) btn.innerHTML = t === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-    };
-    setTheme(localStorage.getItem("theme") || "light");
-    
-    document.getElementById("theme-toggle")?.addEventListener("click", () => {
-        const current = document.body.getAttribute("data-theme");
-        setTheme(current === "dark" ? "light" : "dark");
-    });
-
-    const hamburger = document.getElementById("hamburger-menu");
-    const nav = document.getElementById("main-nav");
-    if(hamburger && nav) {
-        hamburger.addEventListener("click", (e) => { 
-            e.stopPropagation();
-            hamburger.classList.toggle("active"); 
-            nav.classList.toggle("active"); 
-        });
-        document.addEventListener("click", (e) => {
-            if (nav.classList.contains("active") && !nav.contains(e.target)) {
-                hamburger.classList.remove("active");
-                nav.classList.remove("active");
-            }
-        });
-    }
-
-    // --- 6. HEADER PADDING ---
-    const header = document.querySelector('header');
-    if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
-
-
     // ======================================================
-    // NAME FINDER LOGIC (A-Z Section)
+    // 📂 NAME FINDER LIST LOGIC (Fixes "Error Loading List")
     // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
@@ -176,8 +152,8 @@ document.addEventListener("DOMContentLoaded", () => {
         
         let currentGender = "Boy";
         let currentLetter = "A";
+        let namesData = [];
 
-        // Load Names Function
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             
@@ -185,10 +161,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
                 
                 const response = await fetch(fileName);
-                if (!response.ok) throw new Error(`File missing: ${fileName}`);
+                if (!response.ok) {
+                    throw new Error(`File nahi mili: ${fileName}`);
+                }
                 
                 let rawData = await response.json();
 
+                // --- SMART DATA FIX ---
                 if (Array.isArray(rawData)) {
                     namesData = rawData;
                 } else {
@@ -201,11 +180,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch (error) {
                 console.error("Load Error:", error);
-                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading list.</p>`;
+                if(nameListContainer) nameListContainer.innerHTML = `
+                    <div style="color: red; padding: 20px;">
+                        <h3>Error Loading Data</h3>
+                        <p>File: <b>${fileName}</b> load nahi ho payi.</p>
+                        <p>Reason: ${error.message}</p>
+                        <p>Make sure file exists in the folder.</p>
+                    </div>`;
             }
         }
 
-        // Render A-Z
         function generateAlphabet() {
             if(!alphabetContainer) return;
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -224,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Render List
         function renderNames() {
             if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
@@ -240,7 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
             
             if (filtered.length === 0) {
-                nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found for ${currentLetter}</p>`;
+                nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found for '${currentLetter}'</p>`;
                 return;
             }
 
@@ -257,7 +240,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             <h2>${person.name}</h2>
                             <p><strong>Meaning:</strong> ${person.meaning || 'N/A'}</p>
                             <p><strong>Rashi:</strong> ${person.zodiac || 'N/A'}</p>
-                            <p><strong>Horoscope:</strong> ${person.horoscope || 'N/A'}</p>
                             <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
                         `;
                     }
