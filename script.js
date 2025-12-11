@@ -1,15 +1,15 @@
 /* ======================================================
-   SCRIPT.JS - FINAL LOCAL JSON VERSION
+   MAIN.JS - ALL FIXES (Search, Scroll, Theme, Details)
    ====================================================== */
 
-// --- 1. Force Page Visibility ---
+// --- 1. Force Page Visibility (Safety) ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-const GEMINI_API_KEY = ""; // Optional (Sirf agar API use karni ho)
+const GEMINI_API_KEY = ""; // Optional: Agar API use karni ho
 
 // ======================================================
-// 🌟 ASTRO ENGINE (Calculation Logic)
+// 🌟 ASTRO ENGINE CLASS (Logic for Calculation)
 // ======================================================
 class AstroEngine {
     constructor() {
@@ -51,13 +51,15 @@ class AstroEngine {
         for(let r of this.rashiMap) {
             for(let l of r.letters) if(n.startsWith(l)) return r;
         }
-        return this.rashiMap[0]; // Fallback
+        return this.rashiMap[0];
     }
 
     processName(data) {
-        // FIX: Undefined error fix
+        // --- FIX FOR UNDEFINED ---
+        // Check both 'name' (lowercase) and 'Name' (uppercase)
         let safeName = data.name || data.Name;
-        if(!safeName) return null;
+        
+        if(!safeName) return null; // Safety Check
 
         const num = this.calculateNumerology(safeName);
         const rashi = this.calculateRashi(safeName);
@@ -65,8 +67,8 @@ class AstroEngine {
 
         return {
             ...data,
-            name: safeName,
-            meaning: data.meaning || data.Meaning || "Meaning available in database.",
+            name: safeName, // Standardize to 'name'
+            meaning: data.meaning || data.Meaning || "Meaning available in full report.",
             rashi: rashi.rashi,
             nakshatra: rashi.nakshatras.join(", "),
             phal: rashi.phal,
@@ -86,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
-    // --- 2. THEME TOGGLE ---
+    // --- 2. THEME TOGGLE (Fixed) ---
     const themeBtn = document.getElementById("theme-toggle");
     if(themeBtn) {
         const saved = localStorage.getItem("theme") || "light";
@@ -110,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.onclick = (e) => { if (nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
     }
 
-    // --- 4. SCROLL TO TOP ---
+    // --- 4. SCROLL TO TOP (Fixed) ---
     const scrollBtn = document.getElementById("scrollToTopBtn");
     if (scrollBtn) {
         window.addEventListener("scroll", () => {
@@ -127,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // --- 5. LANGUAGE FIX ---
+    // --- 5. LANGUAGE ---
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
@@ -142,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
     updateContent(localStorage.getItem("language") || "en");
 
-    // --- 6. COMMON FUNCTION TO SHOW DETAILS ---
+    // --- 6. COMMON FUNCTION TO SHOW DETAILS (UI for both Search & List) ---
     function showDetails(box, data, gender="Unknown") {
         if(!box || !data) return;
         
@@ -153,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p><strong>Gender:</strong> ${data.gender || gender}</p>
                 <p><strong>Origin:</strong> ${data.origin || 'Sanskrit/Indian'}</p>
                 <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                <h3>🔮 Vedic Astrology</h3>
+                <h3>🔮 Vedic Analysis</h3>
                 <p><strong>Rashi:</strong> ${data.rashi}</p>
                 <p><strong>Nakshatra:</strong> ${data.nakshatra}</p>
                 <p><strong>Traits:</strong> ${data.phal}</p>
@@ -167,56 +169,66 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ======================================================
-    // SEARCH LOGIC (JSON BASED)
+    // SEARCH LOGIC (FIXED: Uses AstroEngine for EVERYTHING)
     // ======================================================
     async function handleHeroSearch() {
         const input = document.getElementById('hero-search-input');
         if(!input || !input.value.trim()) return;
         const term = input.value.trim().toLowerCase();
-
+        
+        // Scroll to details section
         const section = document.getElementById('name-finder');
+        const header = document.querySelector('header');
+        if(section) window.scrollTo({ top: section.offsetTop - (header ? header.offsetHeight : 0) - 20, behavior: 'smooth' });
+
         const detailsBox = document.querySelector('.name-details');
         const listContainer = document.querySelector('.name-list-container');
         const detailsContainer = document.querySelector('.name-details-container');
 
-        if(section) {
-            window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
-            if(listContainer) listContainer.style.display = 'none';
-            if(detailsContainer) detailsContainer.style.display = 'block';
-            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching Database...</div>';
+        if(listContainer) listContainer.style.display = 'none';
+        if(detailsContainer) detailsContainer.style.display = 'block';
+        if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Analyzing Name...</div>';
 
-            try {
-                // LOAD JSON FILES
-                const [b, g] = await Promise.all([ 
-                    fetch('bnames.json').then(r => r.ok?r.json():[]), 
-                    fetch('gnames.json').then(r => r.ok?r.json():[]) 
-                ]);
-                
-                // Combine and find
-                const all = [].concat(b, g).flatMap(i => i.name ? i : (Object.values(i).find(v=>Array.isArray(v))||[]));
-                const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
-
-                let dataToProcess;
-                if(found) {
-                    dataToProcess = found;
-                } else {
-                    let displayTerm = term.charAt(0).toUpperCase() + term.slice(1);
-                    dataToProcess = { 
-                        name: displayTerm, 
-                        meaning: "Not found in database (Auto-Calculated Analysis)", 
-                        gender: "Unknown", 
-                        origin: "Unknown" 
-                    };
-                }
-
-                const smartData = engine.processName(dataToProcess);
-                showDetails(detailsBox, smartData, dataToProcess.gender);
-
-            } catch(e) {
-                console.error(e);
-                detailsBox.innerHTML = "<p>Search error. Please check console.</p>";
+        try {
+            // Load Database
+            const [b, g] = await Promise.all([ 
+                fetch('bnames.json').then(r => r.ok ? r.json() : []), 
+                fetch('gnames.json').then(r => r.ok ? r.json() : []) 
+            ]);
+            
+            // Flatten Data
+            const all = [].concat(b, g).flatMap(i => i.name ? i : Object.values(i).find(v => Array.isArray(v))||[]);
+            
+            // Find Name
+            const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
+            
+            let dataToProcess;
+            if (found) {
+                dataToProcess = found;
+            } else {
+                // Agar name database mein nahi hai, tab bhi engine se calculate karo
+                // FIX: Use input value capitalized for Title
+                let displayTerm = term.charAt(0).toUpperCase() + term.slice(1);
+                dataToProcess = { 
+                    name: displayTerm, 
+                    meaning: "Name not found in database (Auto-Calculated Analysis)",
+                    gender: "Unknown",
+                    origin: "Unknown"
+                };
             }
+
+            const smartData = engine.processName(dataToProcess);
+            renderDetailHTML(detailsBox, smartData, dataToProcess.gender);
+
+        } catch(e) {
+            console.error(e);
+            detailsBox.innerHTML = "<p>Search error. Please check console.</p>";
         }
+    }
+    
+    // Re-attach helper because 'renderDetailHTML' wasn't defined in scope of handleHeroSearch in previous snippet
+    function renderDetailHTML(box, smartData, gender = "Unknown") {
+        showDetails(box, smartData, gender);
     }
 
     const sBtn = document.getElementById('hero-search-btn');
@@ -226,7 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     // ======================================================
-    // A-Z LIST LOGIC (JSON BASED)
+    // NAME FINDER (A-Z LIST)
     // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
@@ -240,7 +252,6 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentGender = "Boy";
         let currentLetter = "A";
 
-        // LOAD JSON FILES
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             try {
@@ -257,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderNames();
             } catch (error) {
                 console.error(error);
-                if(nameListContainer) nameListContainer.innerHTML = `<p>Error loading ${fileName}. Make sure file exists.</p>`;
+                if(nameListContainer) nameListContainer.innerHTML = `<p>Error loading ${fileName}.</p>`;
             }
         }
 
@@ -289,6 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!Array.isArray(namesData)) return;
 
             const filtered = namesData.filter(n => {
+                // FIX: Check both 'name' and 'Name'
                 let nName = n.name || n.Name;
                 return nName && nName.toUpperCase().startsWith(currentLetter);
             });
@@ -302,6 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const div = document.createElement("div");
                 div.className = "name-item";
                 div.textContent = person.name || person.Name;
+                
                 div.onclick = () => {
                     if(listSection) listSection.style.display = 'none';
                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
@@ -332,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadNames("Boy");
     }
 
-    // --- CHATBOT (Simple UI) ---
+    // --- CHATBOT PLACEHOLDER ---
     if(document.getElementById("chatbox")) {
         const btn = document.getElementById("sendBtn");
         const inp = document.getElementById("userInput");
@@ -342,7 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
             box.innerHTML += `<div class="message user">${inp.value}</div>`;
             inp.value = "";
             box.scrollTop = box.scrollHeight;
-            box.innerHTML += `<div class="message bot">For AI chat, please add API Key.</div>`;
+            box.innerHTML += `<div class="message bot">API Key required.</div>`;
         };
         if(btn) btn.onclick = send;
         if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
