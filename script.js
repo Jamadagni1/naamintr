@@ -1,25 +1,21 @@
 /* ======================================================
-   SCRIPT.JS - FINAL WORKING VERSION
+   SCRIPT.JS - FINAL FIXED VERSION (JSON AUTO-DETECT)
    ====================================================== */
-
-// --- IMMEDIATE FIX: Page ko turant dikhao ---
-document.body.style.visibility = "visible";
-document.body.style.opacity = "1";
 
 // Global Variables
 let namesData = []; 
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Ensure visibility again just in case
+    // --- 1. Page Visibility Fix ---
     document.body.style.visibility = 'visible'; 
     document.body.style.opacity = '1';
 
-    // --- 1. Header Adjustment ---
+    // --- 2. Header Adjustment ---
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
-    // --- 2. Typing Effect ---
+    // --- 3. Typing Effect ---
     const typeElement = document.getElementById("naamin-main-title-typing");
     if (typeElement) {
         const text = "Naamin";
@@ -31,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })();
     }
 
-    // --- 3. Theme & Language ---
+    // --- 4. Theme & Language ---
     const setTheme = (t) => {
         document.body.setAttribute("data-theme", t);
         localStorage.setItem("theme", t);
@@ -45,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTheme(current === "dark" ? "light" : "dark");
     });
 
-    // --- 4. Mobile Menu ---
+    // --- 5. Mobile Menu ---
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
@@ -63,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ======================================================
-    // NAME FINDER LOGIC
+    // NAME FINDER LOGIC (ERROR PROOF)
     // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
@@ -77,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentGender = "Boy";
         let currentLetter = "A";
 
-        // --- LOAD DATA ---
+        // --- FIXED LOAD FUNCTION ---
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             
@@ -88,26 +84,45 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!response.ok) throw new Error(`File not found: ${fileName}`);
                 
                 let rawData = await response.json();
+                console.log("Raw JSON Data:", rawData); // Console mein check karein data kaisa dikh raha hai
 
-                // Array Check Logic
+                // --- SMART DATA FIX ---
                 if (Array.isArray(rawData)) {
+                    // 1. Agar data seedha Array hai: [...] (BEST)
                     namesData = rawData;
+                } else if (typeof rawData === 'object' && rawData !== null) {
+                    // 2. Agar data Object hai: { "names": [...] } ya { "bnames": [...] }
+                    // Hum check karenge ki object ke andar koi Array chupa hai kya
+                    const keys = Object.keys(rawData);
+                    let foundArray = false;
+                    
+                    for (const key of keys) {
+                        if (Array.isArray(rawData[key])) {
+                            namesData = rawData[key]; // Array mil gaya!
+                            foundArray = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundArray) {
+                        console.error("JSON Error: Object mila lekin andar koi List nahi mili.");
+                        namesData = []; // Khali kar do taaki crash na ho
+                    }
                 } else {
-                    // Agar galti se Object format abhi bhi hai
-                    const values = Object.values(rawData);
-                    const found = values.find(v => Array.isArray(v));
-                    namesData = found || [];
+                    console.error("JSON Error: Data format galat hai.");
+                    namesData = [];
                 }
                 
-                renderNames();
+                renderNames(); // List Update
 
             } catch (error) {
-                console.error("Error:", error);
-                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading ${fileName}.</p>`;
+                console.error("Load Error:", error);
+                namesData = []; // Crash bachane ke liye empty array
+                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error: ${fileName} load nahi hui.<br>Console check karein.</p>`;
             }
         }
 
-        // --- RENDER A-Z BUTTONS ---
+        // Generate A-Z Buttons
         function generateAlphabet() {
             if(!alphabetContainer) return;
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -126,7 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // --- RENDER NAMES LIST ---
+        // Render List Function
         function renderNames() {
             if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
@@ -135,9 +150,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if(listSection) listSection.style.display = 'block';
             if(nameDetailsContainer) nameDetailsContainer.style.display = 'none';
 
-            if (!Array.isArray(namesData)) return;
+            // --- SAFETY CHECK (Yehi line error rokegi) ---
+            if (!Array.isArray(namesData)) {
+                console.error("namesData Array nahi hai!", namesData);
+                nameListContainer.innerHTML = "<p>Data Format Error. Check Console.</p>";
+                return;
+            }
 
-            // Filter Logic
+            // Filter
             const filtered = namesData.filter(n => 
                 n.name && n.name.toUpperCase().startsWith(currentLetter)
             );
@@ -147,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Create Cards
+            // Create Items
             filtered.forEach(person => {
                 const div = document.createElement("div");
                 div.className = "name-item";
@@ -160,8 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         nameDetailsBox.innerHTML = `
                             <h2>${person.name}</h2>
                             <p><strong>Meaning:</strong> ${person.meaning || 'N/A'}</p>
-                            <p><strong>Rashi:</strong> ${person.zodiac || 'N/A'}</p>
-                            <p><strong>Horoscope:</strong> ${person.horoscope || 'N/A'}</p>
+                            <p><strong>Rashi:</strong> ${person.rashi || 'N/A'}</p>
                             <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
                         `;
                     }
@@ -170,7 +189,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // --- BUTTON EVENTS ---
+        // Events
         genderBtns.forEach(btn => {
             btn.onclick = () => {
                 genderBtns.forEach(b => b.classList.remove('active'));
@@ -191,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadNames("Boy");
     }
 
-    // --- CHATBOT PLACEHOLDER ---
+    // --- CHATBOT (Placeholder) ---
     if (document.getElementById("chatbox")) {
         const sendBtn = document.getElementById("sendBtn");
         const userInput = document.getElementById("userInput");
@@ -203,7 +222,7 @@ document.addEventListener("DOMContentLoaded", () => {
             chatbox.innerHTML += `<div class="message user">${text}</div>`;
             userInput.value = "";
             chatbox.scrollTop = chatbox.scrollHeight;
-            chatbox.innerHTML += `<div class="message bot">For AI Chat, please add API Key in script.js</div>`;
+            chatbox.innerHTML += `<div class="message bot">Chatbot requires API Key.</div>`;
         }
         if(sendBtn) sendBtn.onclick = sendMessage;
         if(userInput) userInput.onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
