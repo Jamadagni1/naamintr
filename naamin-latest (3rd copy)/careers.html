@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <script>
+        (() => {
+            const preferredLang = localStorage.getItem("language") || "hi";
+            document.documentElement.lang = preferredLang;
+        })();
+    </script>
+    <style>body { visibility: hidden; }</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Careers - Naamin</title>
+    <meta name="description" content="Join the Naamin team and see what our clients say about our naming solutions." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="light">
+
+<header>
+    <a class="header-logo" href="index.html"><span class="header-naam">Naam</span><span class="header-in">in</span></a>
+    <button class="hamburger-menu" id="hamburger-menu" aria-label="Toggle navigation menu"><span class="line line1"></span><span class="line line2"></span><span class="line line3"></span></button>
+    <nav class="main-nav" id="main-nav">
+        <ul class="nav-links">
+            <li><a class="nav-items" href="index.html" data-en="Home" data-hi="होम">Home</a></li>
+            <li><a class="nav-items highlight-pulse" href="chatbot.html" data-en="Naamin AI" data-hi="नामिन ए.आई.">Naamin AI</a></li>
+            <li><a class="nav-items" href="about.html" data-en="About" data-hi="हमारे बारे में">About</a></li>
+            <li><a class="nav-items" href="services.html" data-en="Services" data-hi="सेवाएं">Services</a></li>
+            <li><a class="nav-items" href="pricing.html" data-en="Aura" data-hi="आभा">Aura</a></li>
+            <li><a class="nav-items active" href="careers.html" data-en="Careers" data-hi="करियर">Careers</a></li>
+            <li><a class="nav-items" href="contact.html" data-en="Contact" data-hi="संपर्क करें">Contact</a></li>
+        </ul>
+        <div class="header-controls">
+            <button id="theme-toggle" aria-label="Toggle dark and light mode"><i class="fas fa-moon"></i></button>
+            <button id="language-toggle" aria-label="Toggle language" data-current-lang="en">ENG/HIN</button>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section id="join-us" class="section">
+        <div class="content-wrapper">
+            <h2 data-en="Join Our Journey" data-hi="हमारी यात्रा में शामिल हों">Join Our Journey</h2>
+            <p data-en="Are you passionate about language, culture, and the power of identity? Naamin is a growing platform dedicated to bringing the beauty of Sanskrit naming to the world. We are always looking for talented individuals to join our team." data-hi="क्या आप भाषा, संस्कृति और पहचान की शक्ति के प्रति जुनूनी हैं? नामिन एक बढ़ता हुआ मंच है जो संस्कृत नामकरण की सुंदरता को दुनिया में लाने के लिए समर्पित है। हम हमेशा अपनी टीम में शामिल होने के लिए प्रतिभाशाली व्यक्तियों की तलाश में रहते हैं।">Are you passionate about language, culture, and the power of identity? Naamin is a growing platform dedicated to bringing the beauty of Sanskrit naming to the world. We are always looking for talented individuals to join our team.</p>
+            <div style="text-align: center;"><a href="contact.html" class="cta-button" data-en="Partner With Us 🤝" data-hi="हमारे साथ साझेदारी करें 🤝">Partner With Us 🤝</a></div>
+        </div>
+    </section>
+
+    
+</main>
+
+<footer>
+    <div class="footer-grid">
+        <div><h3 data-en="Quick Links" data-hi="त्वरित लिंक">Quick Links</h3><a href="index.html" data-en="Home" data-hi="होम">Home</a><a href="about.html" data-en="About" data-hi="हमारे बारे में">About</a><a href="services.html" data-en="Services" data-hi="सेवाएं">Services</a><a href="contact.html" data-en="Contact" data-hi="संपर्क करें">Contact</a></div>
+        <div><h3 data-en="Our Services" data-hi="हमारी सेवाएं">Our Services</h3><a href="services.html" data-en="Baby Naming" data-hi="शिशु नामकरण">Baby Naming</a><a href="services.html" data-en="Company Naming" data-hi="कंपनी नामकरण">Company Naming</a><a href="services.html" data-en="Motto Creation" data-hi="उद्घोष निर्माण">Motto Creation</a></div>
+        <div><h3 data-en="Follow Us" data-hi="हमें फॉलो करें">Follow Us</h3><p><a href="https://www.linkedin.com/company/naamin/" target="_blank" rel="noopener">LinkedIn</a></p><p><a href="#" target="_blank" rel="noopener">Instagram</a></p><p><a href="#" target="_blank" rel="noopener">Facebook</a></p></div>
+        <div><h3 data-en="Contact" data-hi="संपर्क">Contact</h3><p><a href="tel:+919413678955">+91 94136 78955</a></p><p><a href="mailto:naamin.com@gmail.com">naamin.com@gmail.com</a></p><p data-en="Hyderabad, Telangana, India" data-hi="हैदराबाद, तेलंगाना, भारत">Hyderabad, Telangana, India</p></div>
+    </div>
+    <p class="copyrights" data-en="© 2025 Naamin. All rights reserved." data-hi="© २०२५ नामिन। सभी अधिकार सुरक्षित।">© 2025 Naamin. All rights reserved.</p>
+</footer>
+
+<a href="https://wa.me/9413678955" class="whatsapp-float" target="_blank">
+    <i class="fa-brands fa-whatsapp whatsapp-icon"></i>
+</a>
+<button id="scrollToTopBtn" class="scroll-to-top-btn" aria-label="Scroll to top"><i class="fas fa-arrow-up"></i></button>
+
+<script src="script.js" type="module"></script>
+</body>
+</html>
