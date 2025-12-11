@@ -1,10 +1,8 @@
 /* ======================================================
-   SCRIPT.JS - FINAL TEXT FIX VERSION
+   SCRIPT.JS - COMPLETE FIX (Text, Buttons & Search)
    ====================================================== */
 
-const GEMINI_API_KEY = ""; // Yahan API Key daalein agar chahiye
-
-// --- 1. Force Page Visibility ---
+// --- 1. Force Page Visibility (Safety) ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
@@ -12,43 +10,112 @@ let namesData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- 2. Initialize Language (TEXT FIX) ---
-    // Yeh function khali tags mein text bharega
+    // --- 2. TEXT & LANGUAGE FIX (Problems 1 & 2 Solved) ---
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
         
+        // Sabhi elements jinke paas data-en hai, unhe dhoondo
         document.querySelectorAll("[data-en]").forEach(el => {
             const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
+            
             if (text) {
-                // Agar element khali hai ya sirf text hai, toh update karein
-                if (!el.children.length || el.tagName === 'P' || el.tagName === 'H2' || el.tagName === 'A') {
-                    el.textContent = text;
-                }
+                // Agar element button hai ya heading hai, toh seedha text badal do
+                // Yeh logic Buttons aur Headings ko wapas le aayega
+                el.textContent = text;
             }
         });
 
-        // Update Placeholders
+        // Search Placeholder update
         const heroInput = document.getElementById("hero-search-input");
         if(heroInput) {
             heroInput.placeholder = lang === "hi" ? "उदा: आरव, अद्विक..." : "e.g., Aarav, Advik...";
         }
     }
 
-    // Default Language Load karein
-    const currentLang = localStorage.getItem("language") || "en";
-    updateContent(currentLang);
-
-    // Language Toggle Button
+    // Language Toggle Logic
     const langBtn = document.getElementById("language-toggle");
     if(langBtn) {
         langBtn.onclick = () => {
-            const newLang = document.documentElement.lang === "hi" ? "en" : "hi";
-            updateContent(newLang);
+            const current = localStorage.getItem("language") === "hi" ? "en" : "hi";
+            updateContent(current);
         };
     }
 
-    // --- 3. Typing Effect ---
+    // Load Default Language
+    updateContent(localStorage.getItem("language") || "en");
+
+
+    // --- 3. HERO SEARCH - LOCAL JSON VERSION (Problem 3 Solved) ---
+    async function handleHeroSearch() {
+        const heroInput = document.getElementById('hero-search-input');
+        if (!heroInput || !heroInput.value.trim()) return;
+        const nameToSearch = heroInput.value.trim().toLowerCase();
+
+        const nameFinderSection = document.getElementById('name-finder');
+        const detailsBox = document.querySelector('.name-details');
+        const detailsContainer = document.querySelector('.name-details-container');
+        const listContainer = document.querySelector('.name-list-container');
+
+        if (nameFinderSection) {
+            // Scroll to section
+            const header = document.querySelector('header');
+            window.scrollTo({ top: nameFinderSection.offsetTop - (header ? header.offsetHeight : 0), behavior: 'smooth' });
+
+            // UI Show Loading
+            if(listContainer) listContainer.style.display = 'none';
+            if(detailsContainer) detailsContainer.style.display = 'block';
+            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching Database...</div>';
+
+            try {
+                // Dono files (Boy & Girl) load karein
+                const [boysRes, girlsRes] = await Promise.all([
+                    fetch('bnames.json'),
+                    fetch('gnames.json')
+                ]);
+
+                const boysData = await boysRes.json();
+                const girlsData = await girlsRes.json();
+
+                // Dono lists ko milayein (Safe Checks ke sath)
+                let allNames = [];
+                if(Array.isArray(boysData)) allNames = allNames.concat(boysData);
+                if(Array.isArray(girlsData)) allNames = allNames.concat(girlsData);
+
+                // Naam dhoondein
+                const foundPerson = allNames.find(n => n.name.toLowerCase() === nameToSearch);
+
+                if (foundPerson) {
+                    detailsBox.innerHTML = `
+                        <h2>${foundPerson.name}</h2>
+                        <p><strong>Meaning:</strong> ${foundPerson.meaning}</p>
+                        <p><strong>Gender:</strong> ${foundPerson.gender || 'Unknown'}</p>
+                        <p><strong>Rashi:</strong> ${foundPerson.zodiac || 'N/A'}</p>
+                        <p><strong>Horoscope:</strong> ${foundPerson.horoscope || 'N/A'}</p>
+                        <p><strong>Origin:</strong> ${foundPerson.origin || 'N/A'}</p>
+                    `;
+                } else {
+                    detailsBox.innerHTML = `
+                        <h2>${nameToSearch}</h2>
+                        <p>Sorry, this name is not in our database yet.</p>
+                        <button class="back-btn" onclick="location.reload()">Try Another</button>
+                    `;
+                }
+
+            } catch(e) {
+                console.error(e);
+                detailsBox.innerHTML = `<p>Error searching data. Check JSON files.</p>`;
+            }
+        }
+    }
+
+    const heroBtn = document.getElementById('hero-search-btn');
+    const heroInp = document.getElementById('hero-search-input');
+    if(heroBtn) heroBtn.onclick = handleHeroSearch;
+    if(heroInp) heroInp.onkeypress = (e) => { if(e.key === "Enter") handleHeroSearch(); };
+
+
+    // --- 4. TYPING EFFECT (Styling) ---
     const typeElement = document.getElementById("naamin-main-title-typing");
     if (typeElement) {
         const text = "Naamin";
@@ -60,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })();
     }
 
-    // --- 4. Theme Logic ---
+    // --- 5. THEME & MENU ---
     const setTheme = (t) => {
         document.body.setAttribute("data-theme", t);
         localStorage.setItem("theme", t);
@@ -74,7 +141,6 @@ document.addEventListener("DOMContentLoaded", () => {
         setTheme(current === "dark" ? "light" : "dark");
     });
 
-    // --- 5. Mobile Menu ---
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
@@ -91,13 +157,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // --- 6. Header Padding ---
+    // --- 6. HEADER PADDING ---
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
 
     // ======================================================
-    // NAME FINDER LOGIC
+    // NAME FINDER LOGIC (A-Z Section)
     // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
@@ -111,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentGender = "Boy";
         let currentLetter = "A";
 
-        // --- LOAD DATA ---
+        // Load Names Function
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             
@@ -134,12 +200,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderNames();
 
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Load Error:", error);
                 if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading list.</p>`;
             }
         }
 
-        // --- RENDER A-Z ---
+        // Render A-Z
         function generateAlphabet() {
             if(!alphabetContainer) return;
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -158,7 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // --- RENDER NAMES ---
+        // Render List
         function renderNames() {
             if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
@@ -191,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <h2>${person.name}</h2>
                             <p><strong>Meaning:</strong> ${person.meaning || 'N/A'}</p>
                             <p><strong>Rashi:</strong> ${person.zodiac || 'N/A'}</p>
+                            <p><strong>Horoscope:</strong> ${person.horoscope || 'N/A'}</p>
                             <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
                         `;
                     }
@@ -217,44 +284,4 @@ document.addEventListener("DOMContentLoaded", () => {
         generateAlphabet();
         loadNames("Boy");
     }
-
-    // --- HERO SEARCH (API) ---
-    async function handleHeroSearch() {
-        const heroInput = document.getElementById('hero-search-input');
-        if (!heroInput || !heroInput.value.trim()) return;
-        const nameToSearch = heroInput.value.trim();
-
-        const nameFinderSection = document.getElementById('name-finder');
-        const detailsBox = document.querySelector('.name-details');
-        const detailsContainer = document.querySelector('.name-details-container');
-        const listContainer = document.querySelector('.name-list-container');
-
-        if (nameFinderSection) {
-            const header = document.querySelector('header');
-            window.scrollTo({ top: nameFinderSection.offsetTop - (header ? header.offsetHeight : 0), behavior: 'smooth' });
-
-            if(listContainer) listContainer.style.display = 'none';
-            if(detailsContainer) detailsContainer.style.display = 'block';
-            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching...</div>';
-
-            try {
-                if(!GEMINI_API_KEY) throw new Error("API Key missing");
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: "POST", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `Meaning of name ${nameToSearch}` }] }] })
-                });
-                const data = await response.json();
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Not found";
-                detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>${text}</p>`;
-            } catch(e) {
-                detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>Details not found (Check API Key).</p>`;
-            }
-        }
-    }
-
-    const heroBtn = document.getElementById('hero-search-btn');
-    const heroInp = document.getElementById('hero-search-input');
-    if(heroBtn) heroBtn.onclick = handleHeroSearch;
-    if(heroInp) heroInp.onkeypress = (e) => { if(e.key === "Enter") handleHeroSearch(); };
-
 });
