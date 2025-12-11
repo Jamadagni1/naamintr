@@ -1,28 +1,54 @@
 /* ======================================================
-   SCRIPT.JS - FINAL WORKING VERSION
+   SCRIPT.JS - FINAL TEXT FIX VERSION
    ====================================================== */
 
-// ⚠️ IMPORTANT: Paste your API Key here if you want Chatbot/Search to work
-const GEMINI_API_KEY = ""; 
+const GEMINI_API_KEY = ""; // Yahan API Key daalein agar chahiye
 
-// --- IMMEDIATE FIX: Force page visibility immediately ---
+// --- 1. Force Page Visibility ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-// Global Variables
 let namesData = []; 
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Ensure visibility again just in case
-    document.body.style.visibility = 'visible'; 
-    document.body.style.opacity = '1';
+    // --- 2. Initialize Language (TEXT FIX) ---
+    // Yeh function khali tags mein text bharega
+    function updateContent(lang) {
+        document.documentElement.lang = lang;
+        localStorage.setItem("language", lang);
+        
+        document.querySelectorAll("[data-en]").forEach(el => {
+            const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
+            if (text) {
+                // Agar element khali hai ya sirf text hai, toh update karein
+                if (!el.children.length || el.tagName === 'P' || el.tagName === 'H2' || el.tagName === 'A') {
+                    el.textContent = text;
+                }
+            }
+        });
 
-    // --- 1. Header Adjustment ---
-    const header = document.querySelector('header');
-    if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
+        // Update Placeholders
+        const heroInput = document.getElementById("hero-search-input");
+        if(heroInput) {
+            heroInput.placeholder = lang === "hi" ? "उदा: आरव, अद्विक..." : "e.g., Aarav, Advik...";
+        }
+    }
 
-    // --- 2. Typing Effect ---
+    // Default Language Load karein
+    const currentLang = localStorage.getItem("language") || "en";
+    updateContent(currentLang);
+
+    // Language Toggle Button
+    const langBtn = document.getElementById("language-toggle");
+    if(langBtn) {
+        langBtn.onclick = () => {
+            const newLang = document.documentElement.lang === "hi" ? "en" : "hi";
+            updateContent(newLang);
+        };
+    }
+
+    // --- 3. Typing Effect ---
     const typeElement = document.getElementById("naamin-main-title-typing");
     if (typeElement) {
         const text = "Naamin";
@@ -34,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })();
     }
 
-    // --- 3. Theme & Language ---
+    // --- 4. Theme Logic ---
     const setTheme = (t) => {
         document.body.setAttribute("data-theme", t);
         localStorage.setItem("theme", t);
@@ -48,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTheme(current === "dark" ? "light" : "dark");
     });
 
-    // --- 4. Mobile Menu ---
+    // --- 5. Mobile Menu ---
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
@@ -64,6 +90,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // --- 6. Header Padding ---
+    const header = document.querySelector('header');
+    if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
+
 
     // ======================================================
     // NAME FINDER LOGIC
@@ -88,15 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
                 
                 const response = await fetch(fileName);
-                if (!response.ok) throw new Error(`File not found: ${fileName}`);
+                if (!response.ok) throw new Error(`File missing: ${fileName}`);
                 
                 let rawData = await response.json();
 
-                // Smart Check: Is it a List or an Object?
                 if (Array.isArray(rawData)) {
                     namesData = rawData;
                 } else {
-                    // Try to find the array inside the object
                     const values = Object.values(rawData);
                     const found = values.find(v => Array.isArray(v));
                     namesData = found || [];
@@ -106,11 +135,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch (error) {
                 console.error("Error:", error);
-                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading ${fileName}.<br>Check if file exists.</p>`;
+                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading list.</p>`;
             }
         }
 
-        // --- RENDER A-Z BUTTONS ---
+        // --- RENDER A-Z ---
         function generateAlphabet() {
             if(!alphabetContainer) return;
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -129,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // --- RENDER NAMES LIST ---
+        // --- RENDER NAMES ---
         function renderNames() {
             if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
@@ -140,17 +169,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!Array.isArray(namesData)) return;
 
-            // Filter Logic (Case Insensitive)
             const filtered = namesData.filter(n => 
                 n.name && n.name.toUpperCase().startsWith(currentLetter)
             );
             
             if (filtered.length === 0) {
-                nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found starting with ${currentLetter}</p>`;
+                nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found for ${currentLetter}</p>`;
                 return;
             }
 
-            // Create Cards
             filtered.forEach(person => {
                 const div = document.createElement("div");
                 div.className = "name-item";
@@ -164,7 +191,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             <h2>${person.name}</h2>
                             <p><strong>Meaning:</strong> ${person.meaning || 'N/A'}</p>
                             <p><strong>Rashi:</strong> ${person.zodiac || 'N/A'}</p>
-                            <p><strong>Horoscope:</strong> ${person.horoscope || 'N/A'}</p>
                             <p><strong>Origin:</strong> ${person.origin || 'N/A'}</p>
                         `;
                     }
@@ -173,7 +199,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // --- BUTTON EVENTS ---
         genderBtns.forEach(btn => {
             btn.onclick = () => {
                 genderBtns.forEach(b => b.classList.remove('active'));
@@ -189,87 +214,47 @@ document.addEventListener("DOMContentLoaded", () => {
             if(listSection) listSection.style.display = 'block';
         };
 
-        // Initialize
         generateAlphabet();
         loadNames("Boy");
     }
 
-    // ======================================================
-    // HERO SEARCH & CHATBOT (API BASED)
-    // ======================================================
-    
-    // Hero Search
+    // --- HERO SEARCH (API) ---
     async function handleHeroSearch() {
         const heroInput = document.getElementById('hero-search-input');
-        if (!heroInput) return;
+        if (!heroInput || !heroInput.value.trim()) return;
         const nameToSearch = heroInput.value.trim();
-        if (!nameToSearch) return;
 
         const nameFinderSection = document.getElementById('name-finder');
+        const detailsBox = document.querySelector('.name-details');
+        const detailsContainer = document.querySelector('.name-details-container');
+        const listContainer = document.querySelector('.name-list-container');
+
         if (nameFinderSection) {
-            // Scroll to section
             const header = document.querySelector('header');
-            const offset = nameFinderSection.getBoundingClientRect().top + window.scrollY - (header ? header.offsetHeight : 0) - 20;
-            window.scrollTo({ top: offset, behavior: 'smooth' });
+            window.scrollTo({ top: nameFinderSection.offsetTop - (header ? header.offsetHeight : 0), behavior: 'smooth' });
 
-            // Show Loading in Details
-            const listSection = document.querySelector('.name-list-container');
-            const detailsSection = document.querySelector('.name-details-container');
-            const detailsBox = document.querySelector('.name-details');
-            
-            if(listSection) listSection.style.display = 'none';
-            if(detailsSection) detailsSection.style.display = 'block';
-            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching API...</div>';
+            if(listContainer) listContainer.style.display = 'none';
+            if(detailsContainer) detailsContainer.style.display = 'block';
+            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching...</div>';
 
-            // API Call
             try {
                 if(!GEMINI_API_KEY) throw new Error("API Key missing");
-                
-                const prompt = `Provide meaning and origin for name '${nameToSearch}'`;
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `Meaning of name ${nameToSearch}` }] }] })
                 });
-                
                 const data = await response.json();
-                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "No details found.";
-                
-                detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>${text.replace(/\n/g, "<br>")}</p>`;
-
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Not found";
+                detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>${text}</p>`;
             } catch(e) {
-                if(detailsBox) detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>Could not fetch details (Check API Key).</p>`;
+                detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>Details not found (Check API Key).</p>`;
             }
         }
     }
 
     const heroBtn = document.getElementById('hero-search-btn');
-    const heroInput = document.getElementById('hero-search-input');
+    const heroInp = document.getElementById('hero-search-input');
     if(heroBtn) heroBtn.onclick = handleHeroSearch;
-    if(heroInput) heroInput.onkeypress = (e) => { if(e.key === "Enter") handleHeroSearch(); };
+    if(heroInp) heroInp.onkeypress = (e) => { if(e.key === "Enter") handleHeroSearch(); };
 
-    // Chatbot
-    if (document.getElementById("chatbox")) {
-        const sendBtn = document.getElementById("sendBtn");
-        const userInput = document.getElementById("userInput");
-        const chatbox = document.getElementById("chatbox");
-
-        function sendMessage() {
-            const text = userInput.value.trim();
-            if (!text) return;
-            
-            // Add User Message
-            chatbox.innerHTML += `<div class="message user">${text}</div>`;
-            userInput.value = "";
-            chatbox.scrollTop = chatbox.scrollHeight;
-
-            // Add Bot Message
-            setTimeout(() => {
-                chatbox.innerHTML += `<div class="message bot">For AI Chat, please add API Key in script.js</div>`;
-                chatbox.scrollTop = chatbox.scrollHeight;
-            }, 500);
-        }
-        if(sendBtn) sendBtn.onclick = sendMessage;
-        if(userInput) userInput.onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
-    }
 });
