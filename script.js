@@ -1,5 +1,5 @@
 /* ======================================================
-   SCRIPT.JS - FINAL FIXED VERSION (JSON AUTO-DETECT)
+   SCRIPT.JS - FINAL ROBUST VERSION
    ====================================================== */
 
 // Global Variables
@@ -7,7 +7,7 @@ let namesData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- 1. Page Visibility Fix ---
+    // --- 1. Page Visibility Fix (Taaki blank na dikhe) ---
     document.body.style.visibility = 'visible'; 
     document.body.style.opacity = '1';
 
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })();
     }
 
-    // --- 4. Theme & Language ---
+    // --- 4. Theme & Language Logic ---
     const setTheme = (t) => {
         document.body.setAttribute("data-theme", t);
         localStorage.setItem("theme", t);
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTheme(current === "dark" ? "light" : "dark");
     });
 
-    // --- 5. Mobile Menu ---
+    // --- 5. Mobile Menu Logic ---
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ======================================================
-    // NAME FINDER LOGIC (ERROR PROOF)
+    // NAME FINDER LOGIC (CRASH PROOF VERSION)
     // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
@@ -73,52 +73,46 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentGender = "Boy";
         let currentLetter = "A";
 
-        // --- FIXED LOAD FUNCTION ---
+        // --- NEW SMART LOADER FUNCTION ---
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             
             try {
-                if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
+                if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading List...</div>';
                 
                 const response = await fetch(fileName);
-                if (!response.ok) throw new Error(`File not found: ${fileName}`);
+                if (!response.ok) throw new Error(`File missing: ${fileName}`);
                 
                 let rawData = await response.json();
-                console.log("Raw JSON Data:", rawData); // Console mein check karein data kaisa dikh raha hai
 
-                // --- SMART DATA FIX ---
+                // --- CRASH FIX: Check Data Structure ---
                 if (Array.isArray(rawData)) {
-                    // 1. Agar data seedha Array hai: [...] (BEST)
+                    // Agar seedhi list hai (Sahi format)
                     namesData = rawData;
-                } else if (typeof rawData === 'object' && rawData !== null) {
-                    // 2. Agar data Object hai: { "names": [...] } ya { "bnames": [...] }
-                    // Hum check karenge ki object ke andar koi Array chupa hai kya
-                    const keys = Object.keys(rawData);
-                    let foundArray = false;
-                    
-                    for (const key of keys) {
-                        if (Array.isArray(rawData[key])) {
-                            namesData = rawData[key]; // Array mil gaya!
-                            foundArray = true;
-                            break;
-                        }
-                    }
-
-                    if (!foundArray) {
-                        console.error("JSON Error: Object mila lekin andar koi List nahi mili.");
-                        namesData = []; // Khali kar do taaki crash na ho
-                    }
                 } else {
-                    console.error("JSON Error: Data format galat hai.");
-                    namesData = [];
+                    // Agar Object hai (Galat format, par hum dhoondh lenge)
+                    console.warn("JSON array nahi hai, automatic fix try kar raha hu...");
+                    // Object ke andar pehli Array dhoondo
+                    const foundArray = Object.values(rawData).find(val => Array.isArray(val));
+                    
+                    if (foundArray) {
+                        namesData = foundArray;
+                    } else {
+                        throw new Error("JSON file mein Names ki List nahi mili.");
+                    }
                 }
                 
-                renderNames(); // List Update
+                renderNames(); // Sab sahi hai, ab list dikhao
 
             } catch (error) {
-                console.error("Load Error:", error);
-                namesData = []; // Crash bachane ke liye empty array
-                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error: ${fileName} load nahi hui.<br>Console check karein.</p>`;
+                console.error("Data Load Error:", error);
+                namesData = []; // Error aane par empty array taaki crash na ho
+                if(nameListContainer) {
+                    nameListContainer.innerHTML = `<p style="color:red; padding:20px;">
+                        Error loading data.<br>
+                        <small>${error.message}</small>
+                    </p>`;
+                }
             }
         }
 
@@ -150,14 +144,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if(listSection) listSection.style.display = 'block';
             if(nameDetailsContainer) nameDetailsContainer.style.display = 'none';
 
-            // --- SAFETY CHECK (Yehi line error rokegi) ---
+            // Safety Check: Agar namesData array nahi hai to ruk jao
             if (!Array.isArray(namesData)) {
-                console.error("namesData Array nahi hai!", namesData);
-                nameListContainer.innerHTML = "<p>Data Format Error. Check Console.</p>";
+                console.error("namesData array nahi hai:", namesData);
                 return;
             }
 
-            // Filter
+            // Filter names
             const filtered = namesData.filter(n => 
                 n.name && n.name.toUpperCase().startsWith(currentLetter)
             );
@@ -167,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Create Items
+            // Create Name Items
             filtered.forEach(person => {
                 const div = document.createElement("div");
                 div.className = "name-item";
@@ -189,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Events
+        // Event Listeners
         genderBtns.forEach(btn => {
             btn.onclick = () => {
                 genderBtns.forEach(b => b.classList.remove('active'));
@@ -209,9 +202,10 @@ document.addEventListener("DOMContentLoaded", () => {
         generateAlphabet();
         loadNames("Boy");
     }
+    // --- NAME FINDER LOGIC END ---
 
-    // --- CHATBOT (Placeholder) ---
-    if (document.getElementById("chatbox")) {
+    // --- CHATBOT PLACEHOLDER ---
+    if (document.getElementById("chatbox") && document.getElementById("sendBtn")) {
         const sendBtn = document.getElementById("sendBtn");
         const userInput = document.getElementById("userInput");
         const chatbox = document.getElementById("chatbox");
@@ -224,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
             chatbox.scrollTop = chatbox.scrollHeight;
             chatbox.innerHTML += `<div class="message bot">Chatbot requires API Key.</div>`;
         }
-        if(sendBtn) sendBtn.onclick = sendMessage;
-        if(userInput) userInput.onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+        sendBtn.onclick = sendMessage;
+        userInput.onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
     }
 });
