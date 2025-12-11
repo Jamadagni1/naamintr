@@ -1,5 +1,5 @@
 /* ======================================================
-   SCRIPT.JS - INTELLIGENT VERSION (With AstroEngine)
+   SCRIPT.JS - FINAL FIXED VERSION (Meaning & Details)
    ====================================================== */
 
 // --- 1. Force Page Visibility ---
@@ -13,7 +13,6 @@ const GEMINI_API_KEY = ""; // API Key (Optional)
 // ======================================================
 class AstroEngine {
     constructor() {
-        // 1. Numerology Map (Chaldean)
         this.numerologyMap = {
             'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
             'B': 2, 'K': 2, 'R': 2,
@@ -25,7 +24,6 @@ class AstroEngine {
             'F': 8, 'P': 8
         };
 
-        // 2. Rashi & Nakshatra Mapping (Phonetic)
         this.rashiMap = [
             { rashi: "मेष (Aries)", letters: ["chu", "che", "cho", "la", "li", "lu", "le", "lo", "a"], nakshatras: ["Ashwini", "Bharani", "Krittika"], phal: "साहसी, ऊर्जावान और नेतृत्व करने वाला।" },
             { rashi: "वृषभ (Taurus)", letters: ["i", "ee", "u", "oo", "e", "o", "va", "vi", "vu", "ve", "vo"], nakshatras: ["Krittika", "Rohini", "Mrigashira"], phal: "शांत, विश्वसनीय और कला प्रेमी।" },
@@ -41,60 +39,48 @@ class AstroEngine {
             { rashi: "मीन (Pisces)", letters: ["di", "du", "th", "jha", "yna", "de", "do", "cha", "chi"], nakshatras: ["Purva Bhadrapada", "Uttara Bhadrapada", "Revati"], phal: "दयालु, आध्यात्मिक और कल्पनाशील।" }
         ];
 
-        // 3. Astro Details (Based on Number)
         this.astroDetails = {
-            1: { planet: "सूर्य (Sun)", color: "सुनहरा (Golden)", day: "रविवार", trait: "नेतृत्व क्षमता" },
-            2: { planet: "चन्द्र (Moon)", color: "सफेद (White)", day: "सोमवार", trait: "शांतिप्रिय" },
-            3: { planet: "बृहस्पति (Jupiter)", color: "पीला (Yellow)", day: "गुरुवार", trait: "ज्ञान और भाग्य" },
-            4: { planet: "राहू (Rahu)", color: "नीला (Blue)", day: "शनिवार", trait: "व्यावहारिक" },
-            5: { planet: "बुध (Mercury)", color: "हरा (Green)", day: "बुधवार", trait: "बुद्धि और संचार" },
-            6: { planet: "शुक्र (Venus)", color: "गुलाबी (Pink)", day: "शुक्रवार", trait: "प्रेम और कला" },
-            7: { planet: "केतु (Ketu)", color: "चितकबरा (Multi)", day: "मंगलवार", trait: "आध्यात्मिक" },
-            8: { planet: "शनि (Saturn)", color: "काला (Black)", day: "शनिवार", trait: "न्याय और मेहनत" },
-            9: { planet: "मंगल (Mars)", color: "लाल (Red)", day: "मंगलवार", trait: "ऊर्जा और साहस" }
+            1: { planet: "सूर्य (Sun)", color: "सुनहरा (Golden)", day: "रविवार" },
+            2: { planet: "चन्द्र (Moon)", color: "सफेद (White)", day: "सोमवार" },
+            3: { planet: "बृहस्पति (Jupiter)", color: "पीला (Yellow)", day: "गुरुवार" },
+            4: { planet: "राहू (Rahu)", color: "नीला (Blue)", day: "शनिवार" },
+            5: { planet: "बुध (Mercury)", color: "हरा (Green)", day: "बुधवार" },
+            6: { planet: "शुक्र (Venus)", color: "गुलाबी (Pink)", day: "शुक्रवार" },
+            7: { planet: "केतु (Ketu)", color: "चितकबरा (Multi)", day: "मंगलवार" },
+            8: { planet: "शनि (Saturn)", color: "काला (Black)", day: "शनिवार" },
+            9: { planet: "मंगल (Mars)", color: "लाल (Red)", day: "मंगलवार" }
         };
     }
 
-    // Calculate Numerology
     calculateNumerology(name) {
         let cleanName = name.toUpperCase().replace(/[^A-Z]/g, '');
         let total = 0;
-        for (let char of cleanName) {
-            total += this.numerologyMap[char] || 0;
-        }
+        for (let char of cleanName) total += this.numerologyMap[char] || 0;
         while (total > 9) {
             let sum = 0;
-            while (total > 0) {
-                sum += total % 10;
-                total = Math.floor(total / 10);
-            }
+            while (total > 0) { sum += total % 10; total = Math.floor(total / 10); }
             total = sum;
         }
-        return total || 1; // Default to 1
+        return total || 1;
     }
 
-    // Calculate Rashi
     calculateRashi(name) {
         let cleanName = name.toLowerCase().trim();
         for (let rashiObj of this.rashiMap) {
             for (let sound of rashiObj.letters) {
-                if (cleanName.startsWith(sound)) {
-                    return rashiObj;
-                }
+                if (cleanName.startsWith(sound)) return rashiObj;
             }
         }
-        // Fallback Logic based on first letter if sound not found
-        return this.rashiMap[0]; // Default to Aries for now
+        return this.rashiMap[0]; // Fallback
     }
 
-    // Process Full Data
     processName(nameData) {
         const num = this.calculateNumerology(nameData.name);
         const rashiDetails = this.calculateRashi(nameData.name);
         const luckyInfo = this.astroDetails[num];
 
         return {
-            ...nameData, // Keep existing JSON data
+            ...nameData, // JSON ka purana data (name, meaning)
             calculatedRashi: rashiDetails.rashi,
             calculatedNakshatra: rashiDetails.nakshatras.join(", "),
             calculatedPhal: rashiDetails.phal,
@@ -107,20 +93,17 @@ class AstroEngine {
 }
 
 // ======================================================
-// MAIN SCRIPT LOGIC
+// MAIN LOGIC
 // ======================================================
 
 let namesData = []; 
-// Create Engine Instance
 const engine = new AstroEngine();
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- Header Adjustment ---
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
-    // --- Mobile Menu ---
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
@@ -128,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.onclick = (e) => { if (nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
     }
 
-    // --- Text & Language ---
+    // --- Language Fix ---
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
@@ -147,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // ======================================================
-    // NAME FINDER (INTEGRATED WITH ASTRO ENGINE)
+    // NAME FINDER 
     // ======================================================
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
@@ -161,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentGender = "Boy";
         let currentLetter = "A";
 
-        // Load JSON
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             try {
@@ -170,7 +152,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!response.ok) throw new Error("File missing");
                 let rawData = await response.json();
 
-                // Flatten Data
                 if (Array.isArray(rawData)) {
                     namesData = rawData;
                 } else {
@@ -183,7 +164,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Render A-Z
         function generateAlphabet() {
             if(!alphabetContainer) return;
             const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -202,7 +182,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // Render List
         function renderNames() {
             if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
@@ -225,30 +204,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 div.className = "name-item";
                 div.textContent = person.name;
                 
-                // CLICK EVENT: Use Astro Engine Here!
                 div.onclick = () => {
                     if(listSection) listSection.style.display = 'none';
                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
                     
-                    // 🌟 MAGIC HAPPENS HERE: Calculate Details Dynamically
+                    // --- SMART DATA PROCESS ---
                     const smartData = engine.processName(person);
 
                     if(nameDetailsBox) {
                         nameDetailsBox.innerHTML = `
-                            <h2>${smartData.Name}</h2>
+                            <h2>${smartData.name}</h2>
                             <div class="detail-grid">
-                                <p><strong>Meaning:</strong> ${smartData.Meaning}</p>
-                                <p><strong>Gender:</strong> ${smartData.gender || currentGender}</p>
-                                <p><strong>Origin:</strong> ${smartData.origin || 'Sanskrit'}</p>
+                                <p><strong>Meaning:</strong> ${smartData.meaning}</p>
+                                <p><strong>Gender:</strong> ${currentGender}</p>
+                                <p><strong>Origin:</strong> Sanskrit/Indian</p>
                                 <hr>
                                 <h3>🔮 Vedic Analysis</h3>
                                 <p><strong>Rashi:</strong> ${smartData.calculatedRashi}</p>
                                 <p><strong>Nakshatra:</strong> ${smartData.calculatedNakshatra}</p>
-                                <p><strong>Traits:</strong> ${smartData.calculatedPhal}</p>
+                                <p><strong>Personality:</strong> ${smartData.calculatedPhal}</p>
                                 <hr>
                                 <h3>🔢 Numerology</h3>
                                 <p><strong>Number:</strong> ${smartData.calculatedNum}</p>
-                                <p><strong>Ruling Planet:</strong> ${smartData.calculatedPlanet}</p>
+                                <p><strong>Planet:</strong> ${smartData.calculatedPlanet}</p>
                                 <p><strong>Lucky Color:</strong> ${smartData.calculatedColor}</p>
                                 <p><strong>Lucky Day:</strong> ${smartData.calculatedDay}</p>
                             </div>
@@ -278,13 +256,12 @@ document.addEventListener("DOMContentLoaded", () => {
         loadNames("Boy");
     }
 
-    // --- Search Logic ---
+    // --- Search Logic (Case Sensitive Fix) ---
     async function handleHeroSearch() {
         const input = document.getElementById('hero-search-input');
         if(!input || !input.value.trim()) return;
         const term = input.value.trim().toLowerCase();
         
-        // Scroll to details
         const section = document.getElementById('name-finder');
         if(section) window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
 
@@ -296,7 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(detailsContainer) detailsContainer.style.display = 'block';
         if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Analyzing...</div>';
 
-        // Load & Search
         try {
             const [b, g] = await Promise.all([ fetch('bnames.json').then(r=>r.json()), fetch('gnames.json').then(r=>r.json()) ]);
             const all = [].concat(b, g).flatMap(i => i.name ? i : Object.values(i).find(v => Array.isArray(v))||[]);
@@ -304,20 +280,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const found = all.find(n => n.name.toLowerCase() === term);
             
             if(found) {
-                // Use Engine for Search too!
                 const smartData = engine.processName(found);
                 detailsBox.innerHTML = `
-                    <h2>${smartData.Name}</h2>
-                    <p><strong>Meaning:</strong> ${smartData.Meaning}</p>
+                    <h2>${smartData.name}</h2>
+                    <p><strong>Meaning:</strong> ${smartData.meaning}</p>
                     <p><strong>Rashi:</strong> ${smartData.calculatedRashi}</p>
                     <p><strong>Numerology:</strong> ${smartData.calculatedNum} (${smartData.calculatedPlanet})</p>
+                    <p><strong>Lucky Color:</strong> ${smartData.calculatedColor}</p>
                 `;
             } else {
-                // Create data even if not in list (Calculate for ANY name)
-                const smartData = engine.processName({ name: input.value, meaning: "Unknown (Name not in list)" });
+                const smartData = engine.processName({ name: input.value, meaning: "Not found in database" });
                 detailsBox.innerHTML = `
-                    <h2>${smartData.Name}</h2>
-                    <p><em>(Not in database, but here is the analysis)</em></p>
+                    <h2>${smartData.name}</h2>
+                    <p><em>(Auto-Analysis generated)</em></p>
                     <p><strong>Rashi:</strong> ${smartData.calculatedRashi}</p>
                     <p><strong>Nakshatra:</strong> ${smartData.calculatedNakshatra}</p>
                     <p><strong>Numerology:</strong> ${smartData.calculatedNum} (${smartData.calculatedPlanet})</p>
