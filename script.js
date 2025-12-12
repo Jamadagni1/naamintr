@@ -1,310 +1,444 @@
 /* ======================================================
-   SCRIPT.JS - RESTORED FEATURES + SMART JSON ENGINE
+   NAAMIN.COM - CORE LOGIC ENGINE
    ====================================================== */
 
-// Force Visibility
-document.body.style.visibility = "visible";
-document.body.style.opacity = "1";
+// 1. CONFIGURATION & STATE
+const APP_CONFIG = {
+    files: {
+        boys: 'bnames.json',
+        girls: 'gnames.json'
+    },
+    animationSpeed: 150
+};
 
-const GEMINI_API_KEY = ""; // API Key
+// Global State to prevent re-fetching
+const state = {
+    boyNames: [],
+    girlNames: [],
+    isLoaded: false,
+    currentGender: 'Boy',
+    currentLetter: 'A'
+};
 
-// 🌟 ASTRO ENGINE (To calculate missing details)
+// ======================================================
+// 2. ASTRO ENGINE (The Brain)
+// ======================================================
 class AstroEngine {
     constructor() {
-        this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
+        this.numerologyMap = { 
+            'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,
+            'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 
+        };
+
         this.rashiMap = [
-            { rashi: "मेष (Aries)", letters: ["chu","che","cho","la","li","lu","le","lo","a"], nakshatras: ["Ashwini","Bharani","Krittika"], phal: "साहसी, ऊर्जावान" },
-            { rashi: "वृषभ (Taurus)", letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], nakshatras: ["Krittika","Rohini","Mrigashira"], phal: "शांत, विश्वसनीय" },
-            { rashi: "मिथुन (Gemini)", letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], nakshatras: ["Mrigashira","Ardra","Punarvasu"], phal: "बुद्धिमान, वाचाल" },
-            { rashi: "कर्क (Cancer)", letters: ["hi","hu","he","ho","da","di","du","de","do"], nakshatras: ["Punarvasu","Pushya","Ashlesha"], phal: "भावुक, संवेदनशील" },
-            { rashi: "सिंह (Leo)", letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], phal: "आत्मविश्वासी, उदार" },
-            { rashi: "कन्या (Virgo)", letters: ["to","pa","pi","pu","sha","na","th","pe","po"], nakshatras: ["Uttara Phalguni","Hasta","Chitra"], phal: "व्यावहारिक, मेहनती" },
-            { rashi: "तुला (Libra)", letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], nakshatras: ["Chitra","Swati","Vishakha"], phal: "न्यायप्रिय, संतुलित" },
-            { rashi: "वृश्चिक (Scorpio)", letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], nakshatras: ["Vishakha","Anuradha","Jyeshtha"], phal: "तीव्र, रहस्यमयी" },
-            { rashi: "धनु (Sagittarius)", letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], phal: "आशावादी, दार्शनिक" },
-            { rashi: "मकर (Capricorn)", letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], phal: "महत्वाकांक्षी, धैर्यवान" },
-            { rashi: "कुम्भ (Aquarius)", letters: ["gu","ge","go","sa","si","su","se","so","da"], nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], phal: "नवीन सोच वाला" },
-            { rashi: "मीन (Pisces)", letters: ["di","du","th","jha","yna","de","do","cha","chi"], nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], phal: "दयालु, आध्यात्मिक" }
+            { rashi: "मेष (Aries)", sound: "chu,che,cho,la,li,lu,le,lo,a", nakshatras: ["Ashwini", "Bharani", "Krittika (1)"], phal: "साहसी, ऊर्जावान और नेतृत्व करने वाला।" },
+            { rashi: "वृषभ (Taurus)", sound: "i,ee,u,oo,e,o,va,vi,vu,ve,vo", nakshatras: ["Krittika (2-4)", "Rohini", "Mrigashira (1-2)"], phal: "शांत, विश्वसनीय और कला प्रेमी।" },
+            { rashi: "मिथुन (Gemini)", sound: "ka,ki,ku,gh,ng,ch,ke,ko,ha", nakshatras: ["Mrigashira (3-4)", "Ardra", "Punarvasu (1-3)"], phal: "बुद्धिमान, वाचाल और बहुमुखी।" },
+            { rashi: "कर्क (Cancer)", sound: "hi,hu,he,ho,da,di,du,de,do", nakshatras: ["Punarvasu (4)", "Pushya", "Ashlesha"], phal: "भावुक, संवेदनशील और रक्षक।" },
+            { rashi: "सिंह (Leo)", sound: "ma,mi,mu,me,mo,ta,ti,tu,te", nakshatras: ["Magha", "Purva Phalguni", "Uttara Phalguni (1)"], phal: "आत्मविश्वासी, उदार और राजसी।" },
+            { rashi: "कन्या (Virgo)", sound: "to,pa,pi,pu,sha,na,th,pe,po", nakshatras: ["Uttara Phalguni (2-4)", "Hasta", "Chitra (1-2)"], phal: "व्यावहारिक, विश्लेषक और मेहनती।" },
+            { rashi: "तुला (Libra)", sound: "ra,ri,ru,re,ro,ta,ti,tu,te", nakshatras: ["Chitra (3-4)", "Swati", "Vishakha (1-3)"], phal: "न्यायप्रिय, संतुलित और मिलनसार।" },
+            { rashi: "वृश्चिक (Scorpio)", sound: "to,na,ni,nu,ne,no,ya,yi,yu", nakshatras: ["Vishakha (4)", "Anuradha", "Jyeshtha"], phal: "तीव्र, रहस्यमयी और दृढ़।" },
+            { rashi: "धनु (Sagittarius)", sound: "ye,yo,bha,bhi,bhu,dha,pha,dha,bhe", nakshatras: ["Mula", "Purva Ashadha", "Uttara Ashadha (1)"], phal: "आशावादी, दार्शनिक और मुक्त।" },
+            { rashi: "मकर (Capricorn)", sound: "bho,ja,ji,ju,je,jo,kha,ga,gi", nakshatras: ["Uttara Ashadha (2-4)", "Shravana", "Dhanishtha (1-2)"], phal: "महत्वाकांक्षी, अनुशासित और धैर्यवान।" },
+            { rashi: "कुम्भ (Aquarius)", sound: "gu,ge,go,sa,si,su,se,so,da", nakshatras: ["Dhanishtha (3-4)", "Shatabhisha", "Purva Bhadrapada (1-3)"], phal: "नवीन सोच, मानवीय और मित्रवत।" },
+            { rashi: "मीन (Pisces)", sound: "di,du,th,jha,yna,de,do,cha,chi", nakshatras: ["Purva Bhadrapada (4)", "Uttara Bhadrapada", "Revati"], phal: "दयालु, आध्यात्मिक और कल्पनाशील।" }
         ];
+
         this.astroDetails = {
-            1: { planet: "Sun", color: "Golden" }, 2: { planet: "Moon", color: "White" }, 3: { planet: "Jupiter", color: "Yellow" },
-            4: { planet: "Rahu", color: "Blue" }, 5: { planet: "Mercury", color: "Green" }, 6: { planet: "Venus", color: "Pink" },
-            7: { planet: "Ketu", color: "Multi" }, 8: { planet: "Saturn", color: "Black" }, 9: { planet: "Mars", color: "Red" }
+            1: { planet: "Sun (सूर्य)", color: "Golden (सुनहरा)", trait: "Leadership" }, 
+            2: { planet: "Moon (चंद्र)", color: "White (सफेद)", trait: "Peace" }, 
+            3: { planet: "Jupiter (गुरु)", color: "Yellow (पीला)", trait: "Wisdom" },
+            4: { planet: "Rahu (राहु)", color: "Blue (नीला)", trait: "Rebel" }, 
+            5: { planet: "Mercury (बुध)", color: "Green (हरा)", trait: "Intellect" }, 
+            6: { planet: "Venus (शुक्र)", color: "Pink (गुलाबी)", trait: "Luxury" },
+            7: { planet: "Ketu (केतु)", color: "Multi-Color", trait: "Spirituality" }, 
+            8: { planet: "Saturn (शनि)", color: "Black (काला)", trait: "Discipline" }, 
+            9: { planet: "Mars (मंगल)", color: "Red (लाल)", trait: "Energy" }
         };
     }
+
     calculateNumerology(name) {
         if(!name) return 1;
-        let total=0, clean=name.toUpperCase().replace(/[^A-Z]/g,'');
-        for(let c of clean) total+=this.numerologyMap[c]||0;
-        while(total>9){ let s=0; while(total>0){s+=total%10; total=Math.floor(total/10);} total=s; }
-        return total||1;
+        let total = 0, clean = name.toUpperCase().replace(/[^A-Z]/g,'');
+        for(let c of clean) total += this.numerologyMap[c] || 0;
+        
+        // Reduce to single digit
+        while(total > 9) { 
+            let s = 0; 
+            while(total > 0) { s += total % 10; total = Math.floor(total / 10); } 
+            total = s; 
+        }
+        return total || 1;
     }
+
     calculateRashi(name) {
         if(!name) return this.rashiMap[0];
-        let n=name.toLowerCase().trim();
-        for(let r of this.rashiMap){ for(let l of r.letters) if(n.startsWith(l)) return r; }
-        return this.rashiMap[0];
+        let n = name.toLowerCase().trim();
+        
+        for(let r of this.rashiMap) { 
+            let sounds = r.sound.split(',');
+            for(let s of sounds) {
+                if(n.startsWith(s)) return r; 
+            }
+        }
+        return { 
+            rashi: "Unknown", 
+            nakshatras: ["Unknown"], 
+            phal: "Data not available for this sound pattern." 
+        };
     }
+
     processName(data) {
         let safeName = data.name || data.Name;
         if(!safeName) return null;
+        
         const num = this.calculateNumerology(safeName);
-        const rashi = this.calculateRashi(safeName);
+        const rashiData = this.calculateRashi(safeName);
         const astro = this.astroDetails[num] || this.astroDetails[1];
+
         return {
-            ...data, name: safeName,
+            ...data, 
+            name: safeName,
             meaning: data.meaning || "Meaning available in database.",
-            rashi: rashi.rashi, nakshatra: rashi.nakshatras.join(", "), phal: rashi.phal,
-            num: num, planet: astro.planet, color: astro.color
+            
+            // Generated Astro Data
+            rashi: rashiData.rashi, 
+            nakshatra: rashiData.nakshatras.join(", "), 
+            phal: rashiData.phal,
+            
+            // Generated Numero Data
+            num: num, 
+            planet: astro.planet, 
+            color: astro.color,
+            trait: astro.trait
         };
     }
 }
 
 const engine = new AstroEngine();
 
+// ======================================================
+// 3. UI HELPERS & INITIALIZATION
+// ======================================================
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 1. Header Logic
-    const header = document.querySelector('header');
-    if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
+    // --- Initial Setup ---
+    initTheme();
+    initLanguage();
+    initMobileMenu();
+    initScrollToTop();
+    initTypingEffect();
+    initDataFetching(); // Pre-fetch data silently
 
-    // 2. Typing Effect (RESTORED)
+    // --- Search Handlers ---
+    const searchBtn = document.getElementById('hero-search-btn');
+    const searchInput = document.getElementById('hero-search-input');
+    
+    if(searchBtn) searchBtn.addEventListener('click', handleHeroSearch);
+    if(searchInput) searchInput.addEventListener('keypress', (e) => { if(e.key === "Enter") handleHeroSearch(); });
+
+    // --- Name Finder Handlers ---
+    initAlphabet();
+    initGenderToggles();
+});
+
+
+// ======================================================
+// 4. DATA MANAGEMENT (Smart Fetching)
+// ======================================================
+async function initDataFetching() {
+    if(state.isLoaded) return;
+    
+    try {
+        const [bRes, gRes] = await Promise.all([
+            fetch(APP_CONFIG.files.boys).then(res => res.ok ? res.json() : []),
+            fetch(APP_CONFIG.files.girls).then(res => res.ok ? res.json() : [])
+        ]);
+
+        // Normalize Data structure (Handle array or object)
+        state.boyNames = Array.isArray(bRes) ? bRes : (Object.values(bRes).find(v => Array.isArray(v)) || []);
+        state.girlNames = Array.isArray(gRes) ? gRes : (Object.values(gRes).find(v => Array.isArray(v)) || []);
+        state.isLoaded = true;
+        
+        // Initial Render
+        renderNameList();
+        
+    } catch (error) {
+        console.error("Data Fetch Error:", error);
+    }
+}
+
+// ======================================================
+// 5. FEATURE LOGIC
+// ======================================================
+
+/* --- Typing Effect --- */
+function initTypingEffect() {
     const typeElement = document.getElementById("naamin-main-title-typing");
-    if (typeElement) {
-        const text = "Naamin";
-        let i = 0;
-        (function type() {
-            typeElement.innerHTML = `<span class="naamin-naam">${text.slice(0, 4)}</span><span class="naamin-in">${text.slice(4, i++)}</span>`;
-            if (i <= text.length) setTimeout(type, 150); else setTimeout(() => { i = 0; type(); }, 3000);
-        })();
-    }
+    if (!typeElement) return;
 
-    // 3. Theme Logic
-    const themeBtn = document.getElementById("theme-toggle");
-    if(themeBtn) {
-        const saved = localStorage.getItem("theme") || "light";
-        document.body.setAttribute("data-theme", saved);
-        themeBtn.innerHTML = saved === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        themeBtn.onclick = () => {
-            const next = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
-            document.body.setAttribute("data-theme", next);
-            localStorage.setItem("theme", next);
-            themeBtn.innerHTML = next === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    const text = "Naamin";
+    let i = 0;
+
+    function type() {
+        if (i <= text.length) {
+            typeElement.innerHTML = `
+                <span class="naamin-naam">${text.slice(0, 4)}</span><span class="naamin-in">${text.slice(4, i)}</span>
+            `;
+            i++;
+            setTimeout(type, APP_CONFIG.animationSpeed);
+        } else {
+            setTimeout(() => { i = 0; type(); }, 5000); // Loop after 5s
+        }
+    }
+    type();
+}
+
+/* --- Hero Search Logic --- */
+async function handleHeroSearch() {
+    const input = document.getElementById('hero-search-input');
+    if(!input || !input.value.trim()) return;
+
+    const term = input.value.trim().toLowerCase();
+    
+    // Ensure data is loaded
+    if(!state.isLoaded) await initDataFetching();
+
+    // Scroll to results
+    const section = document.getElementById('name-finder');
+    if(section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+        toggleView('details');
+        
+        const detailsContainer = document.getElementById('detail-card-content');
+        detailsContainer.innerHTML = '<div class="spinner"></div><p style="text-align:center; margin-top:10px;">Analyzing Stars...</p>';
+
+        // Search in both arrays
+        const allNames = [...state.boyNames, ...state.girlNames];
+        const found = allNames.find(n => (n.name || n.Name).toLowerCase() === term);
+
+        let dataToProcess = found ? found : {
+            name: term.charAt(0).toUpperCase() + term.slice(1),
+            meaning: "Auto-Generated Analysis (Name not in database)",
+            gender: "Neutral",
+            origin: "Universal"
         };
+
+        const processedData = engine.processName(dataToProcess);
+        renderDetailView(detailsContainer, processedData);
+    }
+}
+
+/* --- Name Finder Logic --- */
+function initAlphabet() {
+    const container = document.getElementById('alphabet-container');
+    if(!container) return;
+    
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    container.innerHTML = "";
+    
+    chars.forEach(char => {
+        const btn = document.createElement("button");
+        btn.className = `alpha-btn ${char === state.currentLetter ? 'active' : ''}`;
+        btn.textContent = char;
+        btn.onclick = () => {
+            document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.currentLetter = char;
+            renderNameList();
+        };
+        container.appendChild(btn);
+    });
+}
+
+function initGenderToggles() {
+    const btns = document.querySelectorAll('.gender-btn');
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.currentGender = btn.dataset.gender;
+            renderNameList();
+        });
+    });
+    
+    // Back Button Logic
+    const backBtn = document.getElementById('back-to-list');
+    if(backBtn) backBtn.onclick = () => toggleView('list');
+}
+
+function renderNameList() {
+    const grid = document.getElementById('name-grid-output');
+    if(!grid) return;
+    
+    grid.innerHTML = "";
+    
+    if(!state.isLoaded) {
+        grid.innerHTML = '<div class="spinner"></div>';
+        return;
     }
 
-    // 4. Language Logic
-    function updateContent(lang) {
+    const sourceArray = state.currentGender === "Boy" ? state.boyNames : state.girlNames;
+    
+    const filtered = sourceArray.filter(n => {
+        let nName = n.name || n.Name;
+        return nName && nName.toUpperCase().startsWith(state.currentLetter);
+    });
+
+    if(filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">
+            No names found starting with "${state.currentLetter}".
+        </div>`;
+        return;
+    }
+
+    filtered.forEach(person => {
+        const card = document.createElement('div');
+        card.className = 'name-card-item';
+        card.innerHTML = `
+            <h3>${person.name || person.Name}</h3>
+            <p>${(person.meaning || "").substring(0, 30)}...</p>
+        `;
+        card.onclick = () => {
+            toggleView('details');
+            const detailsContainer = document.getElementById('detail-card-content');
+            const processedData = engine.processName(person);
+            renderDetailView(detailsContainer, processedData);
+        };
+        grid.appendChild(card);
+    });
+}
+
+/* --- Render Beautiful Details --- */
+function renderDetailView(container, data) {
+    if(!container) return;
+    
+    container.innerHTML = `
+        <div style="text-align:center; margin-bottom: 25px;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 5px; background: var(--grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                ${data.name}
+            </h2>
+            <span class="badge">${data.gender || state.currentGender}</span>
+            <p style="font-size: 1.1rem; margin-top: 15px; color: var(--text-main);">
+                "${data.meaning}"
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; text-align: left;">
+            
+            <div style="background: rgba(79, 70, 229, 0.05); padding: 20px; border-radius: 16px; border: 1px solid rgba(79, 70, 229, 0.1);">
+                <h4 style="color: var(--secondary); margin-bottom: 15px; display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-star"></i> Vedic Astrology
+                </h4>
+                <div style="margin-bottom: 10px;"><strong>Rashi:</strong> ${data.rashi}</div>
+                <div style="margin-bottom: 10px;"><strong>Nakshatra:</strong> ${data.nakshatra}</div>
+                <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px;">${data.phal}</div>
+            </div>
+
+            <div style="background: rgba(249, 115, 22, 0.05); padding: 20px; border-radius: 16px; border: 1px solid rgba(249, 115, 22, 0.1);">
+                <h4 style="color: var(--primary); margin-bottom: 15px; display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-hashtag"></i> Numerology
+                </h4>
+                <div style="margin-bottom: 10px;"><strong>Destiny Number:</strong> ${data.num}</div>
+                <div style="margin-bottom: 10px;"><strong>Ruling Planet:</strong> ${data.planet}</div>
+                <div style="margin-bottom: 10px;"><strong>Lucky Color:</strong> <span style="color:${data.color.split(' ')[0]}">●</span> ${data.color}</div>
+            </div>
+        </div>
+    `;
+}
+
+function toggleView(viewName) {
+    const list = document.getElementById('name-list-view');
+    const details = document.getElementById('name-detail-view');
+    const filters = document.querySelector('.filters-container');
+    
+    if(viewName === 'details') {
+        list.classList.add('hidden');
+        filters.style.display = 'none'; // Hide filters to focus
+        details.classList.remove('hidden');
+        details.classList.add('animate-in');
+    } else {
+        details.classList.add('hidden');
+        list.classList.remove('hidden');
+        filters.style.display = 'block';
+        list.classList.add('animate-in');
+    }
+}
+
+// ======================================================
+// 6. UTILITIES (Theme, Scroll, Menu)
+// ======================================================
+function initTheme() {
+    const btn = document.getElementById("theme-toggle");
+    if(!btn) return;
+    
+    const saved = localStorage.getItem("theme") || "light";
+    document.body.setAttribute("data-theme", saved);
+    btn.innerHTML = saved === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    
+    btn.onclick = () => {
+        const current = document.body.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        document.body.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        btn.innerHTML = next === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    };
+}
+
+function initLanguage() {
+    const btn = document.getElementById("language-toggle");
+    if(!btn) return;
+    
+    const updateLang = (lang) => {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
+        
+        // Update Static Text
         document.querySelectorAll("[data-en]").forEach(el => {
-            const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
-            if (text) el.textContent = text;
+            el.textContent = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
         });
+        
+        // Update Placeholder
         const inp = document.getElementById("hero-search-input");
         if(inp) inp.placeholder = lang === "hi" ? "उदा: आरव..." : "e.g., Aarav...";
-    }
-    const langBtn = document.getElementById("language-toggle");
-    if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
-    updateContent(localStorage.getItem("language") || "en");
+    };
 
-    // 5. Mobile Menu
+    btn.onclick = () => {
+        const current = localStorage.getItem("language") === "hi" ? "en" : "hi";
+        updateLang(current);
+    };
+    
+    updateLang(localStorage.getItem("language") || "en");
+}
+
+function initMobileMenu() {
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
+    
     if(hamburger && nav) {
-        hamburger.onclick = (e) => { e.stopPropagation(); hamburger.classList.toggle("active"); nav.classList.toggle("active"); };
-        document.onclick = (e) => { if (nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
-    }
-
-    // 6. Scroll To Top
-    const scrollBtn = document.getElementById("scrollToTopBtn");
-    if (scrollBtn) {
-        window.addEventListener("scroll", () => {
-            scrollBtn.classList.toggle("show", window.scrollY > 300);
-            scrollBtn.style.opacity = window.scrollY > 300 ? "1" : "0";
-            scrollBtn.style.visibility = window.scrollY > 300 ? "visible" : "hidden";
-        });
-        scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    // 7. Show Details Helper
-    function showDetails(box, data, gender="Unknown") {
-        if(!box || !data) return;
-        box.innerHTML = `
-            <h2>${data.name}</h2>
-            <div class="detail-grid" style="text-align: left; margin-top: 20px;">
-                <p><strong>Meaning:</strong> ${data.meaning}</p>
-                <p><strong>Gender:</strong> ${data.gender || gender}</p>
-                <p><strong>Origin:</strong> ${data.origin || 'Sanskrit/Indian'}</p>
-                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                <h3>🔮 Vedic Astrology</h3>
-                <p><strong>Rashi:</strong> ${data.rashi}</p>
-                <p><strong>Nakshatra:</strong> ${data.nakshatra}</p>
-                <p><strong>Personality:</strong> ${data.phal}</p>
-                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                <h3>🔢 Numerology</h3>
-                <p><strong>Number:</strong> ${data.num}</p>
-                <p><strong>Planet:</strong> ${data.planet}</p>
-                <p><strong>Lucky Color:</strong> ${data.color}</p>
-            </div>
-        `;
-    }
-
-    // ======================================================
-    // HERO SEARCH (JSON BASED)
-    // ======================================================
-    async function handleHeroSearch() {
-        const input = document.getElementById('hero-search-input');
-        if(!input || !input.value.trim()) return;
-        const term = input.value.trim().toLowerCase();
-
-        const section = document.getElementById('name-finder');
-        const detailsBox = document.querySelector('.name-details');
-        const listContainer = document.querySelector('.name-list-container');
-        const detailsContainer = document.querySelector('.name-details-container');
-
-        if(section) {
-            window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
-            if(listContainer) listContainer.style.display = 'none';
-            if(detailsContainer) detailsContainer.style.display = 'block';
-            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching Database...</div>';
-
-            try {
-                const [b, g] = await Promise.all([ 
-                    fetch('bnames.json').then(r => r.ok?r.json():[]), 
-                    fetch('gnames.json').then(r => r.ok?r.json():[]) 
-                ]);
-                const all = [].concat(b, g).flatMap(i => i.name ? i : (Object.values(i).find(v=>Array.isArray(v))||[]));
-                const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
-
-                let dataToProcess;
-                if(found) {
-                    dataToProcess = found;
-                } else {
-                    let displayTerm = term.charAt(0).toUpperCase() + term.slice(1);
-                    dataToProcess = { 
-                        name: displayTerm, 
-                        meaning: "Not found in database (Auto-Calculated Analysis)", 
-                        gender: "Unknown", 
-                        origin: "Unknown" 
-                    };
-                }
-                const smartData = engine.processName(dataToProcess);
-                showDetails(detailsBox, smartData, dataToProcess.gender);
-            } catch(e) { console.error(e); detailsBox.innerHTML = "<p>Search error.</p>"; }
-        }
-    }
-    const sBtn = document.getElementById('hero-search-btn');
-    const sInp = document.getElementById('hero-search-input');
-    if(sBtn) sBtn.onclick = handleHeroSearch;
-    if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
-
-    // ======================================================
-    // NAME FINDER (A-Z)
-    // ======================================================
-    const nameFinderSection = document.getElementById('name-finder');
-    if (nameFinderSection) {
-        const alphabetContainer = document.querySelector('.alphabet-selector');
-        const nameListContainer = document.querySelector('.name-list');
-        const nameDetailsBox = document.querySelector('.name-details');
-        const nameDetailsContainer = document.querySelector('.name-details-container');
-        const genderBtns = document.querySelectorAll('.gender-btn');
-        const backBtn = document.querySelector('.back-btn');
+        hamburger.onclick = (e) => {
+            e.stopPropagation();
+            hamburger.classList.toggle("active");
+            nav.classList.toggle("active");
+        };
         
-        let currentGender = "Boy";
-        let currentLetter = "A";
-        let namesData = [];
-
-        async function loadNames(gender) {
-            const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
-            try {
-                if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
-                const response = await fetch(fileName);
-                if (!response.ok) throw new Error("File missing");
-                let rawData = await response.json();
-                if (Array.isArray(rawData)) { namesData = rawData; } 
-                else { namesData = Object.values(rawData).find(v => Array.isArray(v)) || []; }
-                renderNames();
-            } catch (error) { if(nameListContainer) nameListContainer.innerHTML = `<p>Error loading data.</p>`; }
-        }
-
-        function generateAlphabet() {
-            if(!alphabetContainer) return;
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-            alphabetContainer.innerHTML = "";
-            chars.forEach(char => {
-                const btn = document.createElement("button");
-                btn.className = `alphabet-btn ${char === currentLetter ? 'active' : ''}`;
-                btn.textContent = char;
-                btn.onclick = () => {
-                    document.querySelectorAll('.alphabet-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentLetter = char;
-                    renderNames();
-                };
-                alphabetContainer.appendChild(btn);
-            });
-        }
-
-        function renderNames() {
-            if(!nameListContainer) return;
-            nameListContainer.innerHTML = "";
-            document.querySelector('.name-list-container').style.display = 'block';
-            nameDetailsContainer.style.display = 'none';
-
-            if (!Array.isArray(namesData)) return;
-            const filtered = namesData.filter(n => {
-                let nName = n.name || n.Name;
-                return nName && nName.toUpperCase().startsWith(currentLetter);
-            });
-            
-            if (filtered.length === 0) { nameListContainer.innerHTML = `<p>No names found.</p>`; return; }
-
-            filtered.forEach(person => {
-                const div = document.createElement("div");
-                div.className = "name-item";
-                div.textContent = person.name || person.Name;
-                div.onclick = () => {
-                    document.querySelector('.name-list-container').style.display = 'none';
-                    nameDetailsContainer.style.display = 'block';
-                    const smartData = engine.processName(person);
-                    showDetails(nameDetailsBox, smartData, currentGender);
-                };
-                nameListContainer.appendChild(div);
-            });
-        }
-
-        genderBtns.forEach(btn => {
-            btn.onclick = () => {
-                genderBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentGender = btn.dataset.gender;
-                loadNames(currentGender);
-            };
-        });
-
-        if(backBtn) backBtn.onclick = () => {
-            nameDetailsContainer.style.display = 'none';
-            document.querySelector('.name-list-container').style.display = 'block';
+        document.onclick = (e) => {
+            if(nav.classList.contains("active") && !nav.contains(e.target) && !hamburger.contains(e.target)) {
+                hamburger.classList.remove("active");
+                nav.classList.remove("active");
+            }
         };
-
-        generateAlphabet();
-        loadNames("Boy");
     }
+}
 
-    // --- CHATBOT UI ---
-    if(document.getElementById("chatbox")) {
-        const btn = document.getElementById("sendBtn");
-        const inp = document.getElementById("userInput");
-        const box = document.getElementById("chatbox");
-        const send = () => {
-            if(!inp.value.trim()) return;
-            box.innerHTML += `<div class="message user">${inp.value}</div>`;
-            inp.value = "";
-            box.scrollTop = box.scrollHeight;
-            box.innerHTML += `<div class="message bot">For AI chat, please add API Key.</div>`;
-        };
-        if(btn) btn.onclick = send;
-        if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
-    }
-});
+function initScrollToTop() {
+    const btn = document.getElementById("scrollToTopBtn");
+    if(!btn) return;
+    
+    window.addEventListener("scroll", () => {
+        btn.classList.toggle("show", window.scrollY > 300);
+    });
+    
+    btn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+}
