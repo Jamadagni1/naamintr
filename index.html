@@ -1,39 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Naamin - Authentic Sanskrit & AI Naming Solutions</title>
-    <meta name="description" content="Discover unique, meaningful, and astrological names with Naamin. Blending ancient Sanskrit wisdom with modern AI technology.">
-    <meta name="keywords" content="Baby Names, Sanskrit Names, Business Naming, Astrology, Numerology">
-    <meta name="author" content="Naamin Team">
-
-    <meta property="og:title" content="Naamin - Naming Solutions">
-    <meta property="og:description" content="Your trusted partner for authentic and meaningful names.">
-    <meta property="og:image" content="assets/logo-preview.png">
-    <meta property="og:url" content="https://naamin.com">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Lora:ital,wght@0,400;1,400&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-
-    <script>
-        (() => {
-            const preferredLang = localStorage.getItem("language") || "hi";
-            document.documentElement.lang = preferredLang;
-        })();
-    </script>
 </head>
 
 <body data-theme="light">
-
     <div id="preloader">
         <div class="loader-logo"><span class="brand-naam">Naam</span><span class="brand-in">in</span></div>
         <div class="spinner"></div>
@@ -41,204 +19,105 @@
 
     <header class="glass-header">
         <div class="container header-container">
-            <a class="header-logo" href="index.html">
-                <span class="header-naam">Naam</span><span class="header-in">in</span>
-            </a>
-
-            <div class="header-actions">
-                <button class="hamburger-menu" id="hamburger-menu" aria-label="Toggle Menu">
-                    <span class="line line1"></span>
-                    <span class="line line2"></span>
-                    <span class="line line3"></span>
-                </button>
-            </div>
+            <a class="header-logo" href="index.html"><span class="header-naam">Naam</span><span class="header-in">in</span></a>
+            
+            <button class="hamburger-menu" id="hamburger-menu">
+                <span class="line"></span><span class="line"></span><span class="line"></span>
+            </button>
 
             <nav class="main-nav" id="main-nav">
-                <ul class="nav-links">
-                    <li><a class="nav-items active" href="index.html" data-en="Home" data-hi="होम"></a></li>
-                    <li><a class="nav-items highlight-pulse" href="chatbot.html" data-en="Naamin AI" data-hi="नामिन ए.आई."></a></li>
-                    <li><a class="nav-items" href="about.html" data-en="About" data-hi="हमारे बारे में"></a></li>
-                    <li><a class="nav-items" href="services.html" data-en="Services" data-hi="सेवाएं"></a></li>
-                    <li><a class="nav-items" href="pricing.html" data-en="Plans" data-hi="योजनाएं"></a></li>
-                    <li><a class="nav-items" href="contact.html" data-en="Contact" data-hi="संपर्क"></a></li>
-                </ul>
-                
-                <div class="nav-controls">
-                    <button id="theme-toggle" class="control-btn" aria-label="Toggle Dark Mode">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button id="language-toggle" class="control-btn lang-btn">
-                        <span class="lang-text">ENG</span> / <span class="lang-text">हिन्दी</span>
-                    </button>
+                <div class="nav-links">
+                    <a class="nav-items active" href="index.html" data-en="Home" data-hi="होम"></a>
+                    <a class="nav-items" href="about.html" data-en="About" data-hi="हमारे बारे में"></a>
+                    <a class="nav-items" href="services.html" data-en="Services" data-hi="सेवाएं"></a>
+                    <a class="nav-items" href="pricing.html" data-en="Plans" data-hi="योजनाएं"></a>
+                    <a class="nav-items" href="contact.html" data-en="Contact" data-hi="संपर्क"></a>
                 </div>
             </nav>
+
+            <div class="nav-controls">
+                <button id="theme-toggle" class="control-btn"><i class="fas fa-moon"></i></button>
+                <button id="language-toggle" class="control-btn">ENG/HIN</button>
+            </div>
         </div>
     </header>
 
     <main>
-        <section id="hero" class="section hero-section">
-            <div class="container hero-content">
+        <section id="hero" class="hero-section">
+            <div class="container">
                 <span class="badge" data-en="✨ The Science of Naming" data-hi="✨ नामकरण का विज्ञान"></span>
-                
                 <h1 class="hero-heading">
-                    <span data-en="Discover the Perfect Name" data-hi="सही नाम की खोज करें"></span>
-                    <br>
+                    <span data-en="Discover the Perfect Name" data-hi="सही नाम की खोज करें"></span><br>
                     <span class="typing-text" id="naamin-main-title-typing"></span>
                 </h1>
-
-                <p class="hero-subtext" data-en="Blending Vedic astrology with AI precision to find names that shape destiny." data-hi="वैदिक ज्योतिष और ए.आई. की सटीकता का संगम, जो भाग्य संवारने वाले नाम खोजता है।"></p>
+                <p class="hero-subtext" data-en="Blending Vedic astrology with AI precision." data-hi="वैदिक ज्योतिष और ए.आई. की सटीकता का संगम।"></p>
 
                 <div class="hero-search-wrapper">
                     <div class="search-bar">
                         <i class="fas fa-search search-icon"></i>
                         <input type="text" id="hero-search-input" placeholder="Search name (e.g., Aarav)...">
-                        <button id="hero-search-btn" data-en="Analyze" data-hi="विश्लेषण करें"></button>
-                    </div>
-                </div>
-                
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">50k+</span>
-                        <span class="stat-label" data-en="Names" data-hi="नाम"></span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">100%</span>
-                        <span class="stat-label" data-en="Sanskrit" data-hi="संस्कृत"></span>
+                        <button id="hero-search-btn" data-en="Analyze" data-hi="विश्लेषण"></button>
                     </div>
                 </div>
             </div>
-            
             <div class="hero-bg-shape shape-1"></div>
             <div class="hero-bg-shape shape-2"></div>
         </section>
 
-        <section id="name-finder" class="section tool-section">
-            <div class="container">
-                <div class="section-header text-center">
-                    <h2 data-en="Explore Names" data-hi="नाम खोजें"></h2>
-                    <p data-en="Filter by gender and starting letter" data-hi="लिंग और पहले अक्षर के अनुसार खोजें"></p>
-                </div>
-
-                <div class="tool-interface glass-card">
+        <section id="name-finder" class="tool-section">
+            <div class="container text-center">
+                <h2 data-en="Explore Names" data-hi="नाम खोजें"></h2>
+                <div class="glass-card" style="margin-top:30px;">
                     <div class="filters-container">
                         <div class="gender-selector">
-                            <button class="gender-btn active" data-gender="Boy">
-                                <i class="fas fa-child"></i> <span data-en="Boy" data-hi="लड़का"></span>
-                            </button>
-                            <button class="gender-btn" data-gender="Girl">
-                                <i class="fas fa-child-dress"></i> <span data-en="Girl" data-hi="लड़की"></span>
-                            </button>
+                            <button class="gender-btn active" data-gender="Boy"><i class="fas fa-child"></i> Boy</button>
+                            <button class="gender-btn" data-gender="Girl"><i class="fas fa-child-dress"></i> Girl</button>
                         </div>
-                        
                         <div class="alphabet-scroll-wrapper">
-                            <div class="alphabet-selector" id="alphabet-container">
-                                </div>
+                            <div class="alphabet-selector" id="alphabet-container"></div>
                         </div>
                     </div>
 
                     <div class="results-area">
-                        <div id="loading-spinner" class="hidden">
-                            <i class="fas fa-spinner fa-spin"></i> Loading...
-                        </div>
-                        
-                        <div class="name-list-container" id="name-list-view">
-                            <div class="name-grid" id="name-grid-output">
-                                </div>
-                        </div>
-
+                        <div class="name-grid" id="name-grid-output"></div>
                         <div class="name-details-container hidden" id="name-detail-view">
-                            <button class="back-btn" id="back-to-list">
-                                <i class="fas fa-arrow-left"></i> <span data-en="Back" data-hi="वापस"></span>
-                            </button>
-                            <div class="detail-card" id="detail-card-content">
-                                </div>
+                            <button class="back-btn" id="back-to-list"><i class="fas fa-arrow-left"></i> Back</button>
+                            <div class="detail-card" id="detail-card-content"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="testimonials" class="section">
-            <div class="container">
-                <div class="section-header text-center">
-                    <h2 data-en="Success Stories" data-hi="सफलता की कहानियां"></h2>
-                </div>
-                
+        <section class="section">
+            <div class="container text-center">
+                <h2 data-en="Success Stories" data-hi="सफलता की कहानियां"></h2>
                 <div class="testimonial-grid">
                     <div class="testimonial-card">
-                        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
-                        <p class="review-text" data-en="Naamin gave us the perfect name for our daughter — ‘Syona’. It’s pure Sanskrit yet modern." data-hi="Naamin ने हमारी बेटी के लिए ‘स्योना’ (Syona) नाम दिया। यह संस्कृत होते हुए भी आधुनिक है।"></p>
-                        <div class="reviewer-info">
-                            <div class="reviewer-img">S</div>
-                            <div>
-                                <h4 data-en="Smita Sharma" data-hi="स्मिता शर्मा"></h4>
-                                <small data-en="Parent" data-hi="माता-पिता"></small>
-                            </div>
-                        </div>
+                        <i class="fas fa-quote-left quote-icon"></i>
+                        <p data-en="Naamin gave us the perfect name 'Syona'." data-hi="नामिन ने हमें 'स्योना' नाम दिया।"></p>
+                        <div class="reviewer-info"><div class="reviewer-img">S</div><div><h4>Smita</h4></div></div>
                     </div>
-                    
                     <div class="testimonial-card">
-                        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
-                        <p class="review-text" data-en="Unique name ‘Shivex’. Beautifully blends Shiva's divinity with modernity." data-hi="अद्वितीय नाम ‘शिवेक्ष’। शिव की दिव्यता और आधुनिकता का सुंदर संगम।"></p>
-                        <div class="reviewer-info">
-                            <div class="reviewer-img">R</div>
-                            <div>
-                                <h4 data-en="Mr. S.R." data-hi="श्री एस.आर."></h4>
-                                <small data-en="Parent" data-hi="माता-पिता"></small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="testimonial-card">
-                        <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
-                        <p class="review-text" data-en="Perfectly captures our fitness brand's essence. Impressive creativity." data-hi="हमारे फिटनेस ब्रांड के सार को पूरी तरह से दर्शाता है। प्रभावशाली रचनात्मकता।"></p>
-                        <div class="reviewer-info">
-                            <div class="reviewer-img">A</div>
-                            <div>
-                                <h4 data-en="Anjali Mishra" data-hi="अंजलि मिश्रा"></h4>
-                                <small data-en="Brand Strategist" data-hi="ब्रांड रणनीतिकार"></small>
-                            </div>
-                        </div>
+                        <i class="fas fa-quote-left quote-icon"></i>
+                        <p data-en="Loved the numerology report!" data-hi="अंक ज्योतिष रिपोर्ट बहुत पसंद आई!"></p>
+                        <div class="reviewer-info"><div class="reviewer-img">R</div><div><h4>Rahul</h4></div></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="faq" class="section bg-alt">
-            <div class="container narrow-container">
-                <div class="section-header text-center">
-                    <h2 data-en="Common Questions" data-hi="सामान्य प्रश्न"></h2>
-                </div>
-
-                <div class="faq-wrapper">
+        <section class="section" style="padding: 60px 0;">
+            <div class="container text-center">
+                <h2 data-en="FAQ" data-hi="सामान्य प्रश्न"></h2>
+                <div class="faq-wrapper" style="margin-top:30px;">
                     <details class="faq-item">
-                        <summary>
-                            <span data-en="Can I get a name based on astrology?" data-hi="क्या नाम ज्योतिष पर आधारित होते हैं?"></span>
-                            <i class="fas fa-chevron-down"></i>
-                        </summary>
-                        <div class="faq-content">
-                            <p data-en="Yes, we specialize in providing names aligned with your birth star (Nakshatra) and Rashi." data-hi="हाँ, हम आपके जन्म नक्षत्र और राशि के अनुकूल नाम प्रदान करने में विशेषज्ञ हैं।"></p>
-                        </div>
+                        <summary>Is it free? <i class="fas fa-chevron-down"></i></summary>
+                        <div class="faq-content">Yes, basic search is free.</div>
                     </details>
-
                     <details class="faq-item">
-                        <summary>
-                            <span data-en="How long does the report take?" data-hi="रिपोर्ट में कितना समय लगता है?"></span>
-                            <i class="fas fa-chevron-down"></i>
-                        </summary>
-                        <div class="faq-content">
-                            <p data-en="Typically 3-5 business days for a comprehensive PDF report." data-hi="विस्तृत पीडीएफ रिपोर्ट के लिए आमतौर पर 3-5 व्यावसायिक दिन।"></p>
-                        </div>
-                    </details>
-                    
-                    <details class="faq-item">
-                        <summary>
-                            <span data-en="What makes Naamin unique?" data-hi="नामिन क्या अनोखा है?"></span>
-                            <i class="fas fa-chevron-down"></i>
-                        </summary>
-                        <div class="faq-content">
-                            <p data-en="We combine traditional Sanskrit grammar (Panini) with modern AI tools." data-hi="हम पारंपरिक संस्कृत व्याकरण (पाणिनी) को आधुनिक ए.आई. टूल्स के साथ जोड़ते हैं।"></p>
-                        </div>
+                        <summary>Is it accurate? <i class="fas fa-chevron-down"></i></summary>
+                        <div class="faq-content">We use authentic Vedic algorithms.</div>
                     </details>
                 </div>
             </div>
@@ -247,47 +126,33 @@
 
     <footer>
         <div class="container footer-container">
-            <div class="footer-brand">
-                <a class="footer-logo" href="#">
-                    <span class="header-naam">Naam</span><span class="header-in">in</span>
-                </a>
-                <p data-en="Naming the future with the wisdom of the past." data-hi="अतीत के ज्ञान से भविष्य का नामकरण।"></p>
+            <div>
+                <a href="#" class="footer-logo"><span class="brand-naam">Naam</span><span class="brand-in">in</span></a>
+                <p>Naming the future with wisdom.</p>
                 <div class="social-links">
-                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
-            
             <div class="footer-links">
-                <h4 data-en="Company" data-hi="कंपनी"></h4>
+                <h4>Links</h4>
                 <ul>
-                    <li><a href="about.html" data-en="About Us" data-hi="हमारे बारे में"></a></li>
-                    <li><a href="careers.html" data-en="Careers" data-hi="करियर"></a></li>
-                    <li><a href="privacy.html" data-en="Privacy Policy" data-hi="गोपनीयता नीति"></a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
                 </ul>
             </div>
-
-            <div class="footer-contact">
-                <h4 data-en="Contact" data-hi="संपर्क"></h4>
-                <p><i class="fas fa-envelope"></i> <a href="mailto:naamin.com@gmail.com">naamin.com@gmail.com</a></p>
-                <p><i class="fas fa-phone"></i> +91 94136 78955</p>
-            </div>
         </div>
-        <div class="footer-bottom">
-            <p data-en="© 2025 Naamin. All rights reserved." data-hi="© २०२५ नामिन। सभी अधिकार सुरक्षित।"></p>
-        </div>
+        <div class="footer-bottom">© 2025 Naamin.</div>
     </footer>
 
-    <a href="https://wa.me/919413678955?text=Hello%20Naamin" class="whatsapp-float" target="_blank" aria-label="Chat on WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
-    
-    <button id="scrollToTopBtn" class="scroll-to-top-btn" aria-label="Scroll to Top">
-        <i class="fas fa-arrow-up"></i>
-    </button>
+    <a href="https://wa.me/919413678955" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
+    <button id="scrollToTopBtn" class="scroll-to-top-btn"><i class="fas fa-arrow-up"></i></button>
 
     <script src="script.js"></script>
+    <style>
+        .whatsapp-float { position: fixed; bottom: 30px; right: 20px; background: #25D366; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; text-decoration: none; z-index: 1000; }
+        .scroll-to-top-btn { position: fixed; bottom: 90px; right: 20px; width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--primary); color: white; cursor: pointer; display: none; }
+        .scroll-to-top-btn.show { display: block; }
+    </style>
 </body>
 </html>
