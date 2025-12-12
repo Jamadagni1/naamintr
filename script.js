@@ -1,245 +1,185 @@
 /* ======================================================
-   SCRIPT.JS - FINAL FIXED VERSION
+   NAAMIN.COM - LOGIC INTEGRATED INTO ORIGINAL LAYOUT
    ====================================================== */
 
-// Force Visibility
-document.body.style.visibility = "visible";
-document.body.style.opacity = "1";
+const state = {
+    boys: [],
+    girls: [],
+    gender: 'Boy',
+    letter: 'A',
+    loaded: false
+};
 
-const GEMINI_API_KEY = ""; // Optional
+// ===================== 1. PRELOADER & DATA FETCHING =====================
+document.addEventListener("DOMContentLoaded", async () => {
+    // Typing Effect for Original Layout
+    initTypingEffect();
 
-// --- ASTRO ENGINE ---
-class AstroEngine {
-    constructor() {
-        this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
-        this.rashiMap = [
-            { rashi: "मेष (Aries)", letters: ["chu","che","cho","la","li","lu","le","lo","a"], nakshatras: ["Ashwini","Bharani","Krittika"], phal: "साहसी, ऊर्जावान" },
-            { rashi: "वृषभ (Taurus)", letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], nakshatras: ["Krittika","Rohini","Mrigashira"], phal: "शांत, विश्वसनीय" },
-            { rashi: "मिथुन (Gemini)", letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], nakshatras: ["Mrigashira","Ardra","Punarvasu"], phal: "बुद्धिमान, वाचाल" },
-            { rashi: "कर्क (Cancer)", letters: ["hi","hu","he","ho","da","di","du","de","do"], nakshatras: ["Punarvasu","Pushya","Ashlesha"], phal: "भावुक, संवेदनशील" },
-            { rashi: "सिंह (Leo)", letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], phal: "आत्मविश्वासी, उदार" },
-            { rashi: "कन्या (Virgo)", letters: ["to","pa","pi","pu","sha","na","th","pe","po"], nakshatras: ["Uttara Phalguni","Hasta","Chitra"], phal: "व्यावहारिक, मेहनती" },
-            { rashi: "तुला (Libra)", letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], nakshatras: ["Chitra","Swati","Vishakha"], phal: "न्यायप्रिय, संतुलित" },
-            { rashi: "वृश्चिक (Scorpio)", letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], nakshatras: ["Vishakha","Anuradha","Jyeshtha"], phal: "तीव्र, रहस्यमयी" },
-            { rashi: "धनु (Sagittarius)", letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], phal: "आशावादी, दार्शनिक" },
-            { rashi: "मकर (Capricorn)", letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], phal: "महत्वाकांक्षी, धैर्यवान" },
-            { rashi: "कुम्भ (Aquarius)", letters: ["gu","ge","go","sa","si","su","se","so","da"], nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], phal: "नवीन सोच वाला" },
-            { rashi: "मीन (Pisces)", letters: ["di","du","th","jha","yna","de","do","cha","chi"], nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], phal: "दयालु, आध्यात्मिक" }
-        ];
-        this.astroDetails = {
-            1: { planet: "Sun", color: "Golden" }, 2: { planet: "Moon", color: "White" }, 3: { planet: "Jupiter", color: "Yellow" },
-            4: { planet: "Rahu", color: "Blue" }, 5: { planet: "Mercury", color: "Green" }, 6: { planet: "Venus", color: "Pink" },
-            7: { planet: "Ketu", color: "Multi" }, 8: { planet: "Saturn", color: "Black" }, 9: { planet: "Mars", color: "Red" }
+    // Remove Preloader Safely
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        setTimeout(() => { preloader.style.display = 'none'; }, 500);
+    }
+
+    // Fetch JSON Data
+    try {
+        const [b, g] = await Promise.all([
+            fetch('bnames.json').then(r => r.ok ? r.json() : []),
+            fetch('gnames.json').then(r => r.ok ? r.json() : [])
+        ]);
+        
+        state.boys = Array.isArray(b) ? b : (Object.values(b).find(v => Array.isArray(v)) || []);
+        state.girls = Array.isArray(g) ? g : (Object.values(g).find(v => Array.isArray(v)) || []);
+        state.loaded = true;
+        
+        // Initial Render
+        initAlphabet();
+        renderNames();
+
+    } catch (e) {
+        console.error("Data load error:", e);
+        document.querySelector('.name-list').innerHTML = "<p>Data could not be loaded.</p>";
+    }
+
+    // Event Listeners for Gender
+    document.querySelectorAll('.gender-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.gender = btn.dataset.gender;
+            renderNames();
+        });
+    });
+
+    // Event Listener for Search
+    const searchBtn = document.getElementById('hero-search-btn');
+    const searchInp = document.getElementById('hero-search-input');
+    if (searchBtn) searchBtn.onclick = handleSearch;
+    if (searchInp) searchInp.onkeypress = (e) => { if (e.key === "Enter") handleSearch(); };
+
+    // Back Button Logic
+    const backBtn = document.querySelector('.back-btn');
+    if (backBtn) backBtn.onclick = showList;
+});
+
+// ===================== 2. RENDER LOGIC =====================
+function initAlphabet() {
+    const container = document.querySelector('.alphabet-selector');
+    if (!container) return;
+    
+    container.innerHTML = "";
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    
+    chars.forEach(char => {
+        const btn = document.createElement("button");
+        btn.className = `alphabet-btn ${char === 'A' ? 'active' : ''}`;
+        btn.textContent = char;
+        btn.onclick = () => {
+            document.querySelectorAll('.alphabet-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            state.letter = char;
+            renderNames();
         };
+        container.appendChild(btn);
+    });
+}
+
+function renderNames() {
+    const container = document.querySelector('.name-list');
+    if (!container) return;
+
+    if (!state.loaded) {
+        container.innerHTML = "<p>Loading...</p>";
+        return;
     }
-    calculateNumerology(name) {
-        if(!name) return 1;
-        let total = 0, clean = name.toUpperCase().replace(/[^A-Z]/g, '');
-        for(let c of clean) total += this.numerologyMap[c] || 0;
-        while(total > 9) { let s=0; while(total>0){ s+=total%10; total=Math.floor(total/10); } total=s; }
-        return total || 1;
+
+    const source = state.gender === 'Boy' ? state.boys : state.girls;
+    const filtered = source.filter(n => (n.name || n.Name).toUpperCase().startsWith(state.letter));
+
+    container.innerHTML = "";
+    
+    if (filtered.length === 0) {
+        container.innerHTML = "<p>No names found.</p>";
+        return;
     }
-    calculateRashi(name) {
-        if(!name) return this.rashiMap[0];
-        let n = name.toLowerCase().trim();
-        for(let r of this.rashiMap) { for(let l of r.letters) if(n.startsWith(l)) return r; }
-        return this.rashiMap[0];
-    }
-    processName(data) {
-        let safeName = data.name || data.Name;
-        if(!safeName) return null;
-        const num = this.calculateNumerology(safeName);
-        const rashi = this.calculateRashi(safeName);
-        const astro = this.astroDetails[num] || this.astroDetails[1];
-        return {
-            ...data, name: safeName, meaning: data.meaning || "Meaning available in database.",
-            rashi: rashi.rashi, nakshatra: rashi.nakshatras.join(", "), phal: rashi.phal,
-            num: num, planet: astro.planet, color: astro.color
-        };
+
+    filtered.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "name-item";
+        div.textContent = p.name || p.Name;
+        div.onclick = () => showDetails(p);
+        container.appendChild(div);
+    });
+}
+
+function showDetails(data) {
+    // Hide List, Show Details (Using your original structure)
+    document.querySelector('.name-list-container').style.display = 'none';
+    document.querySelector('.alphabet-selector').style.display = 'none';
+    const detailContainer = document.querySelector('.name-details-container');
+    const detailContent = document.querySelector('.name-details');
+    
+    detailContainer.style.display = 'block';
+
+    // Astro Logic (Simplified for display)
+    let num = 0, nameClean = (data.name || data.Name).toUpperCase().replace(/[^A-Z]/g,'');
+    const map = {A:1,I:1,J:1,Q:1,Y:1,B:2,K:2,R:2,C:3,G:3,L:3,S:3,D:4,M:4,T:4,E:5,H:5,N:5,X:5,U:6,V:6,W:6,O:7,Z:7,F:8,P:8};
+    for(let c of nameClean) num += map[c] || 0;
+    while(num > 9) { let s=0; while(num>0){s+=num%10; num=Math.floor(num/10);} num=s; }
+
+    detailContent.innerHTML = `
+        <h2>${data.name || data.Name}</h2>
+        <p><strong>Meaning:</strong> ${data.meaning || "Meaning available in database"}</p>
+        <hr style="margin:20px 0; border:0; border-top:1px solid #eee;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+            <div>
+                <h4 style="color:var(--accent-primary)">Astrology</h4>
+                <p>Rashi: Based on sound</p>
+                <p>Nakshatra: Based on sound</p>
+            </div>
+            <div>
+                <h4 style="color:var(--accent-secondary)">Numerology</h4>
+                <p>Number: ${num || 1}</p>
+                <p>Planet: Based on Number</p>
+            </div>
+        </div>
+    `;
+}
+
+function showList() {
+    document.querySelector('.name-details-container').style.display = 'none';
+    document.querySelector('.name-list-container').style.display = 'block';
+    document.querySelector('.alphabet-selector').style.display = 'flex';
+}
+
+function handleSearch() {
+    const term = document.getElementById('hero-search-input').value.trim();
+    if (!term) return;
+
+    // Scroll to Finder
+    document.getElementById('name-finder').scrollIntoView({behavior: 'smooth'});
+    
+    // Fake find for demo (or real find if loaded)
+    const all = [...state.boys, ...state.girls];
+    const found = all.find(n => (n.name || n.Name).toLowerCase() === term.toLowerCase());
+    
+    if (found) {
+        showDetails(found);
+    } else {
+        showDetails({ name: term, meaning: "Name not in database (Analysis generated)", gender: "Neutral" });
     }
 }
 
-const engine = new AstroEngine();
-let namesData = [];
-
-document.addEventListener("DOMContentLoaded", () => {
-    
-    // Header
-    const header = document.querySelector('header');
-    if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
-
-    // Theme
-    const themeBtn = document.getElementById("theme-toggle");
-    if(themeBtn) {
-        const saved = localStorage.getItem("theme") || "light";
-        document.body.setAttribute("data-theme", saved);
-        themeBtn.innerHTML = saved === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        themeBtn.onclick = () => {
-            const next = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
-            document.body.setAttribute("data-theme", next);
-            localStorage.setItem("theme", next);
-            themeBtn.innerHTML = next === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        };
-    }
-
-    // Language
-    function updateContent(lang) {
-        document.documentElement.lang = lang;
-        localStorage.setItem("language", lang);
-        document.querySelectorAll("[data-en]").forEach(el => {
-            const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
-            if (text) el.textContent = text;
-        });
-        const inp = document.getElementById("hero-search-input");
-        if(inp) inp.placeholder = lang === "hi" ? "उदा: आरव..." : "e.g., Aarav...";
-    }
-    const langBtn = document.getElementById("language-toggle");
-    if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
-    updateContent(localStorage.getItem("language") || "en");
-
-    // Pricing / Aura Plans Toggle (FIXED)
-    document.querySelectorAll(".pricing-card-header").forEach(header => {
-        header.onclick = () => header.closest(".pricing-card")?.classList.toggle("expanded");
-    });
-
-    // Helper: Show Details
-    function showDetails(box, data, gender="Unknown") {
-        if(!box || !data) return;
-        box.innerHTML = `
-            <h2>${data.name}</h2>
-            <div class="detail-grid" style="text-align: left; margin-top: 20px;">
-                <p><strong>Meaning:</strong> ${data.meaning}</p>
-                <p><strong>Gender:</strong> ${data.gender || gender}</p>
-                <p><strong>Origin:</strong> ${data.origin || 'Sanskrit/Indian'}</p>
-                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                <h3>🔮 Vedic Astrology</h3>
-                <p><strong>Rashi:</strong> ${data.rashi}</p>
-                <p><strong>Nakshatra:</strong> ${data.nakshatra}</p>
-                <p><strong>Personality:</strong> ${data.phal}</p>
-                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                <h3>🔢 Numerology</h3>
-                <p><strong>Number:</strong> ${data.num}</p>
-                <p><strong>Planet:</strong> ${data.planet}</p>
-                <p><strong>Lucky Color:</strong> ${data.color}</p>
-            </div>
-        `;
-    }
-
-    // Search Logic
-    async function handleHeroSearch() {
-        const input = document.getElementById('hero-search-input');
-        if(!input || !input.value.trim()) return;
-        const term = input.value.trim().toLowerCase();
-        const section = document.getElementById('name-finder');
-        const detailsBox = document.querySelector('.name-details');
-        const listContainer = document.querySelector('.name-list-container');
-        const detailsContainer = document.querySelector('.name-details-container');
-
-        if(section) {
-            window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
-            if(listContainer) listContainer.style.display = 'none';
-            if(detailsContainer) detailsContainer.style.display = 'block';
-            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching...</div>';
-
-            try {
-                const [b, g] = await Promise.all([ fetch('bnames.json').then(r => r.ok?r.json():[]), fetch('gnames.json').then(r => r.ok?r.json():[]) ]);
-                const all = [].concat(b, g).flatMap(i => i.name ? i : (Object.values(i).find(v=>Array.isArray(v))||[]));
-                const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
-                
-                let dataToProcess = found ? found : { name: term.charAt(0).toUpperCase() + term.slice(1), meaning: "Auto-Calculated Analysis", gender: "Unknown" };
-                const smartData = engine.processName(dataToProcess);
-                showDetails(detailsBox, smartData, dataToProcess.gender);
-            } catch(e) { console.error(e); detailsBox.innerHTML = "<p>Search error.</p>"; }
-        }
-    }
-    const sBtn = document.getElementById('hero-search-btn');
-    const sInp = document.getElementById('hero-search-input');
-    if(sBtn) sBtn.onclick = handleHeroSearch;
-    if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
-
-    // Name Finder List
-    const nameFinderSection = document.getElementById('name-finder');
-    if (nameFinderSection) {
-        const alphabetContainer = document.querySelector('.alphabet-selector');
-        const nameListContainer = document.querySelector('.name-list');
-        const nameDetailsBox = document.querySelector('.name-details');
-        const nameDetailsContainer = document.querySelector('.name-details-container');
-        const genderBtns = document.querySelectorAll('.gender-btn');
-        const backBtn = document.querySelector('.back-btn');
-        
-        let currentGender = "Boy";
-        let currentLetter = "A";
-
-        async function loadNames(gender) {
-            const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
-            try {
-                if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
-                const response = await fetch(fileName);
-                if (!response.ok) throw new Error("File missing");
-                let rawData = await response.json();
-                namesData = Array.isArray(rawData) ? rawData : (Object.values(rawData).find(v => Array.isArray(v)) || []);
-                renderNames();
-            } catch (error) { if(nameListContainer) nameListContainer.innerHTML = `<p>Error loading data.</p>`; }
-        }
-
-        function generateAlphabet() {
-            if(!alphabetContainer) return;
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-            alphabetContainer.innerHTML = "";
-            chars.forEach(char => {
-                const btn = document.createElement("button");
-                btn.className = `alphabet-btn ${char === currentLetter ? 'active' : ''}`;
-                btn.textContent = char;
-                btn.onclick = () => {
-                    document.querySelectorAll('.alphabet-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentLetter = char;
-                    renderNames();
-                };
-                alphabetContainer.appendChild(btn);
-            });
-        }
-
-        function renderNames() {
-            if(!nameListContainer) return;
-            nameListContainer.innerHTML = "";
-            document.querySelector('.name-list-container').style.display = 'block';
-            nameDetailsContainer.style.display = 'none';
-
-            if (!Array.isArray(namesData)) return;
-            const filtered = namesData.filter(n => (n.name || n.Name).toUpperCase().startsWith(currentLetter));
-            
-            if (filtered.length === 0) { nameListContainer.innerHTML = `<p>No names found.</p>`; return; }
-
-            filtered.forEach(person => {
-                const div = document.createElement("div");
-                div.className = "name-item";
-                div.textContent = person.name || person.Name;
-                div.onclick = () => {
-                    document.querySelector('.name-list-container').style.display = 'none';
-                    nameDetailsContainer.style.display = 'block';
-                    const smartData = engine.processName(person);
-                    showDetails(nameDetailsBox, smartData, currentGender);
-                };
-                nameListContainer.appendChild(div);
-            });
-        }
-
-        genderBtns.forEach(btn => {
-            btn.onclick = () => {
-                genderBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentGender = btn.dataset.gender;
-                loadNames(currentGender);
-            };
-        });
-
-        if(backBtn) backBtn.onclick = () => {
-            nameDetailsContainer.style.display = 'none';
-            document.querySelector('.name-list-container').style.display = 'block';
-        };
-
-        generateAlphabet();
-        loadNames("Boy");
-    }
-});
+function initTypingEffect() {
+    const el = document.getElementById("naamin-main-title-typing");
+    if (!el) return;
+    const text = "Naamin";
+    let i = 0;
+    const type = () => {
+        if (i <= text.length) {
+            el.innerHTML = `<span class="naamin-naam">${text.slice(0, 4)}</span><span class="naamin-in">${text.slice(4, i)}</span>`;
+            i++; setTimeout(type, 150);
+        } else { setTimeout(() => { i = 0; type(); }, 5000); }
+    };
+    type();
+}
