@@ -2,7 +2,10 @@
    SCRIPT.JS - FINAL WORKING VERSION
    ====================================================== */
 
-// --- IMMEDIATE FIX: Page ko turant dikhao ---
+// ⚠️ IMPORTANT: Paste your API Key here if you want Chatbot/Search to work
+const GEMINI_API_KEY = ""; 
+
+// --- IMMEDIATE FIX: Force page visibility immediately ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
@@ -89,11 +92,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 let rawData = await response.json();
 
-                // Array Check Logic
+                // Smart Check: Is it a List or an Object?
                 if (Array.isArray(rawData)) {
                     namesData = rawData;
                 } else {
-                    // Agar galti se Object format abhi bhi hai
+                    // Try to find the array inside the object
                     const values = Object.values(rawData);
                     const found = values.find(v => Array.isArray(v));
                     namesData = found || [];
@@ -103,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch (error) {
                 console.error("Error:", error);
-                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading ${fileName}.</p>`;
+                if(nameListContainer) nameListContainer.innerHTML = `<p style="color:red">Error loading ${fileName}.<br>Check if file exists.</p>`;
             }
         }
 
@@ -137,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!Array.isArray(namesData)) return;
 
-            // Filter Logic
+            // Filter Logic (Case Insensitive)
             const filtered = namesData.filter(n => 
                 n.name && n.name.toUpperCase().startsWith(currentLetter)
             );
@@ -191,7 +194,61 @@ document.addEventListener("DOMContentLoaded", () => {
         loadNames("Boy");
     }
 
-    // --- CHATBOT PLACEHOLDER ---
+    // ======================================================
+    // HERO SEARCH & CHATBOT (API BASED)
+    // ======================================================
+    
+    // Hero Search
+    async function handleHeroSearch() {
+        const heroInput = document.getElementById('hero-search-input');
+        if (!heroInput) return;
+        const nameToSearch = heroInput.value.trim();
+        if (!nameToSearch) return;
+
+        const nameFinderSection = document.getElementById('name-finder');
+        if (nameFinderSection) {
+            // Scroll to section
+            const header = document.querySelector('header');
+            const offset = nameFinderSection.getBoundingClientRect().top + window.scrollY - (header ? header.offsetHeight : 0) - 20;
+            window.scrollTo({ top: offset, behavior: 'smooth' });
+
+            // Show Loading in Details
+            const listSection = document.querySelector('.name-list-container');
+            const detailsSection = document.querySelector('.name-details-container');
+            const detailsBox = document.querySelector('.name-details');
+            
+            if(listSection) listSection.style.display = 'none';
+            if(detailsSection) detailsSection.style.display = 'block';
+            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching API...</div>';
+
+            // API Call
+            try {
+                if(!GEMINI_API_KEY) throw new Error("API Key missing");
+                
+                const prompt = `Provide meaning and origin for name '${nameToSearch}'`;
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                
+                const data = await response.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "No details found.";
+                
+                detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>${text.replace(/\n/g, "<br>")}</p>`;
+
+            } catch(e) {
+                if(detailsBox) detailsBox.innerHTML = `<h2>${nameToSearch}</h2><p>Could not fetch details (Check API Key).</p>`;
+            }
+        }
+    }
+
+    const heroBtn = document.getElementById('hero-search-btn');
+    const heroInput = document.getElementById('hero-search-input');
+    if(heroBtn) heroBtn.onclick = handleHeroSearch;
+    if(heroInput) heroInput.onkeypress = (e) => { if(e.key === "Enter") handleHeroSearch(); };
+
+    // Chatbot
     if (document.getElementById("chatbox")) {
         const sendBtn = document.getElementById("sendBtn");
         const userInput = document.getElementById("userInput");
@@ -200,10 +257,17 @@ document.addEventListener("DOMContentLoaded", () => {
         function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
+            
+            // Add User Message
             chatbox.innerHTML += `<div class="message user">${text}</div>`;
             userInput.value = "";
             chatbox.scrollTop = chatbox.scrollHeight;
-            chatbox.innerHTML += `<div class="message bot">For AI Chat, please add API Key in script.js</div>`;
+
+            // Add Bot Message
+            setTimeout(() => {
+                chatbox.innerHTML += `<div class="message bot">For AI Chat, please add API Key in script.js</div>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }, 500);
         }
         if(sendBtn) sendBtn.onclick = sendMessage;
         if(userInput) userInput.onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
