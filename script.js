@@ -124,6 +124,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
             if (text) el.textContent = text;
         });
+        const inp = document.getElementById("hero-search-input");
+        if(inp) inp.placeholder = lang === "hi" ? "उदा: आरव..." : "e.g., Aarav...";
     }
     const langBtn = document.getElementById("language-toggle");
     if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
@@ -311,5 +313,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
         generateAlphabet();
         loadNames("Boy");
+    }
+
+    // --- CHATBOT (Simple UI) ---
+    if(document.getElementById("chatbox")) {
+        const btn = document.getElementById("sendBtn");
+        const inp = document.getElementById("userInput");
+        const box = document.getElementById("chatbox");
+        const send = () => {
+            if(!inp.value.trim()) return;
+            box.innerHTML += `<div class="message user">${inp.value}</div>`;
+            inp.value = "";
+            box.scrollTop = box.scrollHeight;
+            box.innerHTML += `<div class="message bot">For AI chat, please add API Key.</div>`;
+        };
+        if(btn) btn.onclick = send;
+        if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
     }
 });
