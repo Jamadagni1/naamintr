@@ -442,3 +442,19 @@ function initScrollToTop() {
     
     btn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
 }
+// ======================================================
+// 7. PRELOADER FIX (Add this at the bottom)
+// ======================================================
+window.addEventListener('load', () => {
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        // थोड़ा फेड-आउट इफेक्ट ताकि झटका न लगे
+        preloader.style.transition = 'opacity 0.5s ease';
+        preloader.style.opacity = '0';
+        
+        // एनीमेशन पूरा होने के बाद उसे गायब कर दें
+        setTimeout(() => {
+            preloader.style.display = 'none';
+        }, 500);
+    }
+});
