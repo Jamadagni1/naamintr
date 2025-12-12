@@ -1,177 +1,310 @@
+/* ======================================================
+   SCRIPT.JS - RESTORED FEATURES + SMART JSON ENGINE
+   ====================================================== */
+
+// Force Visibility
+document.body.style.visibility = "visible";
+document.body.style.opacity = "1";
+
+const GEMINI_API_KEY = ""; // API Key
+
+// 🌟 ASTRO ENGINE (To calculate missing details)
 class AstroEngine {
     constructor() {
-        // 1. अंक ज्योतिष मैपिंग (Chaldean Method)
-        this.numerologyMap = {
-            'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
-            'B': 2, 'K': 2, 'R': 2,
-            'C': 3, 'G': 3, 'L': 3, 'S': 3,
-            'D': 4, 'M': 4, 'T': 4,
-            'E': 5, 'H': 5, 'N': 5, 'X': 5,
-            'U': 6, 'V': 6, 'W': 6,
-            'O': 7, 'Z': 7,
-            'F': 8, 'P': 8
-        };
-
-        // 2. राशि और नक्षत्र मैपिंग (Avakahada Chakra Sounds)
+        this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
         this.rashiMap = [
-            {
-                rashi: "मेष (Aries)",
-                letters: ["chu", "che", "cho", "la", "li", "lu", "le", "lo", "a"],
-                nakshatras: ["Ashwini", "Bharani", "Krittika (1)"],
-                phal: "साहसी, ऊर्जावान और नेतृत्व करने वाला।"
-            },
-            {
-                rashi: "वृषभ (Taurus)",
-                letters: ["i", "ee", "u", "oo", "e", "o", "va", "vi", "vu", "ve", "vo"],
-                nakshatras: ["Krittika (2-4)", "Rohini", "Mrigashira (1-2)"],
-                phal: "शांत, विश्वसनीय और कला प्रेमी।"
-            },
-            {
-                rashi: "मिथुन (Gemini)",
-                letters: ["ka", "ki", "ku", "gh", "ng", "ch", "ke", "ko", "ha"],
-                nakshatras: ["Mrigashira (3-4)", "Ardra", "Punarvasu (1-3)"],
-                phal: "बुद्धिमान, वाचाल और बहुमुखी प्रतिभा वाला।"
-            },
-            {
-                rashi: "कर्क (Cancer)",
-                letters: ["hi", "hu", "he", "ho", "da", "di", "du", "de", "do"],
-                nakshatras: ["Punarvasu (4)", "Pushya", "Ashlesha"],
-                phal: "भावुक, संवेदनशील और परिवार प्रेमी।"
-            },
-            {
-                rashi: "सिंह (Leo)",
-                letters: ["ma", "mi", "mu", "me", "mo", "ta", "ti", "tu", "te"],
-                nakshatras: ["Magha", "Purva Phalguni", "Uttara Phalguni (1)"],
-                phal: "आत्मविश्वासी, उदार और राजा जैसा स्वभाव।"
-            },
-            {
-                rashi: "कन्या (Virgo)",
-                letters: ["to", "pa", "pi", "pu", "sha", "na", "th", "pe", "po"],
-                nakshatras: ["Uttara Phalguni (2-4)", "Hasta", "Chitra (1-2)"],
-                phal: "विश्लेषण करने वाला, व्यावहारिक और मेहनती।"
-            },
-            {
-                rashi: "तुला (Libra)",
-                letters: ["ra", "ri", "ru", "re", "ro", "ta", "ti", "tu", "te"], 
-                nakshatras: ["Chitra (3-4)", "Swati", "Vishakha (1-3)"],
-                phal: "न्यायप्रिय, संतुलित और मिलनसार।"
-            },
-            {
-                rashi: "वृश्चिक (Scorpio)",
-                letters: ["to", "na", "ni", "nu", "ne", "no", "ya", "yi", "yu"],
-                nakshatras: ["Vishakha (4)", "Anuradha", "Jyeshtha"],
-                phal: "तीव्र, रहस्यमयी और दृढ़ निश्चय वाला।"
-            },
-            {
-                rashi: "धनु (Sagittarius)",
-                letters: ["ye", "yo", "bha", "bhi", "bhu", "dha", "pha", "dha", "bhe"],
-                nakshatras: ["Mula", "Purva Ashadha", "Uttara Ashadha (1)"],
-                phal: "आशावादी, दार्शनिक और स्वतंत्र।"
-            },
-            {
-                rashi: "मकर (Capricorn)",
-                letters: ["bho", "ja", "ji", "ju", "je", "jo", "kha", "ga", "gi"],
-                nakshatras: ["Uttara Ashadha (2-4)", "Shravana", "Dhanishtha (1-2)"],
-                phal: "महत्वाकांक्षी, अनुशासित और धैर्यवान।"
-            },
-            {
-                rashi: "कुम्भ (Aquarius)",
-                letters: ["gu", "ge", "go", "sa", "si", "su", "se", "so", "da"],
-                nakshatras: ["Dhanishtha (3-4)", "Shatabhisha", "Purva Bhadrapada (1-3)"],
-                phal: "नवीन सोच वाला, मानवीय और मित्रवत।"
-            },
-            {
-                rashi: "मीन (Pisces)",
-                letters: ["di", "du", "th", "jha", "yna", "de", "do", "cha", "chi"],
-                nakshatras: ["Purva Bhadrapada (4)", "Uttara Bhadrapada", "Revati"],
-                phal: "दयालु, आध्यात्मिक और कल्पनाशील।"
-            }
+            { rashi: "मेष (Aries)", letters: ["chu","che","cho","la","li","lu","le","lo","a"], nakshatras: ["Ashwini","Bharani","Krittika"], phal: "साहसी, ऊर्जावान" },
+            { rashi: "वृषभ (Taurus)", letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], nakshatras: ["Krittika","Rohini","Mrigashira"], phal: "शांत, विश्वसनीय" },
+            { rashi: "मिथुन (Gemini)", letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], nakshatras: ["Mrigashira","Ardra","Punarvasu"], phal: "बुद्धिमान, वाचाल" },
+            { rashi: "कर्क (Cancer)", letters: ["hi","hu","he","ho","da","di","du","de","do"], nakshatras: ["Punarvasu","Pushya","Ashlesha"], phal: "भावुक, संवेदनशील" },
+            { rashi: "सिंह (Leo)", letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], phal: "आत्मविश्वासी, उदार" },
+            { rashi: "कन्या (Virgo)", letters: ["to","pa","pi","pu","sha","na","th","pe","po"], nakshatras: ["Uttara Phalguni","Hasta","Chitra"], phal: "व्यावहारिक, मेहनती" },
+            { rashi: "तुला (Libra)", letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], nakshatras: ["Chitra","Swati","Vishakha"], phal: "न्यायप्रिय, संतुलित" },
+            { rashi: "वृश्चिक (Scorpio)", letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], nakshatras: ["Vishakha","Anuradha","Jyeshtha"], phal: "तीव्र, रहस्यमयी" },
+            { rashi: "धनु (Sagittarius)", letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], phal: "आशावादी, दार्शनिक" },
+            { rashi: "मकर (Capricorn)", letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], phal: "महत्वाकांक्षी, धैर्यवान" },
+            { rashi: "कुम्भ (Aquarius)", letters: ["gu","ge","go","sa","si","su","se","so","da"], nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], phal: "नवीन सोच वाला" },
+            { rashi: "मीन (Pisces)", letters: ["di","du","th","jha","yna","de","do","cha","chi"], nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], phal: "दयालु, आध्यात्मिक" }
         ];
-
-        // 3. (NEW) सम्पूर्ण ज्योतिष फल (ग्रह, रंग और दिन)
         this.astroDetails = {
-            1: { planet: "सूर्य (Sun)", color: "सुनहरा, नारंगी (Golden, Orange)", day: "रविवार (Sunday)", trait: "नेतृत्व क्षमता" },
-            2: { planet: "चन्द्र (Moon)", color: "सफेद, सिल्वर (White, Silver)", day: "सोमवार (Monday)", trait: "शांतिप्रिय" },
-            3: { planet: "बृहस्पति (Jupiter)", color: "पीला (Yellow)", day: "गुरुवार (Thursday)", trait: "ज्ञान और भाग्य" },
-            4: { planet: "राहू (Rahu)", color: "नीला, भूरा (Blue, Grey)", day: "शनिवार (Saturday)", trait: "व्यावहारिक और अलग सोच" },
-            5: { planet: "बुध (Mercury)", color: "हरा (Green)", day: "बुधवार (Wednesday)", trait: "बुद्धि और संचार" },
-            6: { planet: "शुक्र (Venus)", color: "सफेद, गुलाबी (White, Pink)", day: "शुक्रवार (Friday)", trait: "प्रेम और कला" },
-            7: { planet: "केतु (Ketu)", color: "चितकबरा (Multi-color)", day: "मंगलवार (Tuesday)", trait: "आध्यात्मिक" },
-            8: { planet: "शनि (Saturn)", color: "काला, गहरा नीला (Black, Dark Blue)", day: "शनिवार (Saturday)", trait: "न्याय और मेहनत" },
-            9: { planet: "मंगल (Mars)", color: "लाल (Red)", day: "मंगलवार (Tuesday)", trait: "ऊर्जा और साहस" }
+            1: { planet: "Sun", color: "Golden" }, 2: { planet: "Moon", color: "White" }, 3: { planet: "Jupiter", color: "Yellow" },
+            4: { planet: "Rahu", color: "Blue" }, 5: { planet: "Mercury", color: "Green" }, 6: { planet: "Venus", color: "Pink" },
+            7: { planet: "Ketu", color: "Multi" }, 8: { planet: "Saturn", color: "Black" }, 9: { planet: "Mars", color: "Red" }
         };
     }
-
-    // --- Core Functions ---
-
     calculateNumerology(name) {
-        let cleanName = name.toUpperCase().replace(/[^A-Z]/g, '');
-        let total = 0;
-        for (let char of cleanName) {
-            total += this.numerologyMap[char] || 0;
-        }
-        while (total > 9) {
-            let sum = 0;
-            while (total > 0) {
-                sum += total % 10;
-                total = Math.floor(total / 10);
-            }
-            total = sum;
-        }
-        return total;
+        if(!name) return 1;
+        let total=0, clean=name.toUpperCase().replace(/[^A-Z]/g,'');
+        for(let c of clean) total+=this.numerologyMap[c]||0;
+        while(total>9){ let s=0; while(total>0){s+=total%10; total=Math.floor(total/10);} total=s; }
+        return total||1;
     }
-
     calculateRashi(name) {
-        let cleanName = name.toLowerCase().trim();
-        for (let rashiObj of this.rashiMap) {
-            for (let sound of rashiObj.letters) {
-                if (cleanName.startsWith(sound)) {
-                    return rashiObj;
-                }
-            }
-        }
-        return {
-            rashi: "Unknown",
-            nakshatras: [],
-            phal: "General info not available."
-        };
+        if(!name) return this.rashiMap[0];
+        let n=name.toLowerCase().trim();
+        for(let r of this.rashiMap){ for(let l of r.letters) if(n.startsWith(l)) return r; }
+        return this.rashiMap[0];
     }
-
-    // --- Main Processor ---
-    processName(nameData) {
-        const num = this.calculateNumerology(nameData.name);
-        const rashiDetails = this.calculateRashi(nameData.name);
-        
-        // लकी डिटेल्स निकालना
-        const luckyInfo = this.astroDetails[num] || this.astroDetails[1]; // Fallback to Sun if error
-
+    processName(data) {
+        let safeName = data.name || data.Name;
+        if(!safeName) return null;
+        const num = this.calculateNumerology(safeName);
+        const rashi = this.calculateRashi(safeName);
+        const astro = this.astroDetails[num] || this.astroDetails[1];
         return {
-            Name: nameData.name,
-            Meaning: nameData.meaning,
-            
-            // --- Astrology Data ---
-            Rashi: rashiDetails.rashi,
-            Nakshatra_Group: rashiDetails.nakshatras.join(", "),
-            Rashiphal: rashiDetails.phal,
-            
-            // --- Numerology & Lucky Factors ---
-            Lucky_Number: num,
-            Planet: luckyInfo.planet,
-            Lucky_Color: luckyInfo.color,
-            Lucky_Day: luckyInfo.day,
-            Key_Trait: luckyInfo.trait
+            ...data, name: safeName,
+            meaning: data.meaning || "Meaning available in database.",
+            rashi: rashi.rashi, nakshatra: rashi.nakshatras.join(", "), phal: rashi.phal,
+            num: num, planet: astro.planet, color: astro.color
         };
     }
 }
 
-// --- EXAMPLE USAGE ---
-
 const engine = new AstroEngine();
 
-const sampleData = [
-  { "name": "Santosh", "meaning": "Satisfaction" },
-  { "name": "Ramesh", "meaning": "Lord Vishnu" }
-];
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // 1. Header Logic
+    const header = document.querySelector('header');
+    if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
-const result = sampleData.map(item => engine.processName(item));
-console.log(JSON.stringify(result, null, 2));
+    // 2. Typing Effect (RESTORED)
+    const typeElement = document.getElementById("naamin-main-title-typing");
+    if (typeElement) {
+        const text = "Naamin";
+        let i = 0;
+        (function type() {
+            typeElement.innerHTML = `<span class="naamin-naam">${text.slice(0, 4)}</span><span class="naamin-in">${text.slice(4, i++)}</span>`;
+            if (i <= text.length) setTimeout(type, 150); else setTimeout(() => { i = 0; type(); }, 3000);
+        })();
+    }
+
+    // 3. Theme Logic
+    const themeBtn = document.getElementById("theme-toggle");
+    if(themeBtn) {
+        const saved = localStorage.getItem("theme") || "light";
+        document.body.setAttribute("data-theme", saved);
+        themeBtn.innerHTML = saved === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        themeBtn.onclick = () => {
+            const next = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+            document.body.setAttribute("data-theme", next);
+            localStorage.setItem("theme", next);
+            themeBtn.innerHTML = next === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        };
+    }
+
+    // 4. Language Logic
+    function updateContent(lang) {
+        document.documentElement.lang = lang;
+        localStorage.setItem("language", lang);
+        document.querySelectorAll("[data-en]").forEach(el => {
+            const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
+            if (text) el.textContent = text;
+        });
+        const inp = document.getElementById("hero-search-input");
+        if(inp) inp.placeholder = lang === "hi" ? "उदा: आरव..." : "e.g., Aarav...";
+    }
+    const langBtn = document.getElementById("language-toggle");
+    if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
+    updateContent(localStorage.getItem("language") || "en");
+
+    // 5. Mobile Menu
+    const hamburger = document.getElementById("hamburger-menu");
+    const nav = document.getElementById("main-nav");
+    if(hamburger && nav) {
+        hamburger.onclick = (e) => { e.stopPropagation(); hamburger.classList.toggle("active"); nav.classList.toggle("active"); };
+        document.onclick = (e) => { if (nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
+    }
+
+    // 6. Scroll To Top
+    const scrollBtn = document.getElementById("scrollToTopBtn");
+    if (scrollBtn) {
+        window.addEventListener("scroll", () => {
+            scrollBtn.classList.toggle("show", window.scrollY > 300);
+            scrollBtn.style.opacity = window.scrollY > 300 ? "1" : "0";
+            scrollBtn.style.visibility = window.scrollY > 300 ? "visible" : "hidden";
+        });
+        scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // 7. Show Details Helper
+    function showDetails(box, data, gender="Unknown") {
+        if(!box || !data) return;
+        box.innerHTML = `
+            <h2>${data.name}</h2>
+            <div class="detail-grid" style="text-align: left; margin-top: 20px;">
+                <p><strong>Meaning:</strong> ${data.meaning}</p>
+                <p><strong>Gender:</strong> ${data.gender || gender}</p>
+                <p><strong>Origin:</strong> ${data.origin || 'Sanskrit/Indian'}</p>
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+                <h3>🔮 Vedic Astrology</h3>
+                <p><strong>Rashi:</strong> ${data.rashi}</p>
+                <p><strong>Nakshatra:</strong> ${data.nakshatra}</p>
+                <p><strong>Personality:</strong> ${data.phal}</p>
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+                <h3>🔢 Numerology</h3>
+                <p><strong>Number:</strong> ${data.num}</p>
+                <p><strong>Planet:</strong> ${data.planet}</p>
+                <p><strong>Lucky Color:</strong> ${data.color}</p>
+            </div>
+        `;
+    }
+
+    // ======================================================
+    // HERO SEARCH (JSON BASED)
+    // ======================================================
+    async function handleHeroSearch() {
+        const input = document.getElementById('hero-search-input');
+        if(!input || !input.value.trim()) return;
+        const term = input.value.trim().toLowerCase();
+
+        const section = document.getElementById('name-finder');
+        const detailsBox = document.querySelector('.name-details');
+        const listContainer = document.querySelector('.name-list-container');
+        const detailsContainer = document.querySelector('.name-details-container');
+
+        if(section) {
+            window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
+            if(listContainer) listContainer.style.display = 'none';
+            if(detailsContainer) detailsContainer.style.display = 'block';
+            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching Database...</div>';
+
+            try {
+                const [b, g] = await Promise.all([ 
+                    fetch('bnames.json').then(r => r.ok?r.json():[]), 
+                    fetch('gnames.json').then(r => r.ok?r.json():[]) 
+                ]);
+                const all = [].concat(b, g).flatMap(i => i.name ? i : (Object.values(i).find(v=>Array.isArray(v))||[]));
+                const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
+
+                let dataToProcess;
+                if(found) {
+                    dataToProcess = found;
+                } else {
+                    let displayTerm = term.charAt(0).toUpperCase() + term.slice(1);
+                    dataToProcess = { 
+                        name: displayTerm, 
+                        meaning: "Not found in database (Auto-Calculated Analysis)", 
+                        gender: "Unknown", 
+                        origin: "Unknown" 
+                    };
+                }
+                const smartData = engine.processName(dataToProcess);
+                showDetails(detailsBox, smartData, dataToProcess.gender);
+            } catch(e) { console.error(e); detailsBox.innerHTML = "<p>Search error.</p>"; }
+        }
+    }
+    const sBtn = document.getElementById('hero-search-btn');
+    const sInp = document.getElementById('hero-search-input');
+    if(sBtn) sBtn.onclick = handleHeroSearch;
+    if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
+
+    // ======================================================
+    // NAME FINDER (A-Z)
+    // ======================================================
+    const nameFinderSection = document.getElementById('name-finder');
+    if (nameFinderSection) {
+        const alphabetContainer = document.querySelector('.alphabet-selector');
+        const nameListContainer = document.querySelector('.name-list');
+        const nameDetailsBox = document.querySelector('.name-details');
+        const nameDetailsContainer = document.querySelector('.name-details-container');
+        const genderBtns = document.querySelectorAll('.gender-btn');
+        const backBtn = document.querySelector('.back-btn');
+        
+        let currentGender = "Boy";
+        let currentLetter = "A";
+        let namesData = [];
+
+        async function loadNames(gender) {
+            const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
+            try {
+                if(nameListContainer) nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
+                const response = await fetch(fileName);
+                if (!response.ok) throw new Error("File missing");
+                let rawData = await response.json();
+                if (Array.isArray(rawData)) { namesData = rawData; } 
+                else { namesData = Object.values(rawData).find(v => Array.isArray(v)) || []; }
+                renderNames();
+            } catch (error) { if(nameListContainer) nameListContainer.innerHTML = `<p>Error loading data.</p>`; }
+        }
+
+        function generateAlphabet() {
+            if(!alphabetContainer) return;
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+            alphabetContainer.innerHTML = "";
+            chars.forEach(char => {
+                const btn = document.createElement("button");
+                btn.className = `alphabet-btn ${char === currentLetter ? 'active' : ''}`;
+                btn.textContent = char;
+                btn.onclick = () => {
+                    document.querySelectorAll('.alphabet-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentLetter = char;
+                    renderNames();
+                };
+                alphabetContainer.appendChild(btn);
+            });
+        }
+
+        function renderNames() {
+            if(!nameListContainer) return;
+            nameListContainer.innerHTML = "";
+            document.querySelector('.name-list-container').style.display = 'block';
+            nameDetailsContainer.style.display = 'none';
+
+            if (!Array.isArray(namesData)) return;
+            const filtered = namesData.filter(n => {
+                let nName = n.name || n.Name;
+                return nName && nName.toUpperCase().startsWith(currentLetter);
+            });
+            
+            if (filtered.length === 0) { nameListContainer.innerHTML = `<p>No names found.</p>`; return; }
+
+            filtered.forEach(person => {
+                const div = document.createElement("div");
+                div.className = "name-item";
+                div.textContent = person.name || person.Name;
+                div.onclick = () => {
+                    document.querySelector('.name-list-container').style.display = 'none';
+                    nameDetailsContainer.style.display = 'block';
+                    const smartData = engine.processName(person);
+                    showDetails(nameDetailsBox, smartData, currentGender);
+                };
+                nameListContainer.appendChild(div);
+            });
+        }
+
+        genderBtns.forEach(btn => {
+            btn.onclick = () => {
+                genderBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentGender = btn.dataset.gender;
+                loadNames(currentGender);
+            };
+        });
+
+        if(backBtn) backBtn.onclick = () => {
+            nameDetailsContainer.style.display = 'none';
+            document.querySelector('.name-list-container').style.display = 'block';
+        };
+
+        generateAlphabet();
+        loadNames("Boy");
+    }
+
+    // --- CHATBOT UI ---
+    if(document.getElementById("chatbox")) {
+        const btn = document.getElementById("sendBtn");
+        const inp = document.getElementById("userInput");
+        const box = document.getElementById("chatbox");
+        const send = () => {
+            if(!inp.value.trim()) return;
+            box.innerHTML += `<div class="message user">${inp.value}</div>`;
+            inp.value = "";
+            box.scrollTop = box.scrollHeight;
+            box.innerHTML += `<div class="message bot">For AI chat, please add API Key.</div>`;
+        };
+        if(btn) btn.onclick = send;
+        if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
+    }
+});
