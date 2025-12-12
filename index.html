@@ -3,156 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Naamin - Authentic Sanskrit & AI Naming Solutions</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Lora:ital,wght@0,400;1,400&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Naamin - Naming Solutions</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 </head>
+<body>
 
-<body data-theme="light">
-    <div id="preloader">
-        <div class="loader-logo"><span class="brand-naam">Naam</span><span class="brand-in">in</span></div>
-        <div class="spinner"></div>
-    </div>
+    <div id="preloader"><div class="spinner"></div></div>
 
     <header class="glass-header">
         <div class="container header-container">
-            <a class="header-logo" href="index.html"><span class="header-naam">Naam</span><span class="header-in">in</span></a>
-            
-            <button class="hamburger-menu" id="hamburger-menu">
-                <span class="line"></span><span class="line"></span><span class="line"></span>
-            </button>
-
-            <nav class="main-nav" id="main-nav">
-                <div class="nav-links">
-                    <a class="nav-items active" href="index.html" data-en="Home" data-hi="होम"></a>
-                    <a class="nav-items" href="about.html" data-en="About" data-hi="हमारे बारे में"></a>
-                    <a class="nav-items" href="services.html" data-en="Services" data-hi="सेवाएं"></a>
-                    <a class="nav-items" href="pricing.html" data-en="Plans" data-hi="योजनाएं"></a>
-                    <a class="nav-items" href="contact.html" data-en="Contact" data-hi="संपर्क"></a>
-                </div>
-            </nav>
-
-            <div class="nav-controls">
-                <button id="theme-toggle" class="control-btn"><i class="fas fa-moon"></i></button>
-                <button id="language-toggle" class="control-btn">ENG/HIN</button>
-            </div>
+            <a href="#" class="logo">Naam<span>in</span></a>
+            <button class="hamburger" id="hamburger"><i class="fas fa-bars"></i></button>
+            <ul class="nav-links">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#name-finder">Name Tool</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
     </header>
 
-    <main>
-        <section id="hero" class="hero-section">
-            <div class="container">
-                <span class="badge" data-en="✨ The Science of Naming" data-hi="✨ नामकरण का विज्ञान"></span>
-                <h1 class="hero-heading">
-                    <span data-en="Discover the Perfect Name" data-hi="सही नाम की खोज करें"></span><br>
-                    <span class="typing-text" id="naamin-main-title-typing"></span>
-                </h1>
-                <p class="hero-subtext" data-en="Blending Vedic astrology with AI precision." data-hi="वैदिक ज्योतिष और ए.आई. की सटीकता का संगम।"></p>
-
-                <div class="hero-search-wrapper">
-                    <div class="search-bar">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" id="hero-search-input" placeholder="Search name (e.g., Aarav)...">
-                        <button id="hero-search-btn" data-en="Analyze" data-hi="विश्लेषण"></button>
-                    </div>
-                </div>
-            </div>
-            <div class="hero-bg-shape shape-1"></div>
-            <div class="hero-bg-shape shape-2"></div>
-        </section>
-
-        <section id="name-finder" class="tool-section">
-            <div class="container text-center">
-                <h2 data-en="Explore Names" data-hi="नाम खोजें"></h2>
-                <div class="glass-card" style="margin-top:30px;">
-                    <div class="filters-container">
-                        <div class="gender-selector">
-                            <button class="gender-btn active" data-gender="Boy"><i class="fas fa-child"></i> Boy</button>
-                            <button class="gender-btn" data-gender="Girl"><i class="fas fa-child-dress"></i> Girl</button>
-                        </div>
-                        <div class="alphabet-scroll-wrapper">
-                            <div class="alphabet-selector" id="alphabet-container"></div>
-                        </div>
-                    </div>
-
-                    <div class="results-area">
-                        <div class="name-grid" id="name-grid-output"></div>
-                        <div class="name-details-container hidden" id="name-detail-view">
-                            <button class="back-btn" id="back-to-list"><i class="fas fa-arrow-left"></i> Back</button>
-                            <div class="detail-card" id="detail-card-content"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section">
-            <div class="container text-center">
-                <h2 data-en="Success Stories" data-hi="सफलता की कहानियां"></h2>
-                <div class="testimonial-grid">
-                    <div class="testimonial-card">
-                        <i class="fas fa-quote-left quote-icon"></i>
-                        <p data-en="Naamin gave us the perfect name 'Syona'." data-hi="नामिन ने हमें 'स्योना' नाम दिया।"></p>
-                        <div class="reviewer-info"><div class="reviewer-img">S</div><div><h4>Smita</h4></div></div>
-                    </div>
-                    <div class="testimonial-card">
-                        <i class="fas fa-quote-left quote-icon"></i>
-                        <p data-en="Loved the numerology report!" data-hi="अंक ज्योतिष रिपोर्ट बहुत पसंद आई!"></p>
-                        <div class="reviewer-info"><div class="reviewer-img">R</div><div><h4>Rahul</h4></div></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section" style="padding: 60px 0;">
-            <div class="container text-center">
-                <h2 data-en="FAQ" data-hi="सामान्य प्रश्न"></h2>
-                <div class="faq-wrapper" style="margin-top:30px;">
-                    <details class="faq-item">
-                        <summary>Is it free? <i class="fas fa-chevron-down"></i></summary>
-                        <div class="faq-content">Yes, basic search is free.</div>
-                    </details>
-                    <details class="faq-item">
-                        <summary>Is it accurate? <i class="fas fa-chevron-down"></i></summary>
-                        <div class="faq-content">We use authentic Vedic algorithms.</div>
-                    </details>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container footer-container">
-            <div>
-                <a href="#" class="footer-logo"><span class="brand-naam">Naam</span><span class="brand-in">in</span></a>
-                <p>Naming the future with wisdom.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                </div>
-            </div>
-            <div class="footer-links">
-                <h4>Links</h4>
-                <ul>
-                    <li><a href="about.html">About</a></li>
-                    <li><a href="contact.html">Contact</a></li>
-                </ul>
+    <section id="hero" class="hero-section">
+        <div class="container">
+            <h1 class="hero-heading">Discover the <span>Perfect Name</span></h1>
+            <p class="hero-sub">Blending Vedic astrology with modern identity.</p>
+            
+            <div class="search-box">
+                <input type="text" placeholder="Search name (e.g. Aarav)...">
+                <button>Search</button>
             </div>
         </div>
-        <div class="footer-bottom">© 2025 Naamin.</div>
+    </section>
+
+    <section id="name-finder" class="tool-section">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom:30px;">Explore Names</h2>
+            
+            <div class="tool-card">
+                <div id="tool-list">
+                    <div class="filters">
+                        <div class="gender-opts">
+                            <button class="g-btn active" data-gen="Boy">Boy</button>
+                            <button class="g-btn" data-gen="Girl">Girl</button>
+                        </div>
+                        <div class="alpha-scroll" id="alphabet"></div>
+                    </div>
+                    <div class="name-grid" id="name-grid">
+                        </div>
+                </div>
+
+                <div id="tool-detail" class="detail-view hidden">
+                    <button class="back-btn" id="back-btn"><i class="fas fa-arrow-left"></i> Back</button>
+                    <div id="detail-content"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="hero-section">
+        <div class="container">
+            <h2>About Us</h2>
+            <p class="hero-sub">We specialize in finding meaningful Sanskrit names using ancient wisdom.</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <a href="#" class="logo">Naam<span>in</span></a>
+            <p style="margin-top:10px; color:#888;">&copy; 2025 Naamin. All rights reserved.</p>
+        </div>
     </footer>
 
-    <a href="https://wa.me/919413678955" class="whatsapp-float" target="_blank"><i class="fab fa-whatsapp"></i></a>
-    <button id="scrollToTopBtn" class="scroll-to-top-btn"><i class="fas fa-arrow-up"></i></button>
-
     <script src="script.js"></script>
-    <style>
-        .whatsapp-float { position: fixed; bottom: 30px; right: 20px; background: #25D366; color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; text-decoration: none; z-index: 1000; }
-        .scroll-to-top-btn { position: fixed; bottom: 90px; right: 20px; width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--primary); color: white; cursor: pointer; display: none; }
-        .scroll-to-top-btn.show { display: block; }
-    </style>
 </body>
 </html>
