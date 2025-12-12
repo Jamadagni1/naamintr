@@ -1,16 +1,12 @@
 /* ======================================================
-   SCRIPT.JS - FINAL LOCAL JSON VERSION
+   SCRIPT.JS - FINAL WORKING VERSION (No API Needed)
    ====================================================== */
 
-// --- 1. Force Page Visibility ---
+// 1. Force Page Visibility (Safety)
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-const GEMINI_API_KEY = ""; // Optional (Sirf agar API use karni ho)
-
-// ======================================================
-// 🌟 ASTRO ENGINE (Calculation Logic)
-// ======================================================
+// 🌟 ASTRO ENGINE CLASS (Logic for Calculation)
 class AstroEngine {
     constructor() {
         this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
@@ -51,11 +47,11 @@ class AstroEngine {
         for(let r of this.rashiMap) {
             for(let l of r.letters) if(n.startsWith(l)) return r;
         }
-        return this.rashiMap[0]; // Fallback
+        return this.rashiMap[0];
     }
 
     processName(data) {
-        // FIX: Undefined error fix
+        // FIX: Handle both 'name' and 'Name' keys to avoid UNDEFINED
         let safeName = data.name || data.Name;
         if(!safeName) return null;
 
@@ -82,17 +78,16 @@ let namesData = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- 1. HEADER PADDING ---
+    // Header Padding
     const header = document.querySelector('header');
     if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
 
-    // --- 2. THEME TOGGLE ---
+    // Theme Toggle
     const themeBtn = document.getElementById("theme-toggle");
     if(themeBtn) {
         const saved = localStorage.getItem("theme") || "light";
         document.body.setAttribute("data-theme", saved);
         themeBtn.innerHTML = saved === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-
         themeBtn.onclick = () => {
             const current = document.body.getAttribute("data-theme");
             const next = current === "dark" ? "light" : "dark";
@@ -102,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
-    // --- 3. MOBILE MENU ---
+    // Mobile Menu
     const hamburger = document.getElementById("hamburger-menu");
     const nav = document.getElementById("main-nav");
     if(hamburger && nav) {
@@ -110,24 +105,18 @@ document.addEventListener("DOMContentLoaded", () => {
         document.onclick = (e) => { if (nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
     }
 
-    // --- 4. SCROLL TO TOP ---
+    // Scroll To Top
     const scrollBtn = document.getElementById("scrollToTopBtn");
     if (scrollBtn) {
         window.addEventListener("scroll", () => {
-            if (window.scrollY > 300) {
-                scrollBtn.classList.add("show");
-                scrollBtn.style.opacity = "1";
-                scrollBtn.style.visibility = "visible";
-            } else {
-                scrollBtn.classList.remove("show");
-                scrollBtn.style.opacity = "0";
-                scrollBtn.style.visibility = "hidden";
-            }
+            scrollBtn.classList.toggle("show", window.scrollY > 300);
+            scrollBtn.style.opacity = window.scrollY > 300 ? "1" : "0";
+            scrollBtn.style.visibility = window.scrollY > 300 ? "visible" : "hidden";
         });
         scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // --- 5. LANGUAGE FIX ---
+    // Language Fix
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
@@ -135,17 +124,16 @@ document.addEventListener("DOMContentLoaded", () => {
             const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
             if (text) el.textContent = text;
         });
-        const inp = document.getElementById("hero-search-input");
-        if(inp) inp.placeholder = lang === "hi" ? "उदा: आरव..." : "e.g., Aarav...";
     }
     const langBtn = document.getElementById("language-toggle");
     if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
     updateContent(localStorage.getItem("language") || "en");
 
-    // --- 6. COMMON FUNCTION TO SHOW DETAILS ---
+    // Helper: Show Details UI
     function showDetails(box, data, gender="Unknown") {
         if(!box || !data) return;
         
+        // Show everything even if JSON is missing it (Smart Engine fills it)
         box.innerHTML = `
             <h2>${data.name}</h2>
             <div class="detail-grid" style="text-align: left; margin-top: 20px;">
@@ -156,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <h3>🔮 Vedic Astrology</h3>
                 <p><strong>Rashi:</strong> ${data.rashi}</p>
                 <p><strong>Nakshatra:</strong> ${data.nakshatra}</p>
-                <p><strong>Traits:</strong> ${data.phal}</p>
+                <p><strong>Personality:</strong> ${data.phal}</p>
                 <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
                 <h3>🔢 Numerology</h3>
                 <p><strong>Number:</strong> ${data.num}</p>
@@ -166,9 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    // ======================================================
-    // SEARCH LOGIC (JSON BASED)
-    // ======================================================
+    // === SEARCH LOGIC (Fixes undefined error) ===
     async function handleHeroSearch() {
         const input = document.getElementById('hero-search-input');
         if(!input || !input.value.trim()) return;
@@ -183,16 +169,15 @@ document.addEventListener("DOMContentLoaded", () => {
             window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
             if(listContainer) listContainer.style.display = 'none';
             if(detailsContainer) detailsContainer.style.display = 'block';
-            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching Database...</div>';
+            if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching...</div>';
 
             try {
-                // LOAD JSON FILES
+                // Load JSON files
                 const [b, g] = await Promise.all([ 
                     fetch('bnames.json').then(r => r.ok?r.json():[]), 
                     fetch('gnames.json').then(r => r.ok?r.json():[]) 
                 ]);
                 
-                // Combine and find
                 const all = [].concat(b, g).flatMap(i => i.name ? i : (Object.values(i).find(v=>Array.isArray(v))||[]));
                 const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
 
@@ -200,10 +185,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(found) {
                     dataToProcess = found;
                 } else {
+                    // Smart handling if name not in DB
                     let displayTerm = term.charAt(0).toUpperCase() + term.slice(1);
                     dataToProcess = { 
                         name: displayTerm, 
-                        meaning: "Not found in database (Auto-Calculated Analysis)", 
+                        meaning: "Auto-Calculated Analysis (Name not in database)", 
                         gender: "Unknown", 
                         origin: "Unknown" 
                     };
@@ -214,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } catch(e) {
                 console.error(e);
-                detailsBox.innerHTML = "<p>Search error. Please check console.</p>";
+                detailsBox.innerHTML = "<p>Search error. Please try again.</p>";
             }
         }
     }
@@ -224,10 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(sBtn) sBtn.onclick = handleHeroSearch;
     if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
 
-
-    // ======================================================
-    // A-Z LIST LOGIC (JSON BASED)
-    // ======================================================
+    // === A-Z LIST LOGIC ===
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
         const alphabetContainer = document.querySelector('.alphabet-selector');
@@ -240,7 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
         let currentGender = "Boy";
         let currentLetter = "A";
 
-        // LOAD JSON FILES
         async function loadNames(gender) {
             const fileName = (gender === "Boy") ? "bnames.json" : "gnames.json";
             try {
@@ -257,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderNames();
             } catch (error) {
                 console.error(error);
-                if(nameListContainer) nameListContainer.innerHTML = `<p>Error loading ${fileName}. Make sure file exists.</p>`;
+                if(nameListContainer) nameListContainer.innerHTML = `<p>Error loading ${fileName}. Check file.</p>`;
             }
         }
 
@@ -305,7 +287,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 div.onclick = () => {
                     if(listSection) listSection.style.display = 'none';
                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
-                    
                     const smartData = engine.processName(person);
                     showDetails(nameDetailsBox, smartData, currentGender);
                 };
@@ -330,21 +311,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
         generateAlphabet();
         loadNames("Boy");
-    }
-
-    // --- CHATBOT (Simple UI) ---
-    if(document.getElementById("chatbox")) {
-        const btn = document.getElementById("sendBtn");
-        const inp = document.getElementById("userInput");
-        const box = document.getElementById("chatbox");
-        const send = () => {
-            if(!inp.value.trim()) return;
-            box.innerHTML += `<div class="message user">${inp.value}</div>`;
-            inp.value = "";
-            box.scrollTop = box.scrollHeight;
-            box.innerHTML += `<div class="message bot">For AI chat, please add API Key.</div>`;
-        };
-        if(btn) btn.onclick = send;
-        if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
     }
 });
