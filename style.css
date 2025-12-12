@@ -199,10 +199,8 @@ section {
     padding: 120px 40px 80px;
     position: relative;
     z-index: 1;
-    /* FIX: Force visibility so page is never blank */
-    opacity: 1 !important; 
-    transform: none !important;
-    visibility: visible !important;
+    opacity: 0;
+    transform: translateY(20px);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
