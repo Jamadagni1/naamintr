@@ -1,3 +1,23 @@
+// ======================================================
+// 0. EMERGENCY PRELOADER REMOVER (Paste at the Top)
+// ======================================================
+document.addEventListener("DOMContentLoaded", () => {
+    // 1. अगर सब सही लोड हो गया तो तुरंत हटाओ
+    const preloader = document.getElementById('preloader');
+    if(preloader) {
+        window.addEventListener('load', () => {
+            preloader.style.opacity = '0';
+            setTimeout(() => { preloader.style.display = 'none'; }, 500);
+        });
+
+        // 2. बैकअप प्लान: अगर 3 सेकंड तक लोड न हो, तो जबरदस्ती हटा दो
+        setTimeout(() => {
+            if(preloader.style.display !== 'none') {
+                preloader.style.display = 'none';
+            }
+        }, 3000);
+    }
+});
 /* ======================================================
    NAAMIN.COM - CORE LOGIC ENGINE
    ====================================================== */
