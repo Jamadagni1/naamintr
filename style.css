@@ -52,12 +52,11 @@ body {
     transition: opacity 0.4s ease-in-out, color 0.5s ease-in-out, background-color 0.5s ease-in-out;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    /* FIX: Force body visible */
+    
+    /* FIX: Force Visibility (Blank Page Solution) */
     opacity: 1 !important;
     visibility: visible !important;
 }
-
-body.fade-out { opacity: 0; }
 
 h1, h2, h3, h4 { font-family: 'Inter', sans-serif; color: var(--text-dark); }
 h2 { font-weight: 800; }
@@ -65,8 +64,8 @@ h3, h4 { font-weight: 700; }
 p { line-height: 1.8; margin-bottom: 1.2rem; font-weight: 500; font-size: 1.1rem; }
 
 :lang(hi) body, :lang(hi) button, :lang(hi) input, :lang(hi) h1, :lang(hi) h2, :lang(hi) h3, :lang(hi) h4, :lang(hi) p { font-family: 'Poppins', 'Inter', sans-serif; }
-:lang(hi) .bot, :lang(hi) .user, :lang(hi) p { line-height: 1.9; }
 
+/* Canvas Container for Three.js (Optional Background) */
 #three-canvas-container {
     position: fixed;
     top: 0;
@@ -76,7 +75,25 @@ p { line-height: 1.8; margin-bottom: 1.2rem; font-weight: 500; font-size: 1.1rem
     z-index: -1;
     overflow: hidden;
     background-color: var(--bg-main-light);
+    pointer-events: none; /* Allows clicking through the background */
 }
+
+/* ================== PRELOADER ================== */
+#preloader {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-main-light); z-index: 9999;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    transition: opacity 0.5s ease;
+}
+.loader-logo { font-size: 3rem; font-weight: 800; margin-bottom: 20px; font-family: 'Inter'; }
+.brand-naam { color: var(--text-dark); }
+.brand-in { color: var(--accent-primary); }
+.spinner {
+    width: 40px; height: 40px; border: 4px solid var(--border-color-light);
+    border-top: 4px solid var(--accent-primary); border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 /* ================== HEADER & NAVIGATION ================== */
 header {
@@ -202,13 +219,11 @@ section {
     padding: 120px 40px 80px;
     position: relative;
     z-index: 1;
-    /* FIX: Blank Page issue resolved here */
-    opacity: 1 !important; 
+    /* FIX: Remove opacity/transform animation to prevent blank sections */
+    opacity: 1 !important;
     transform: none !important;
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    visibility: visible !important;
 }
-
-section.animate-in { opacity: 1; transform: translateY(0); }
 
 .content-wrapper {
     max-width: 1200px;
@@ -626,7 +641,7 @@ section h2::after {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    height: 80vh; /* डेस्कटॉप पर ऊंचाई */
+    height: 80vh;
     max-height: 700px;
 }
 
@@ -640,7 +655,7 @@ section h2::after {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    flex-grow: 1; /* बची हुई जगह को भरता है */
+    flex-grow: 1;
 }
 
 .message {
@@ -669,7 +684,7 @@ section h2::after {
 
 .button-group {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* मोबाइल के लिए बटन छोटे किए गए */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 10px;
 }
 
@@ -677,18 +692,18 @@ section h2::after {
     background: var(--bg-card-light);
     box-shadow: var(--box-shadow-soft);
     color: var(--text-dark);
-    padding: 12px; /* थोड़ी कम पैडिंग */
+    padding: 12px;
     border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    font-size: 0.9rem; /* फॉन्ट साइज छोटा किया गया */
+    font-size: 0.9rem;
     font-family: 'Inter', sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    border: 1px solid var(--border-color-light); /* बॉर्डर पतला किया गया */
+    border: 1px solid var(--border-color-light);
     text-align: center;
 }
 
@@ -717,7 +732,7 @@ section h2::after {
     padding: 8px;
     transition: all 0.3s ease-in-out;
     box-shadow: var(--box-shadow-soft);
-    flex-shrink: 0; /* यह सुनिश्चित करता है कि इसका आकार छोटा न हो */
+    flex-shrink: 0;
 }
 
 .input-area:focus-within {
@@ -758,22 +773,22 @@ section h2::after {
 /* ================== MOBILE OPTIMIZATIONS ================== */
 @media (max-width: 768px) {
     #chatbot-section {
-        padding: 0; /* सेक्शन की बाहरी पैडिंग हटाएं */
+        padding: 0;
     }
 
     #chatbot-section .content-wrapper {
-        padding: 0; /* अंदर की पैडिंग भी हटाएं */
-        height: calc(100vh - var(--header-height)); /* हेडर के नीचे पूरी ऊंचाई ले */
+        padding: 0;
+        height: calc(100vh - var(--header-height));
         border-radius: 0;
         border: none;
         box-shadow: none;
-        background: var(--bg-main-light); /* बैकग्राउंड कलर सेट करें */
+        background: var(--bg-main-light);
     }
 
     .chatbox {
-        border-radius: 0; /* गोल किनारे हटाएं */
+        border-radius: 0;
         border: none;
-        padding: 15px 10px; /* मोबाइल के लिए पैडिंग एडजस्ट करें */
+        padding: 15px 10px;
     }
     
     .button-group, .input-area {
@@ -783,8 +798,8 @@ section h2::after {
     }
     
     .input-area {
-       background: var(--bg-card-light); /* मोबाइल पर बैकग्राउंड सुनिश्चित करें */
-       margin-bottom: 15px; /* नीचे से थोड़ी जगह */
+       background: var(--bg-card-light);
+       margin-bottom: 15px;
     }
 }
 
