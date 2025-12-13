@@ -1,8 +1,9 @@
 /* ======================================================
-   SCRIPT.JS - FINAL FIXED VERSION (Gender & Aura Fix)
+   SCRIPT.JS - FINAL UPGRADED VERSION 
+   (Added: Numerology Phal, Lucky Numbers, Rashiphal)
    ====================================================== */
 
-// --- 1. EMERGENCY FIX: Page ko turant dikhao ---
+// --- 1. Force Page Visibility ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
@@ -15,25 +16,105 @@ class AstroEngine {
     constructor() {
         this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
         
+        // Added 'rashiphal' (Forecast) for each Rashi
         this.rashiMap = [
-            { rashi: "मेष (Aries)", letters: ["chu","che","cho","la","li","lu","le","lo","a"], nakshatras: ["Ashwini","Bharani","Krittika"], phal: "साहसी, ऊर्जावान" },
-            { rashi: "वृषभ (Taurus)", letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], nakshatras: ["Krittika","Rohini","Mrigashira"], phal: "शांत, विश्वसनीय" },
-            { rashi: "मिथुन (Gemini)", letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], nakshatras: ["Mrigashira","Ardra","Punarvasu"], phal: "बुद्धिमान, वाचाल" },
-            { rashi: "कर्क (Cancer)", letters: ["hi","hu","he","ho","da","di","du","de","do"], nakshatras: ["Punarvasu","Pushya","Ashlesha"], phal: "भावुक, संवेदनशील" },
-            { rashi: "सिंह (Leo)", letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], phal: "आत्मविश्वासी, उदार" },
-            { rashi: "कन्या (Virgo)", letters: ["to","pa","pi","pu","sha","na","th","pe","po"], nakshatras: ["Uttara Phalguni","Hasta","Chitra"], phal: "व्यावहारिक, मेहनती" },
-            { rashi: "तुला (Libra)", letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], nakshatras: ["Chitra","Swati","Vishakha"], phal: "न्यायप्रिय, संतुलित" },
-            { rashi: "वृश्चिक (Scorpio)", letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], nakshatras: ["Vishakha","Anuradha","Jyeshtha"], phal: "तीव्र, रहस्यमयी" },
-            { rashi: "धनु (Sagittarius)", letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], phal: "आशावादी, दार्शनिक" },
-            { rashi: "मकर (Capricorn)", letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], phal: "महत्वाकांक्षी, धैर्यवान" },
-            { rashi: "कुम्भ (Aquarius)", letters: ["gu","ge","go","sa","si","su","se","so","da"], nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], phal: "नवीन सोच वाला" },
-            { rashi: "मीन (Pisces)", letters: ["di","du","th","jha","yna","de","do","cha","chi"], nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], phal: "दयालु, आध्यात्मिक" }
+            { 
+                rashi: "मेष (Aries)", 
+                letters: ["chu","che","cho","la","li","lu","le","lo","a"], 
+                nakshatras: ["Ashwini","Bharani","Krittika"], 
+                phal: "साहसी, ऊर्जावान और नेतृत्व करने वाला।",
+                rashiphal: "आज का दिन नई शुरुआत के लिए अच्छा है। अपनी ऊर्जा को सही दिशा में लगाएं। स्वास्थ्य उत्तम रहेगा।" 
+            },
+            { 
+                rashi: "वृषभ (Taurus)", 
+                letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], 
+                nakshatras: ["Krittika","Rohini","Mrigashira"], 
+                phal: "शांत, विश्वसनीय और कला प्रेमी।",
+                rashiphal: "धैर्य बनाए रखें, धन लाभ के योग हैं। परिवार के साथ अच्छा समय बीतेगा।" 
+            },
+            { 
+                rashi: "मिथुन (Gemini)", 
+                letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], 
+                nakshatras: ["Mrigashira","Ardra","Punarvasu"], 
+                phal: "बुद्धिमान, वाचाल और बहुमुखी प्रतिभा वाला।",
+                rashiphal: "संचार कौशल से लाभ होगा। किसी पुराने मित्र से मुलाकात हो सकती है।" 
+            },
+            { 
+                rashi: "कर्क (Cancer)", 
+                letters: ["hi","hu","he","ho","da","di","du","de","do"], 
+                nakshatras: ["Punarvasu","Pushya","Ashlesha"], 
+                phal: "भावुक, संवेदनशील और परिवार प्रेमी।",
+                rashiphal: "भावनाओं पर काबू रखें। कार्यक्षेत्र में प्रशंसा मिलेगी। माता के स्वास्थ्य का ध्यान रखें।" 
+            },
+            { 
+                rashi: "सिंह (Leo)", 
+                letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], 
+                nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], 
+                phal: "आत्मविश्वासी, उदार और राजा जैसा स्वभाव।",
+                rashiphal: "आत्मविश्वास बढ़ा रहेगा। मान-सम्मान में वृद्धि होगी। क्रोध से बचें।" 
+            },
+            { 
+                rashi: "कन्या (Virgo)", 
+                letters: ["to","pa","pi","pu","sha","na","th","pe","po"], 
+                nakshatras: ["Uttara Phalguni","Hasta","Chitra"], 
+                phal: "विश्लेषण करने वाला, व्यावहारिक और मेहनती।",
+                rashiphal: "मेहनत का फल मिलेगा। किसी भी दस्तावेज़ पर हस्ताक्षर करने से पहले सोच-विचार कर लें।" 
+            },
+            { 
+                rashi: "तुला (Libra)", 
+                letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], 
+                nakshatras: ["Chitra","Swati","Vishakha"], 
+                phal: "न्यायप्रिय, संतुलित और मिलनसार।",
+                rashiphal: "आज का दिन संतुलन बनाने का है। कला और संगीत में रुचि बढ़ेगी।" 
+            },
+            { 
+                rashi: "वृश्चिक (Scorpio)", 
+                letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], 
+                nakshatras: ["Vishakha","Anuradha","Jyeshtha"], 
+                phal: "तीव्र, रहस्यमयी और दृढ़ निश्चय वाला।",
+                rashiphal: "रुके हुए कार्य पूर्ण होंगे। गुप्त शत्रुओं से सावधान रहें।" 
+            },
+            { 
+                rashi: "धनु (Sagittarius)", 
+                letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], 
+                nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], 
+                phal: "आशावादी, दार्शनिक और स्वतंत्र।",
+                rashiphal: "भाग्य का साथ मिलेगा। धार्मिक कार्यों में रुचि बढ़ेगी। यात्रा के योग हैं।" 
+            },
+            { 
+                rashi: "मकर (Capricorn)", 
+                letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], 
+                nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], 
+                phal: "महत्वाकांक्षी, अनुशासित और धैर्यवान।",
+                rashiphal: "कड़ी मेहनत का समय है। अनुशासन बनाए रखें, सफलता अवश्य मिलेगी।" 
+            },
+            { 
+                rashi: "कुम्भ (Aquarius)", 
+                letters: ["gu","ge","go","sa","si","su","se","so","da"], 
+                nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], 
+                phal: "नवीन सोच वाला, मानवीय और मित्रवत।",
+                rashiphal: "नए विचार आएंगे। समाज सेवा में मन लगेगा। मित्रों का सहयोग प्राप्त होगा।" 
+            },
+            { 
+                rashi: "मीन (Pisces)", 
+                letters: ["di","du","th","jha","yna","de","do","cha","chi"], 
+                nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], 
+                phal: "दयालु, आध्यात्मिक और कल्पनाशील।",
+                rashiphal: "आध्यात्मिक शांति मिलेगी। खर्चों पर नियंत्रण रखें। दिन शुभ है।" 
+            }
         ];
 
+        // Added 'fal' (Prediction) and 'lucky_nos'
         this.astroDetails = {
-            1: { planet: "Sun", color: "Golden" }, 2: { planet: "Moon", color: "White" }, 3: { planet: "Jupiter", color: "Yellow" },
-            4: { planet: "Rahu", color: "Blue" }, 5: { planet: "Mercury", color: "Green" }, 6: { planet: "Venus", color: "Pink" },
-            7: { planet: "Ketu", color: "Multi" }, 8: { planet: "Saturn", color: "Black" }, 9: { planet: "Mars", color: "Red" }
+            1: { planet: "Sun (सूर्य)", color: "Golden", lucky_nos: "1, 2, 3, 9", fal: "आप एक जन्मजात नेता हैं। आप महत्वाकांक्षी और दृढ़ निश्चयी हैं।" },
+            2: { planet: "Moon (चन्द्र)", color: "White", lucky_nos: "2, 6, 7", fal: "आप भावुक, कल्पनाशील और शांतिप्रिय हैं। आप दूसरों का ख्याल रखते हैं।" },
+            3: { planet: "Jupiter (बृहस्पति)", color: "Yellow", lucky_nos: "1, 3, 5, 9", fal: "आप ज्ञानवान, आशावादी और रचनात्मक हैं। आपका सामाजिक दायरा बड़ा होता है।" },
+            4: { planet: "Rahu (राहू)", color: "Blue", lucky_nos: "1, 4, 5, 6", fal: "आप व्यावहारिक, अनुशासित और मेहनती हैं। आप नियमों का पालन करना पसंद करते हैं।" },
+            5: { planet: "Mercury (बुध)", color: "Green", lucky_nos: "1, 5, 6", fal: "आप बुद्धिमान, अनुकूलनीय और स्वतंत्रता प्रेमी हैं। आपको बदलाव पसंद है।" },
+            6: { planet: "Venus (शुक्र)", color: "Pink", lucky_nos: "3, 6, 9", fal: "आप आकर्षक, जिम्मेदार और परिवार प्रेमी हैं। आपको सुंदरता और विलासिता पसंद है।" },
+            7: { planet: "Ketu (केतु)", color: "Multi-color", lucky_nos: "2, 7", fal: "आप विश्लेषणात्मक, आध्यात्मिक और एकांतप्रिय हैं। आप गहरे विचारक हैं।" },
+            8: { planet: "Saturn (शनि)", color: "Black", lucky_nos: "1, 4, 8", fal: "आप महत्वाकांक्षी, धैर्यवान और कार्यकुशल हैं। आप जीवन में उच्च पद प्राप्त करते हैं।" },
+            9: { planet: "Mars (मंगल)", color: "Red", lucky_nos: "3, 6, 9", fal: "आप ऊर्जावान, साहसी और दयालु हैं। आप चुनौतियों का डटकर सामना करते हैं।" }
         };
     }
 
@@ -66,13 +147,18 @@ class AstroEngine {
             ...data,
             name: safeName,
             meaning: data.meaning || data.Meaning || "Meaning available in database.",
-            gender: data.gender || "Unknown", // Pass the gender through
+            gender: data.gender || "Unknown",
+            // Rashi Data
             rashi: rashi.rashi,
             nakshatra: rashi.nakshatras.join(", "),
             phal: rashi.phal,
+            rashiphal: rashi.rashiphal, // Added
+            // Numerology Data
             num: num,
             planet: astro.planet,
-            color: astro.color
+            color: astro.color,
+            luckyNumbers: astro.lucky_nos, // Added
+            numFal: astro.fal // Added
         };
     }
 }
@@ -135,9 +221,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
     updateContent(localStorage.getItem("language") || "en");
 
-    // --- FIX 2: Aura Plan Click Logic ---
-    // Ensure this runs after DOM is ready. Using event delegation is safer.
-    const pricingSection = document.querySelector('.pricing-grid'); // Assuming container has this class
+    // --- FIX: Aura Plan Click Logic ---
+    const pricingSection = document.querySelector('.pricing-grid'); 
     if (pricingSection) {
         pricingSection.addEventListener('click', function(e) {
             const header = e.target.closest('.pricing-card-header');
@@ -149,7 +234,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     } else {
-        // Fallback if grid class missing, direct attach
         const pricingHeaders = document.querySelectorAll(".pricing-card-header");
         pricingHeaders.forEach(header => {
             header.addEventListener("click", () => {
@@ -159,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Helper: Show Details UI
+    // Helper: Show Details UI (UPDATED WITH NEW DATA)
     function showDetails(box, data) {
         if(!box || !data) return;
         
@@ -167,22 +251,34 @@ document.addEventListener("DOMContentLoaded", () => {
             <h2>${data.name}</h2>
             <div class="detail-grid" style="text-align: left; margin-top: 20px;">
                 <p><strong>Meaning:</strong> ${data.meaning}</p>
-                <p><strong>Gender:</strong> ${data.gender}</p> <p><strong>Origin:</strong> ${data.origin || 'Sanskrit/Indian'}</p>
+                <p><strong>Gender:</strong> ${data.gender}</p> 
+                <p><strong>Origin:</strong> ${data.origin || 'Sanskrit/Indian'}</p>
+                
                 <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+                
                 <h3>🔮 Vedic Astrology</h3>
                 <p><strong>Rashi:</strong> ${data.rashi}</p>
                 <p><strong>Nakshatra:</strong> ${data.nakshatra}</p>
                 <p><strong>Personality:</strong> ${data.phal}</p>
+                <p style="margin-top:10px; background: rgba(0,0,0,0.05); padding:10px; border-radius:8px;">
+                    <strong>✨ Rashiphal (Horoscope):</strong><br> ${data.rashiphal}
+                </p>
+                
                 <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
+                
                 <h3>🔢 Numerology</h3>
                 <p><strong>Number:</strong> ${data.num}</p>
                 <p><strong>Planet:</strong> ${data.planet}</p>
                 <p><strong>Lucky Color:</strong> ${data.color}</p>
+                <p><strong>Lucky Numbers:</strong> ${data.luckyNumbers}</p>
+                <p style="margin-top:10px;">
+                    <strong>Prediction:</strong> ${data.numFal}
+                </p>
             </div>
         `;
     }
 
-    // === SEARCH LOGIC (FIX 1: Gender Fix) ===
+    // === SEARCH LOGIC ===
     async function handleHeroSearch() {
         const input = document.getElementById('hero-search-input');
         if(!input || !input.value.trim()) return;
@@ -200,19 +296,15 @@ document.addEventListener("DOMContentLoaded", () => {
             if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching...</div>';
 
             try {
-                // Load and Tag Data
                 const bRes = await fetch('bnames.json');
                 const gRes = await fetch('gnames.json');
-                
                 const bRaw = bRes.ok ? await bRes.json() : [];
                 const gRaw = gRes.ok ? await gRes.json() : [];
 
-                // Flatten and Tag Gender immediately
                 const boys = (Array.isArray(bRaw) ? bRaw : Object.values(bRaw).find(v=>Array.isArray(v))||[]).map(item => ({...item, gender: 'Boy'}));
                 const girls = (Array.isArray(gRaw) ? gRaw : Object.values(gRaw).find(v=>Array.isArray(v))||[]).map(item => ({...item, gender: 'Girl'}));
 
                 const all = [].concat(boys, girls);
-                
                 const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
 
                 let dataToProcess;
@@ -243,7 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(sBtn) sBtn.onclick = handleHeroSearch;
     if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
 
-    // === A-Z LIST LOGIC (FIX 1: Gender Fix) ===
+    // === A-Z LIST LOGIC ===
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
         const alphabetContainer = document.querySelector('.alphabet-selector');
@@ -264,7 +356,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!response.ok) throw new Error("File missing");
                 let rawData = await response.json();
 
-                // Extract Array
                 let rawArray = [];
                 if (Array.isArray(rawData)) {
                     rawArray = rawData;
@@ -272,10 +363,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     rawArray = Object.values(rawData).find(v => Array.isArray(v)) || [];
                 }
 
-                // TAG GENDER HERE based on current selection
                 namesData = rawArray.map(item => ({
                     ...item,
-                    gender: gender // Explicitly set gender based on the file loaded
+                    gender: gender 
                 }));
 
                 renderNames();
@@ -341,7 +431,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.onclick = () => {
                 genderBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                currentGender = btn.dataset.gender; // "Boy" or "Girl"
+                currentGender = btn.dataset.gender; 
                 loadNames(currentGender);
             };
         });
@@ -356,7 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadNames("Boy");
     }
 
-    // --- CHATBOT (Simple UI) ---
+    // --- CHATBOT ---
     if(document.getElementById("chatbox")) {
         const btn = document.getElementById("sendBtn");
         const inp = document.getElementById("userInput");
