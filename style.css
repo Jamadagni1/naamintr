@@ -1070,3 +1070,45 @@ footer {
 #name-finder {
     scroll-margin-top: 100px; /* हेडर की ऊंचाई के लिए अतिरिक्त मार्जिन */
 }
+/* ओवरले कंटेनर - इसे स्क्रीन के ऊपर फिक्स करता है */
+#coming-soon-overlay {
+    position: absolute; /* या fixed अगर पूरी स्क्रीन पर चाहिए */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.85); /* हल्का धुंधला बैकग्राउंड */
+    backdrop-filter: blur(5px); /* ग्लास इफ़ेक्ट */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* बाकी सब चीज़ों के ऊपर */
+    border-radius: 15px; /* अगर चैटबॉट के कोने गोल हैं */
+}
+
+/* टेक्स्ट स्टाइलिंग */
+.coming-soon-text span {
+    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #F97316; /* आपका ब्रांड ऑरेंज कलर */
+    display: inline-block;
+    overflow: hidden; /* टाइपिंग इफ़ेक्ट के लिए */
+    border-right: 3px solid #F97316; /* कर्सर */
+    white-space: nowrap; /* टेक्स्ट को एक लाइन में रखता है */
+    animation: 
+        typing 2s steps(15, end) infinite alternate, 
+        blink-caret 0.75s step-end infinite;
+}
+
+/* टाइपिंग एनीमेशन */
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; } /* टेक्स्ट की चौड़ाई के हिसाब से एडजस्ट करें */
+}
+
+/* कर्सर ब्लिंक एनीमेशन */
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #F97316; }
+}
