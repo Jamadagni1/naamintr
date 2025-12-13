@@ -462,20 +462,4 @@ document.addEventListener("DOMContentLoaded", () => {
         if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
     }
 });
-// जिस बटन पर क्लिक करने से मैसेज दिखाना है
-const featureBtn = document.getElementById('feature-btn-id'); // बटन की ID बदलें
-const overlay = document.getElementById('coming-soon-overlay');
 
-// शुरू में छुपाएं (CSS में display: none कर दें अगर ऐसा चाहिए)
-// overlay.style.display = 'none'; 
-
-if(featureBtn) {
-    featureBtn.addEventListener('click', () => {
-        overlay.style.display = 'flex'; // मैसेज दिखाएं
-        
-        // 3 सेकंड बाद वापस छुपा दें (Optional)
-        setTimeout(() => {
-            overlay.style.display = 'none';
-        }, 3000);
-    });
-}
