@@ -1,21 +1,15 @@
 /* ======================================================
-   SCRIPT.JS - BILINGUAL EDITION (Hindi & English Support)
+   SCRIPT.JS - FINAL UPDATE (Coming Soon Message for Unknown Names)
    ====================================================== */
 
-// --- 1. Force Page Visibility ---
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-const GEMINI_API_KEY = ""; // Optional
-
-// ======================================================
-// 🌟 ASTRO ENGINE (Calculation Logic)
-// ======================================================
+// 🌟 ASTRO ENGINE
 class AstroEngine {
     constructor() {
         this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
         
-        // Rashi Data (English & Hindi)
         this.rashiMap = [
             { 
                 rashi_en: "Aries (Mesh)", rashi_hi: "मेष (Aries)", 
@@ -127,7 +121,7 @@ class AstroEngine {
             }
         ];
 
-        // Numerology Data (English & Hindi)
+        // Numerology Data
         this.astroDetails = {
             1: { 
                 planet_en: "Sun", planet_hi: "सूर्य (Sun)", 
@@ -220,30 +214,29 @@ class AstroEngine {
         const rashi = this.calculateRashi(safeName);
         const astro = this.astroDetails[num] || this.astroDetails[1];
         
-        // Select text based on language
         const isHindi = lang === 'hi';
 
         return {
             ...data,
             name: safeName,
-            meaning: data.meaning || (isHindi ? "डेटाबेस में अर्थ नहीं मिला" : "Meaning not in database"),
+            meaning: data.meaning || (isHindi ? "डेटाबेस में नहीं मिला" : "Meaning not in database"),
             gender: data.gender || "Unknown",
             origin: data.origin || (isHindi ? "संस्कृत/भारतीय" : "Sanskrit/Indian"),
             
-            // Rashi Data (Bilingual)
+            // Rashi Data
             rashi: isHindi ? rashi.rashi_hi : rashi.rashi_en,
             nakshatra: rashi.nakshatras.join(", "),
             phal: isHindi ? rashi.phal_hi : rashi.phal_en,
             rashiphal: isHindi ? rashi.rashiphal_hi : rashi.rashiphal_en,
             
-            // Numerology Data (Bilingual)
+            // Numerology Data
             num: num,
             planet: isHindi ? astro.planet_hi : astro.planet_en,
             color: isHindi ? astro.color_hi : astro.color_en,
             luckyNumbers: astro.lucky_nos,
             numFal: isHindi ? astro.fal_hi : astro.fal_en,
             
-            // Labels for UI (Passed to helper function)
+            // Labels for UI
             labels: {
                 meaning: isHindi ? "अर्थ" : "Meaning",
                 gender: isHindi ? "लिंग" : "Gender",
@@ -315,14 +308,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateContent(lang) {
         document.documentElement.lang = lang;
         localStorage.setItem("language", lang);
-        
-        // Update static text elements
         document.querySelectorAll("[data-en]").forEach(el => {
             const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
             if (text) el.textContent = text;
         });
-        
-        // Update Placeholder
         const inp = document.getElementById("hero-search-input");
         if(inp) inp.placeholder = lang === "hi" ? "उदा: आरव, अद्विक..." : "e.g., Aarav, Advik...";
     }
@@ -331,11 +320,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if(langBtn) langBtn.onclick = () => {
         const newLang = getLanguage() === "hi" ? "en" : "hi";
         updateContent(newLang);
-        // Refresh name details if open
-        const detailsContainer = document.querySelector('.name-details-container');
-        if(detailsContainer && detailsContainer.style.display === 'block') {
-             // Ideally we re-render the current name here, but for simplicity, user can re-click
-        }
     };
     updateContent(getLanguage());
 
@@ -353,21 +337,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Helper: Show Details UI (BILINGUAL)
+    // Helper: Show Details UI
     function showDetails(box, data) {
         if(!box || !data) return;
-        
-        const L = data.labels; // Language specific labels
-
+        const L = data.labels;
         box.innerHTML = `
             <h2>${data.name}</h2>
             <div class="detail-grid" style="text-align: left; margin-top: 20px;">
                 <p><strong>${L.meaning}:</strong> ${data.meaning}</p>
                 <p><strong>${L.gender}:</strong> ${data.gender}</p> 
                 <p><strong>${L.origin}:</strong> ${data.origin}</p>
-                
                 <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                
                 <h3>${L.vedicTitle}</h3>
                 <p><strong>${L.rashi}:</strong> ${data.rashi}</p>
                 <p><strong>${L.nakshatra}:</strong> ${data.nakshatra}</p>
@@ -375,9 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p style="margin-top:10px; background: rgba(0,0,0,0.05); padding:10px; border-radius:8px;">
                     <strong>${L.rashiphalTitle}:</strong><br> ${data.rashiphal}
                 </p>
-                
                 <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-                
                 <h3>${L.numTitle}</h3>
                 <p><strong>${L.number}:</strong> ${data.num}</p>
                 <p><strong>${L.planet}:</strong> ${data.planet}</p>
@@ -419,21 +397,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 const all = [].concat(boys, girls);
                 const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
 
-                let dataToProcess;
                 if(found) {
-                    dataToProcess = found;
+                    const smartData = engine.processName(found, getLanguage());
+                    showDetails(detailsBox, smartData);
                 } else {
-                    let displayTerm = term.charAt(0).toUpperCase() + term.slice(1);
-                    dataToProcess = { 
-                        name: displayTerm, 
-                        meaning: getLanguage() === "hi" ? "डेटाबेस में नहीं (स्वतः गणना)" : "Not in DB (Auto-Analysis)", 
-                        gender: "Unknown", 
-                        origin: "Unknown" 
-                    };
+                    // --- NAME NOT FOUND MESSAGE ---
+                    const isHindi = getLanguage() === 'hi';
+                    const msg = isHindi 
+                        ? "जल्दी आ रहा है, कृपया प्रतीक्षा करें, हम आपके धैर्य की सराहना करते हैं।"
+                        : "Coming soon, please wait, we appreciate your patience.";
+                    
+                    detailsBox.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <i class="fas fa-hourglass-half" style="font-size: 3rem; color: var(--accent-primary); margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--text-dark);">${isHindi ? "परिणाम नहीं मिला" : "No Result Found"}</h3>
+                            <p style="font-size: 1.2rem; color: var(--text-medium); margin-top: 10px;">${msg}</p>
+                        </div>
+                    `;
                 }
-
-                const smartData = engine.processName(dataToProcess, getLanguage());
-                showDetails(detailsBox, smartData);
 
             } catch(e) {
                 console.error(e);
@@ -558,7 +539,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loadNames("Boy");
     }
 
-    // --- COMING SOON LOGIC ---
+    // --- COMING SOON OVERLAY ---
     const featureBtn = document.getElementById('feature-btn-id'); 
     const overlay = document.getElementById('coming-soon-overlay');
 
