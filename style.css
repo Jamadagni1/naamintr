@@ -1121,3 +1121,63 @@ footer {
     from, to { border-color: transparent; }
     50% { border-color: #F97316; }
 }
+
+
+/* ================== VARIABLES ================== */
+:root {
+    --accent-primary: #F97316;
+    --accent-secondary: #EA580C;
+    --accent-gradient: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+    --accent-glow: rgba(249, 115, 22, 0.4);
+    --bg-main-light: #F5F5DC;
+    --bg-card-light: rgba(255, 255, 255, 0.8);
+    --text-dark: #1d1d2c;
+    --text-medium: #5a5a6e;
+    --text-light: #ffffff;
+    --border-color-light: rgba(0, 0, 0, 0.08);
+    --header-height: 70px;
+    --transition-smooth: all 0.3s ease-in-out;
+}
+
+/* ================== HERO TYPING FIX (Naamin) ================== */
+.hero-title {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(3rem, 10vw, 5rem); /* Bada Font Size */
+    font-weight: 900;
+    margin-bottom: 20px;
+    min-height: 1.2em; /* Height fix taaki gayab na ho */
+    line-height: 1.2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Typing Colors - Dono class names support karega */
+.header-naam, .naamin-naam { color: var(--text-dark); }
+.header-in, .naamin-in { 
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ================== SERVICES CARD MOBILE FIX ================== */
+.services-grid {
+    display: grid;
+    /* ✅ FIX: 260px min-width taaki mobile me bahar na jaye */
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+    gap: 30px;
+    padding: 10px;
+}
+
+.service-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+
+/* ... (Baaki CSS waisi hi rakhein) ... */
