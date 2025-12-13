@@ -570,3 +570,41 @@ document.addEventListener("DOMContentLoaded", () => {
         if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
     }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // ✅ FIX: Typing Effect for "Naamin"
+    const typeElement = document.getElementById("naamin-main-title-typing");
+    if (typeElement) {
+        const text = "Naamin";
+        let i = 0;
+        let isDeleting = false;
+        
+        function type() {
+            // Text ka hissa (Slice) nikalo
+            let currentText = text.substring(0, i);
+            
+            // "Naam" alag color me aur "in" alag color me dikhane ka logic
+            let part1 = currentText.length > 4 ? "Naam" : currentText;
+            let part2 = currentText.length > 4 ? currentText.substring(4) : "";
+            
+            // CSS Classes apply karein
+            typeElement.innerHTML = `<span class="header-naam">${part1}</span><span class="header-in">${part2}</span>`;
+
+            if (!isDeleting && i < text.length) {
+                i++;
+                setTimeout(type, 200); // Typing Speed
+            } else if (isDeleting && i > 0) {
+                i--;
+                setTimeout(type, 100); // Deleting Speed
+            } else {
+                // Pause and Reverse
+                isDeleting = !isDeleting;
+                setTimeout(type, isDeleting ? 2000 : 500);
+            }
+        }
+        type(); // Start animation
+    }
+
+    // ... (Baaki JS code waisa hi rakhein) ...
+});
