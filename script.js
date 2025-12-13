@@ -1,9 +1,8 @@
 /* ======================================================
-   SCRIPT.JS - FINAL FIXED VERSION
+   SCRIPT.JS - FINAL FIXED VERSION (Gender & Aura Fix)
    ====================================================== */
 
 // --- 1. EMERGENCY FIX: Page ko turant dikhao ---
-// (Agar HTML me galti se hidden reh gaya ho to ye usse thik kar dega)
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
@@ -56,7 +55,6 @@ class AstroEngine {
     }
 
     processName(data) {
-        // FIX: Handle both 'name' and 'Name' keys to avoid UNDEFINED
         let safeName = data.name || data.Name;
         if(!safeName) return null;
 
@@ -68,6 +66,7 @@ class AstroEngine {
             ...data,
             name: safeName,
             meaning: data.meaning || data.Meaning || "Meaning available in database.",
+            gender: data.gender || "Unknown", // Pass the gender through
             rashi: rashi.rashi,
             nakshatra: rashi.nakshatras.join(", "),
             phal: rashi.phal,
@@ -136,17 +135,39 @@ document.addEventListener("DOMContentLoaded", () => {
     if(langBtn) langBtn.onclick = () => updateContent(localStorage.getItem("language") === "hi" ? "en" : "hi");
     updateContent(localStorage.getItem("language") || "en");
 
+    // --- FIX 2: Aura Plan Click Logic ---
+    // Ensure this runs after DOM is ready. Using event delegation is safer.
+    const pricingSection = document.querySelector('.pricing-grid'); // Assuming container has this class
+    if (pricingSection) {
+        pricingSection.addEventListener('click', function(e) {
+            const header = e.target.closest('.pricing-card-header');
+            if (header) {
+                const card = header.closest('.pricing-card');
+                if (card) {
+                    card.classList.toggle('expanded');
+                }
+            }
+        });
+    } else {
+        // Fallback if grid class missing, direct attach
+        const pricingHeaders = document.querySelectorAll(".pricing-card-header");
+        pricingHeaders.forEach(header => {
+            header.addEventListener("click", () => {
+                const card = header.closest(".pricing-card");
+                if(card) card.classList.toggle("expanded");
+            });
+        });
+    }
+
     // Helper: Show Details UI
-    function showDetails(box, data, gender="Unknown") {
+    function showDetails(box, data) {
         if(!box || !data) return;
         
-        // Show everything even if JSON is missing it (Smart Engine fills it)
         box.innerHTML = `
             <h2>${data.name}</h2>
             <div class="detail-grid" style="text-align: left; margin-top: 20px;">
                 <p><strong>Meaning:</strong> ${data.meaning}</p>
-                <p><strong>Gender:</strong> ${data.gender || gender}</p>
-                <p><strong>Origin:</strong> ${data.origin || 'Sanskrit/Indian'}</p>
+                <p><strong>Gender:</strong> ${data.gender}</p> <p><strong>Origin:</strong> ${data.origin || 'Sanskrit/Indian'}</p>
                 <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
                 <h3>🔮 Vedic Astrology</h3>
                 <p><strong>Rashi:</strong> ${data.rashi}</p>
@@ -161,7 +182,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    // === SEARCH LOGIC (Fixes undefined error) ===
+    // === SEARCH LOGIC (FIX 1: Gender Fix) ===
     async function handleHeroSearch() {
         const input = document.getElementById('hero-search-input');
         if(!input || !input.value.trim()) return;
@@ -179,20 +200,25 @@ document.addEventListener("DOMContentLoaded", () => {
             if(detailsBox) detailsBox.innerHTML = '<div class="spinner">Searching...</div>';
 
             try {
-                // Load JSON files
-                const [b, g] = await Promise.all([ 
-                    fetch('bnames.json').then(r => r.ok?r.json():[]), 
-                    fetch('gnames.json').then(r => r.ok?r.json():[]) 
-                ]);
+                // Load and Tag Data
+                const bRes = await fetch('bnames.json');
+                const gRes = await fetch('gnames.json');
                 
-                const all = [].concat(b, g).flatMap(i => i.name ? i : (Object.values(i).find(v=>Array.isArray(v))||[]));
+                const bRaw = bRes.ok ? await bRes.json() : [];
+                const gRaw = gRes.ok ? await gRes.json() : [];
+
+                // Flatten and Tag Gender immediately
+                const boys = (Array.isArray(bRaw) ? bRaw : Object.values(bRaw).find(v=>Array.isArray(v))||[]).map(item => ({...item, gender: 'Boy'}));
+                const girls = (Array.isArray(gRaw) ? gRaw : Object.values(gRaw).find(v=>Array.isArray(v))||[]).map(item => ({...item, gender: 'Girl'}));
+
+                const all = [].concat(boys, girls);
+                
                 const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
 
                 let dataToProcess;
                 if(found) {
                     dataToProcess = found;
                 } else {
-                    // Smart handling if name not in DB
                     let displayTerm = term.charAt(0).toUpperCase() + term.slice(1);
                     dataToProcess = { 
                         name: displayTerm, 
@@ -203,7 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 const smartData = engine.processName(dataToProcess);
-                showDetails(detailsBox, smartData, dataToProcess.gender);
+                showDetails(detailsBox, smartData);
 
             } catch(e) {
                 console.error(e);
@@ -217,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(sBtn) sBtn.onclick = handleHeroSearch;
     if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
 
-    // === A-Z LIST LOGIC ===
+    // === A-Z LIST LOGIC (FIX 1: Gender Fix) ===
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
         const alphabetContainer = document.querySelector('.alphabet-selector');
@@ -238,11 +264,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!response.ok) throw new Error("File missing");
                 let rawData = await response.json();
 
+                // Extract Array
+                let rawArray = [];
                 if (Array.isArray(rawData)) {
-                    namesData = rawData;
+                    rawArray = rawData;
                 } else {
-                    namesData = Object.values(rawData).find(v => Array.isArray(v)) || [];
+                    rawArray = Object.values(rawData).find(v => Array.isArray(v)) || [];
                 }
+
+                // TAG GENDER HERE based on current selection
+                namesData = rawArray.map(item => ({
+                    ...item,
+                    gender: gender // Explicitly set gender based on the file loaded
+                }));
+
                 renderNames();
             } catch (error) {
                 console.error(error);
@@ -294,8 +329,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 div.onclick = () => {
                     if(listSection) listSection.style.display = 'none';
                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
+                    
                     const smartData = engine.processName(person);
-                    showDetails(nameDetailsBox, smartData, currentGender);
+                    showDetails(nameDetailsBox, smartData);
                 };
                 nameListContainer.appendChild(div);
             });
@@ -305,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.onclick = () => {
                 genderBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                currentGender = btn.dataset.gender;
+                currentGender = btn.dataset.gender; // "Boy" or "Girl"
                 loadNames(currentGender);
             };
         });
