@@ -1,389 +1,230 @@
-/* ================== 1. VARIABLES & THEME ================== */
+/* ================== 1. VARIABLES & COLORS (THEME) ================== */
 :root {
-    /* Brand Colors - Modern Orange Palette */
-    --primary: #FF7E21;       /* Vibrant Orange */
-    --primary-dark: #E65100;  /* Deep Orange */
-    --secondary: #2D3436;     /* Dark Slate */
+    /* Main Brand Colors - Orange & Dark */
+    --primary: #FF7E21;
+    --primary-hover: #E65100;
+    --gradient-orange: linear-gradient(135deg, #FF9F43 0%, #FF7E21 100%);
     
-    /* Gradients */
-    --gradient-accent: linear-gradient(135deg, #FF9F43 0%, #FF7E21 100%);
-    --gradient-glow: linear-gradient(135deg, rgba(255, 126, 33, 0.2), rgba(255, 69, 0, 0.1));
-    
-    /* Light Mode Backgrounds */
-    --bg-body: #FDFBF7;       /* Warm White (Better than stark white) */
+    /* Backgrounds */
+    --bg-body: #F4F7F6;
     --bg-card: #FFFFFF;
-    --bg-glass: rgba(255, 255, 255, 0.85);
+    --bg-chat: #F9F9F9;
     
-    /* Text Colors */
-    --text-main: #1A1A1A;
-    --text-muted: #636E72;
+    /* Text */
+    --text-dark: #1A1A1A;
+    --text-gray: #555555;
     --text-light: #FFFFFF;
     
     /* Borders & Shadows */
-    --border-color: rgba(0, 0, 0, 0.08);
-    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.08);
-    --shadow-glow: 0 15px 35px rgba(255, 126, 33, 0.25);
-    
-    --header-height: 75px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --border: 1px solid rgba(0,0,0,0.1);
+    --shadow: 0 5px 15px rgba(0,0,0,0.08);
+    --radius: 12px;
 }
 
+/* DARK MODE VARIABLES */
 [data-theme="dark"] {
-    /* Dark Mode Fixes - High Contrast */
-    --bg-body: #0F0F12;       /* Rich Black, not pitch black */
-    --bg-card: #1E1E24;       /* Dark Gray Card */
-    --bg-glass: rgba(30, 30, 36, 0.85);
+    --bg-body: #121212;
+    --bg-card: #1E1E1E;
+    --bg-chat: #181818;
     
-    --text-main: #F1F2F6;     /* Off-White for reading */
-    --text-muted: #A4B0BE;    /* Light Gray */
+    --text-dark: #FFFFFF;
+    --text-gray: #CCCCCC;
     
-    --border-color: rgba(255, 255, 255, 0.12);
-    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
-    --shadow-glow: 0 15px 35px rgba(255, 126, 33, 0.15);
+    --border: 1px solid rgba(255,255,255,0.1);
+    --shadow: 0 5px 15px rgba(0,0,0,0.5);
 }
 
 /* ================== 2. GLOBAL RESET ================== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: var(--header-height);
-}
-
 body {
-    font-family: 'Lora', serif; /* Elegant for body text */
+    font-family: 'Poppins', sans-serif;
     background-color: var(--bg-body);
-    color: var(--text-muted);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow-x: hidden;
-    line-height: 1.7;
-    transition: background-color 0.4s ease, color 0.4s ease;
+    color: var(--text-dark);
+    line-height: 1.6;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
-h1, h2, h3, h4, h5, h6 { 
-    font-family: 'Inter', sans-serif; /* Clean for headings */
-    color: var(--text-main);
-    font-weight: 700;
-}
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; }
 
-/* Canvas Background */
+/* Canvas Background Fix */
 #three-canvas-container {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; 
-    opacity: 0.5; pointer-events: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
 }
 
-/* ================== 3. HEADER & NAVIGATION ================== */
+/* ================== 3. HEADER & NAV ================== */
 header {
-    width: 100%;
-    height: var(--header-height);
-    padding: 0 5%;
-    position: fixed;
-    top: 0; left: 0;
+    height: 70px;
+    background: var(--bg-card);
     display: flex; justify-content: space-between; align-items: center;
-    background: var(--bg-glass);
-    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--border-color);
-    z-index: 1000;
-    transition: var(--transition);
+    padding: 0 5%;
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    border-bottom: var(--border);
 }
 
-.header-logo {
-    font-size: 28px; font-weight: 900; text-decoration: none; 
-    font-family: 'Inter', sans-serif; letter-spacing: -0.5px; color: var(--text-main);
-}
-.header-in { background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.header-logo { font-size: 24px; font-weight: 800; color: var(--text-dark); }
+.header-in { color: var(--primary); }
 
-/* Desktop Nav */
-.main-nav { display: flex; align-items: center; gap: 30px; }
-.nav-links { list-style: none; display: flex; gap: 5px; }
+.nav-links { list-style: none; display: flex; gap: 20px; }
+.nav-links a { font-weight: 500; font-size: 0.95rem; color: var(--text-dark); }
+.nav-links a:hover, .nav-links a.active { color: var(--primary); }
 
-.nav-links a {
-    color: var(--text-main); text-decoration: none; font-weight: 500;
-    font-family: 'Inter', sans-serif; padding: 8px 16px;
-    border-radius: 50px; transition: var(--transition);
-    font-size: 0.95rem;
+.header-controls button {
+    background: none; border: 1px solid var(--text-gray); 
+    padding: 5px 10px; border-radius: 20px; cursor: pointer; color: var(--text-dark);
 }
 
-.nav-links a:hover, .nav-links a.active {
-    color: var(--primary);
-    background: rgba(255, 126, 33, 0.08);
+/* Hamburger for Mobile */
+.hamburger-menu { display: none; font-size: 1.5rem; background: none; border: none; color: var(--text-dark); cursor: pointer; }
+
+/* ================== 4. MAIN LAYOUT & CHATBOT ================== */
+main { padding-top: 90px; padding-bottom: 50px; min-height: 100vh; }
+
+#chatbot-section {
+    display: flex; justify-content: center; align-items: center; padding: 0 20px;
 }
 
-/* Theme Toggles */
-.header-controls { display: flex; gap: 10px; align-items: center; }
-#theme-toggle, #language-toggle {
-    background: transparent; border: 1px solid var(--border-color);
-    color: var(--text-main); padding: 8px 12px; border-radius: 50px;
-    cursor: pointer; transition: var(--transition); font-size: 0.9rem;
-}
-#theme-toggle:hover, #language-toggle:hover {
-    border-color: var(--primary); color: var(--primary);
-}
-
-/* Hamburger */
-.hamburger-menu { display: none; background: none; border: none; cursor: pointer; padding: 10px; }
-.hamburger-menu .line { display: block; width: 25px; height: 2px; background: var(--text-main); margin: 5px 0; transition: 0.3s; }
-
-/* ================== 4. BUTTONS & UI ELEMENTS (REQUEST 1) ================== */
-
-/* 🔥 The "Back to List" / Main Action Button - Orange, Big, Attractive */
-.btn-action-large {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--gradient-accent);
-    color: #fff !important;
-    font-family: 'Inter', sans-serif;
-    font-size: 1.2rem;
-    font-weight: 700;
-    padding: 18px 40px;
-    border-radius: 50px;
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    box-shadow: var(--shadow-glow);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    margin-top: 20px;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-action-large:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(255, 126, 33, 0.4);
-}
-
-.btn-action-large i { margin-right: 10px; }
-
-/* Secondary Button (Ghost) */
-.btn-secondary {
-    background: transparent;
-    border: 2px solid var(--border-color);
-    color: var(--text-main);
-    padding: 12px 25px;
-    border-radius: 50px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition);
-}
-.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
-
-/* ================== 5. LAYOUT & CARDS ================== */
+/* Main Container Box */
 .content-wrapper {
-    max-width: 1200px; margin: 0 auto; padding: 40px 20px;
-    position: relative; /* Essential for overlay */
-}
-
-/* Card Style */
-.card-glass {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 40px;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-}
-.card-glass:hover {
-    box-shadow: var(--shadow-md);
-    border-color: rgba(255, 126, 33, 0.3);
-}
-
-/* Title Styling */
-.section-title {
-    font-size: 2.5rem; text-align: center; margin-bottom: 50px;
-    position: relative; padding-bottom: 20px;
-}
-.section-title::after {
-    content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 60px; height: 4px; background: var(--primary); border-radius: 10px;
-}
-
-/* ================== 6. AURA PLAN & PRICING (REQUEST 2) ================== */
-.pricing-section { padding: 80px 0; }
-
-.pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    align-items: center;
-}
-
-.pricing-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 40px;
-    text-align: center;
-    position: relative;
-    transition: var(--transition);
-    overflow: hidden;
-}
-
-/* Highlighted "Aura" Card */
-.pricing-card.highlight {
-    border: 2px solid var(--primary);
-    transform: scale(1.05);
-    box-shadow: var(--shadow-glow);
-    z-index: 2;
-}
-[data-theme="dark"] .pricing-card.highlight {
-    background: linear-gradient(180deg, rgba(255, 126, 33, 0.1) 0%, rgba(30, 30, 36, 1) 100%);
-}
-
-.pricing-badge {
-    position: absolute; top: 20px; right: 20px;
-    background: var(--gradient-accent); color: white;
-    font-size: 0.75rem; font-weight: 700; padding: 5px 12px;
-    border-radius: 20px; text-transform: uppercase;
-}
-
-.price-amount {
-    font-size: 3rem; font-weight: 800; color: var(--text-main);
-    font-family: 'Inter', sans-serif; margin: 20px 0;
-}
-.price-period { font-size: 1rem; color: var(--text-muted); font-weight: 400; }
-
-.pricing-features { list-style: none; margin: 30px 0; text-align: left; }
-.pricing-features li {
-    margin-bottom: 15px; color: var(--text-muted); display: flex; align-items: center; gap: 10px;
-}
-.pricing-features i { color: var(--primary); }
-
-/* ================== 7. CHATBOT SCREEN ================== */
-#chatbot-section { min-height: 85vh; padding-top: 100px; display: flex; justify-content: center; }
-
-#chatbot-section .content-wrapper {
     width: 100%; max-width: 900px; height: 80vh;
-    background: var(--bg-card); border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md); border: 1px solid var(--border-color);
-    display: flex; flex-direction: column; overflow: hidden;
-    padding: 0; /* Remove padding for internal layout */
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: var(--border);
+    
+    /* Layout Setup */
+    display: flex; flex-direction: column; 
+    position: relative; /* Zaroori hai Overlay ke liye */
+    overflow: hidden;
 }
 
 /* Chat Area */
 .chatbox {
-    flex: 1; overflow-y: auto; padding: 30px;
-    background: var(--bg-body); /* Subtle contrast */
-    display: flex; flex-direction: column; gap: 20px;
+    flex: 1; /* Baki bachi space lega */
+    overflow-y: auto;
+    padding: 20px;
+    background: var(--bg-chat);
+    display: flex; flex-direction: column; gap: 15px;
 }
 
-.message {
-    padding: 15px 20px; max-width: 80%; line-height: 1.5; font-size: 1rem;
-    position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+/* Messages */
+.message { padding: 12px 18px; border-radius: 10px; max-width: 80%; font-size: 0.95rem; }
+.user { align-self: flex-end; background: var(--gradient-orange); color: #fff; border-radius: 12px 12px 0 12px; }
+.bot { align-self: flex-start; background: var(--bg-card); border: var(--border); color: var(--text-dark); border-radius: 12px 12px 12px 0; }
+
+/* Buttons inside Chat */
+.button-group {
+    padding: 10px; display: flex; gap: 10px; overflow-x: auto;
+    background: var(--bg-card); border-top: var(--border);
 }
-.message.user {
-    align-self: flex-end;
-    background: var(--gradient-accent);
-    color: white;
-    border-radius: 20px 20px 5px 20px;
+.button-group button {
+    padding: 8px 15px; border-radius: 20px; border: 1px solid var(--primary);
+    background: transparent; color: var(--primary); font-weight: 600; cursor: pointer;
+    white-space: nowrap; flex-shrink: 0;
 }
-.message.bot {
-    align-self: flex-start;
-    background: var(--bg-card);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    border-radius: 20px 20px 20px 5px;
+.button-group button:hover { background: var(--primary); color: #fff; }
+
+/* 🔥 SPECIAL BACK BUTTON (REQUEST 1) */
+#resetChatBtn {
+    background: var(--gradient-orange);
+    color: white !important;
+    border: none;
+    font-size: 1rem;
+    padding: 12px 25px;
+    width: 100%; /* Full width for attention */
+    border-radius: 8px;
+    margin: 5px 0;
+    display: flex; justify-content: center; align-items: center; gap: 10px;
+    box-shadow: 0 4px 10px rgba(255, 126, 33, 0.3);
 }
+#resetChatBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 126, 33, 0.5); }
 
 /* Input Area */
 .input-area {
-    padding: 20px; background: var(--bg-card);
-    border-top: 1px solid var(--border-color);
-    display: flex; gap: 15px; align-items: center;
+    padding: 15px; background: var(--bg-card); border-top: var(--border);
+    display: flex; gap: 10px; align-items: center;
 }
 #userInput {
-    flex: 1; padding: 15px 20px; border-radius: 50px;
-    border: 1px solid var(--border-color); background: var(--bg-body);
-    color: var(--text-main); font-family: 'Inter', sans-serif;
-    outline: none; transition: var(--transition);
+    flex: 1; padding: 12px; border-radius: 25px; border: var(--border);
+    background: var(--bg-body); color: var(--text-dark); outline: none;
 }
-#userInput:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(255, 126, 33, 0.1); }
 #sendBtn {
-    width: 50px; height: 50px; border-radius: 50%;
-    background: var(--gradient-accent); border: none; color: white;
-    font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: var(--transition);
-}
-#sendBtn:hover { transform: scale(1.1); box-shadow: var(--shadow-glow); }
-
-/* Menu Buttons in Chat */
-.button-group { padding: 10px 20px; display: flex; gap: 10px; overflow-x: auto; background: var(--bg-card); }
-.button-group button {
-    white-space: nowrap; padding: 10px 18px; border-radius: 12px;
-    border: 1px solid var(--border-color); background: transparent;
-    color: var(--text-muted); cursor: pointer; transition: var(--transition);
-    font-size: 0.9rem; display: flex; align-items: center; gap: 8px;
-}
-.button-group button:hover {
-    border-color: var(--primary); color: var(--primary); background: rgba(255, 126, 33, 0.05);
+    width: 45px; height: 45px; border-radius: 50%; border: none;
+    background: var(--gradient-orange); color: #fff; cursor: pointer; font-size: 1.2rem;
 }
 
-/* ================== 8. OVERLAY (COMING SOON) ================== */
+/* ================== 5. COMING SOON OVERLAY ================== */
 #coming-soon-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    position: absolute; /* Wrapper ke andar fit hoga */
+    top: 0; left: 0; width: 100%; height: 100%;
+    
+    /* Look */
+    background: rgba(255, 255, 255, 0.7); 
+    backdrop-filter: blur(5px);
+    
+    /* Centering */
     display: flex; justify-content: center; align-items: center;
-    z-index: 100; cursor: not-allowed;
+    z-index: 999; /* Sabse upar */
+    cursor: not-allowed;
 }
-[data-theme="dark"] #coming-soon-overlay { background: rgba(0, 0, 0, 0.7); }
+/* Dark Mode Overlay */
+[data-theme="dark"] #coming-soon-overlay { background: rgba(0,0,0,0.7); }
 
 .coming-soon-text span {
-    font-family: 'Inter', sans-serif; font-size: 2rem; font-weight: 800;
-    color: var(--text-main); border-right: 4px solid var(--primary);
+    font-size: 2rem; font-weight: 800; color: var(--text-dark);
+    border-right: 4px solid var(--primary);
     white-space: nowrap; overflow: hidden; width: 0;
-    animation: typing 3.5s steps(30, end) infinite, blink 0.75s step-end infinite;
+    animation: typing 4s steps(30) infinite;
 }
-@keyframes typing { 0%, 100% { width: 0 } 50%, 90% { width: 320px } }
-@keyframes blink { 50% { border-color: transparent } }
+@keyframes typing { 0%, 100% { width: 0; } 50% { width: 300px; } }
 
-/* ================== 9. PROFESSIONAL FOOTER (REQUEST 4) ================== */
+/* ================== 6. AURA PLAN CARD (REQUEST 2) ================== */
+/* NOTE: Apne HTML me jis div me Aura plan hai, usme class="aura-card" add karein */
+.aura-card {
+    background: var(--bg-card);
+    border: 2px solid var(--primary);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(255, 126, 33, 0.15);
+    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+.aura-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(255, 126, 33, 0.25); }
+
+.aura-card h3 { font-size: 1.8rem; margin-bottom: 10px; }
+.aura-price { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin: 15px 0; }
+
+/* ================== 7. FOOTER PROFESSIONAL (REQUEST 4) ================== */
 footer {
-    background: #111; /* Always dark for professional look */
-    color: #b0b0b0;
-    padding: 80px 0 30px;
+    background: #111111; /* Hamesha Dark */
+    color: #AAAAAA;
+    padding: 60px 20px 20px;
     margin-top: auto;
 }
-/* Force text colors in footer to handle dark theme override */
-footer h3 { color: #fff; font-size: 1.2rem; margin-bottom: 25px; letter-spacing: 0.5px; }
-footer a { color: #b0b0b0; text-decoration: none; transition: 0.3s; display: block; margin-bottom: 12px; font-size: 0.95rem; }
-footer a:hover { color: var(--primary); transform: translateX(5px); }
-footer p { color: #888; font-size: 0.9rem; }
-
 .footer-grid {
+    max-width: 1200px; margin: 0 auto;
     display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 50px; max-width: 1200px; margin: 0 auto; padding: 0 20px;
+    gap: 40px;
 }
-.copyrights {
-    text-align: center; margin-top: 60px; padding-top: 30px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 0.85rem; color: #666;
-}
+footer h3 { color: #FFFFFF; margin-bottom: 20px; font-size: 1.1rem; }
+footer a { display: block; margin-bottom: 10px; transition: 0.3s; }
+footer a:hover { color: var(--primary); padding-left: 5px; }
 
-/* ================== 10. RESPONSIVE ================== */
-@media (max-width: 992px) {
-    .hamburger-menu { display: block; z-index: 1001; }
-    .nav-links {
-        position: fixed; top: 0; right: -100%; width: 80%; height: 100vh;
-        background: var(--bg-card); flex-direction: column;
-        justify-content: center; padding: 40px; box-shadow: -10px 0 30px rgba(0,0,0,0.2);
-        transition: 0.4s ease;
-    }
-    .nav-links.active { right: 0; }
-    #chatbot-section .content-wrapper { height: 90vh; border-radius: 0; }
-}
+.copyrights { text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #333; font-size: 0.8rem; }
 
+/* ================== 8. MOBILE RESPONSIVE ================== */
 @media (max-width: 768px) {
-    .section-title { font-size: 2rem; }
-    .footer-grid { grid-template-columns: 1fr; text-align: center; gap: 30px; }
-    footer a:hover { transform: none; color: var(--primary); }
-    .btn-action-large { width: 100%; padding: 15px; }
+    .hamburger-menu { display: block; }
+    .nav-links {
+        display: none; position: absolute; top: 70px; left: 0; width: 100%;
+        background: var(--bg-card); flex-direction: column; padding: 20px;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+    .nav-links.active { display: flex; }
+    
+    .content-wrapper { height: 90vh; border-radius: 0; border: none; }
+    .footer-grid { text-align: center; }
 }
