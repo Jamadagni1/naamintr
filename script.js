@@ -1,406 +1,201 @@
 /* ======================================================
-   SCRIPT.JS - FINAL (Supports new file names & Cache Busting)
+   SCRIPT.JS - ROBUST VERSION
    ====================================================== */
 
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-// 🌟 ASTRO ENGINE
-class AstroEngine {
-    constructor() {
-        this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
-        
-        // Rashi Data
-        this.rashiMap = [
-            { rashi_en: "Aries (Mesh)", rashi_hi: "मेष (Aries)", letters: ["chu","che","cho","la","li","lu","le","lo","a"], nakshatras: ["Ashwini","Bharani","Krittika"], phal_en: "Courageous leader", phal_hi: "साहसी नेतृत्वकर्ता", rashiphal_en: "New beginnings ahead.", rashiphal_hi: "नई शुरुआत के योग हैं।" },
-            { rashi_en: "Taurus (Vrishabh)", rashi_hi: "वृषभ (Taurus)", letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], nakshatras: ["Krittika","Rohini"], phal_en: "Reliable & calm", phal_hi: "विश्वसनीय और शांत", rashiphal_en: "Financial gains likely.", rashiphal_hi: "धन लाभ की संभावना है।" },
-            { rashi_en: "Gemini (Mithun)", rashi_hi: "मिथुन (Gemini)", letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], nakshatras: ["Mrigashira","Ardra"], phal_en: "Intelligent talker", phal_hi: "बुद्धिमान वक्ता", rashiphal_en: "Good news coming.", rashiphal_hi: "शुभ समाचार मिलेगा।" },
-            { rashi_en: "Cancer (Kark)", rashi_hi: "कर्क (Cancer)", letters: ["hi","hu","he","ho","da","di","du","de","do"], nakshatras: ["Punarvasu","Pushya"], phal_en: "Emotional & caring", phal_hi: "भावुक और देखभाल करने वाला", rashiphal_en: "Family time best.", rashiphal_hi: "परिवार के साथ समय बिताएं।" },
-            { rashi_en: "Leo (Simha)", rashi_hi: "सिंह (Leo)", letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], nakshatras: ["Magha","Purva Phalguni"], phal_en: "Confident king", phal_hi: "आत्मविश्वासी राजा", rashiphal_en: "Success in career.", rashiphal_hi: "करियर में सफलता मिलेगी।" },
-            { rashi_en: "Virgo (Kanya)", rashi_hi: "कन्या (Virgo)", letters: ["to","pa","pi","pu","sha","na","th","pe","po"], nakshatras: ["Uttara Phalguni","Hasta"], phal_en: "Practical analyst", phal_hi: "व्यावहारिक विश्लेषक", rashiphal_en: "Health improves.", rashiphal_hi: "स्वास्थ्य में सुधार होगा।" },
-            { rashi_en: "Libra (Tula)", rashi_hi: "तुला (Libra)", letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], nakshatras: ["Chitra","Swati"], phal_en: "Balanced diplomat", phal_hi: "संतुलित राजनयिक", rashiphal_en: "Travel planned.", rashiphal_hi: "यात्रा की योजना बनेगी।" },
-            { rashi_en: "Scorpio (Vrishchik)", rashi_hi: "वृश्चिक (Scorpio)", letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], nakshatras: ["Vishakha","Anuradha"], phal_en: "Intense mystery", phal_hi: "तीव्र रहस्यमयी", rashiphal_en: "Avoid arguments.", rashiphal_hi: "वाद-विवाद से बचें।" },
-            { rashi_en: "Sagittarius (Dhanu)", rashi_hi: "धनु (Sagittarius)", letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], nakshatras: ["Mula","Purva Ashadha"], phal_en: "Optimistic explorer", phal_hi: "आशावादी खोजकर्ता", rashiphal_en: "Luck favors you.", rashiphal_hi: "भाग्य आपका साथ देगा।" },
-            { rashi_en: "Capricorn (Makar)", rashi_hi: "मकर (Capricorn)", letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], nakshatras: ["Uttara Ashadha","Shravana"], phal_en: "Ambitious worker", phal_hi: "महत्वाकांक्षी कर्मी", rashiphal_en: "Hard work pays off.", rashiphal_hi: "मेहनत रंग लाएगी।" },
-            { rashi_en: "Aquarius (Kumbh)", rashi_hi: "कुम्भ (Aquarius)", letters: ["gu","ge","go","sa","si","su","se","so","da"], nakshatras: ["Dhanishtha","Shatabhisha"], phal_en: "Innovative thinker", phal_hi: "नवीन विचारक", rashiphal_en: "Help a friend.", rashiphal_hi: "मित्र की मदद करेंगे।" },
-            { rashi_en: "Pisces (Meen)", rashi_hi: "मीन (Pisces)", letters: ["di","du","th","jha","yna","de","do","cha","chi"], nakshatras: ["Purva Bhadrapada","Revati"], phal_en: "Dreamy soul", phal_hi: "स्वप्नशील आत्मा", rashiphal_en: "Peace of mind.", rashiphal_hi: "मानसिक शांति मिलेगी।" }
-        ];
-
-        this.astroDetails = {
-            1: { planet_en: "Sun", planet_hi: "सूर्य", color_en: "Golden", color_hi: "सुनहरा", lucky_nos: "1, 2, 3, 9", fal_en: "Leader", fal_hi: "नेता" },
-            2: { planet_en: "Moon", planet_hi: "चन्द्र", color_en: "White", color_hi: "सफेद", lucky_nos: "2, 6, 7", fal_en: "Emotional", fal_hi: "भावुक" },
-            3: { planet_en: "Jupiter", planet_hi: "बृहस्पति", color_en: "Yellow", color_hi: "पीला", lucky_nos: "1, 3, 5, 9", fal_en: "Wise", fal_hi: "ज्ञानी" },
-            4: { planet_en: "Rahu", planet_hi: "राहू", color_en: "Blue", color_hi: "नीला", lucky_nos: "1, 4, 5, 6", fal_en: "Practical", fal_hi: "व्यावहारिक" },
-            5: { planet_en: "Mercury", planet_hi: "बुध", color_en: "Green", color_hi: "हरा", lucky_nos: "1, 5, 6", fal_en: "Intelligent", fal_hi: "बुद्धिमान" },
-            6: { planet_en: "Venus", planet_hi: "शुक्र", color_en: "Pink", color_hi: "गुलाबी", lucky_nos: "3, 6, 9", fal_en: "Charming", fal_hi: "आकर्षक" },
-            7: { planet_en: "Ketu", planet_hi: "केतु", color_en: "Multi", color_hi: "चितकबरा", lucky_nos: "2, 7", fal_en: "Spiritual", fal_hi: "आध्यात्मिक" },
-            8: { planet_en: "Saturn", planet_hi: "शनि", color_en: "Black", color_hi: "काला", lucky_nos: "1, 4, 8", fal_en: "Ambitious", fal_hi: "महत्वाकांक्षी" },
-            9: { planet_en: "Mars", planet_hi: "मंगल", color_en: "Red", color_hi: "लाल", lucky_nos: "3, 6, 9", fal_en: "Energetic", fal_hi: "ऊर्जावान" }
-        };
-    }
-
-    calculateNumerology(name) {
-        if(!name) return 1;
-        let total = 0, clean = name.toUpperCase().replace(/[^A-Z]/g, '');
-        for(let c of clean) total += this.numerologyMap[c] || 0;
-        while(total > 9) { let s=0; while(total>0){ s+=total%10; total=Math.floor(total/10); } total=s; }
-        return total || 1;
-    }
-
-    calculateRashi(name) {
-        if(!name) return this.rashiMap[0];
-        let n = name.toLowerCase().trim();
-        for(let r of this.rashiMap) { for(let l of r.letters) if(n.startsWith(l)) return r; }
-        return this.rashiMap[0];
-    }
-
-    processName(data, lang) {
-        let safeName = data.name || data.Name;
-        if(!safeName) return null;
-        const num = this.calculateNumerology(safeName);
-        const rashi = this.calculateRashi(safeName);
-        const astro = this.astroDetails[num] || this.astroDetails[1];
-        const isHindi = lang === 'hi';
-
-        return {
-            ...data,
-            name: safeName,
-            meaning: data.meaning, 
-            gender: data.gender || "Unknown",
-            origin: isHindi ? "भारतीय" : "Indian",
-            rashi: isHindi ? rashi.rashi_hi : rashi.rashi_en,
-            nakshatra: rashi.nakshatras ? rashi.nakshatras.join(", ") : "",
-            phal: isHindi ? rashi.phal_hi : rashi.phal_en,
-            rashiphal: isHindi ? rashi.rashiphal_hi : rashi.rashiphal_en,
-            num: num,
-            planet: isHindi ? astro.planet_hi : astro.planet_en,
-            color: isHindi ? astro.color_hi : astro.color_en,
-            luckyNumbers: astro.lucky_nos,
-            numFal: isHindi ? astro.fal_hi : astro.fal_en,
-            labels: {
-                meaning: isHindi ? "अर्थ" : "Meaning",
-                gender: isHindi ? "लिंग" : "Gender",
-                origin: isHindi ? "मूल" : "Origin",
-                vedicTitle: isHindi ? "🔮 वैदिक ज्योतिष" : "🔮 Vedic Astrology",
-                rashi: isHindi ? "राशि" : "Rashi",
-                nakshatra: isHindi ? "नक्षत्र" : "Nakshatra",
-                personality: isHindi ? "व्यक्तित्व" : "Personality",
-                rashiphalTitle: isHindi ? "✨ राशिफल" : "✨ Horoscope",
-                numTitle: isHindi ? "🔢 अंक ज्योतिष" : "🔢 Numerology",
-                number: isHindi ? "अंक" : "Number",
-                planet: isHindi ? "ग्रह" : "Planet",
-                luckyColor: isHindi ? "शुभ रंग" : "Lucky Color",
-                luckyNos: isHindi ? "शुभ अंक" : "Lucky Numbers",
-                prediction: isHindi ? "भविष्यफल" : "Prediction"
-            }
-        };
-    }
-}
-
-const engine = new AstroEngine();
-
 document.addEventListener("DOMContentLoaded", () => {
-    
-    // --- 1. GLOBAL HELPERS ---
-    const getLanguage = () => localStorage.getItem("language") || "en";
-    const safeGet = (id) => document.getElementById(id);
 
-    // --- 2. UPDATE TEXT ON LANGUAGE CHANGE ---
-    function updateAppLanguage(lang) {
-        document.documentElement.lang = lang;
-        localStorage.setItem("language", lang);
-        
-        document.querySelectorAll("[data-en]").forEach(el => {
-            const text = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
-            if(text) el.textContent = text;
+    // --- 1. GLOBAL HELPERS ---
+    const safeGet = (id) => document.getElementById(id);
+    const getLanguage = () => localStorage.getItem("language") || "en";
+
+    // --- 2. HEADER & MOBILE MENU ---
+    const hamburger = safeGet("hamburger-menu");
+    const mainNav = safeGet("main-nav"); // This should be the container or nav element
+    
+    if (hamburger && mainNav) {
+        hamburger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hamburger.classList.toggle("active");
+            mainNav.classList.toggle("active");
         });
 
-        const inp = safeGet("hero-search-input");
-        if(inp) inp.placeholder = lang === "hi" ? "उदा: आरव, अद्विक..." : "e.g., Aarav, Advik...";
-
-        // Reload data if visible
-        const listContainer = document.querySelector('.name-list-container');
-        if (listContainer && listContainer.style.display !== 'none' && safeGet('name-finder')) {
-            loadNames(currentGender); 
-        }
-        // If details are open, refresh them
-        const detailsContainer = document.querySelector('.name-details-container');
-        if (detailsContainer && detailsContainer.style.display === 'block') {
-             // Go back to list to avoid language mismatch
-             const backBtn = document.querySelector('.back-btn');
-             if(backBtn) backBtn.click();
-        }
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (mainNav.classList.contains("active") && !mainNav.contains(e.target) && !hamburger.contains(e.target)) {
+                hamburger.classList.remove("active");
+                mainNav.classList.remove("active");
+            }
+        });
     }
-
-    const langBtn = safeGet("language-toggle");
-    if(langBtn) {
-        langBtn.onclick = () => {
-            const newLang = getLanguage() === "hi" ? "en" : "hi";
-            updateAppLanguage(newLang);
-        };
-    }
-    
-    // Initial Load
-    updateAppLanguage(getLanguage());
 
     // --- 3. THEME TOGGLE ---
     const themeBtn = safeGet("theme-toggle");
-    if(themeBtn) {
-        const saved = localStorage.getItem("theme") || "light";
-        document.body.setAttribute("data-theme", saved);
-        themeBtn.innerHTML = saved === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        
-        themeBtn.onclick = () => {
-            const next = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    if (themeBtn) {
+        // Init Theme
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.body.setAttribute("data-theme", savedTheme);
+        themeBtn.innerHTML = savedTheme === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+        themeBtn.addEventListener('click', () => {
+            const current = document.body.getAttribute("data-theme");
+            const next = current === "dark" ? "light" : "dark";
             document.body.setAttribute("data-theme", next);
             localStorage.setItem("theme", next);
             themeBtn.innerHTML = next === "dark" ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        };
+        });
     }
 
-    // --- 4. TYPING EFFECT ---
+    // --- 4. LANGUAGE TOGGLE ---
+    const langBtn = safeGet("language-toggle");
+    if (langBtn) {
+        // Function to update text on page
+        const updateText = () => {
+            const lang = getLanguage();
+            document.documentElement.lang = lang;
+            document.querySelectorAll("[data-en]").forEach(el => {
+                el.textContent = el.getAttribute(lang === "hi" ? "data-hi" : "data-en");
+            });
+            const searchInput = safeGet("hero-search-input");
+            if (searchInput) {
+                searchInput.placeholder = lang === "hi" ? "उदा: आरव..." : "e.g., Aarav...";
+            }
+        };
+
+        // Initial Load
+        updateText();
+
+        langBtn.addEventListener('click', () => {
+            const next = getLanguage() === "hi" ? "en" : "hi";
+            localStorage.setItem("language", next);
+            updateText();
+            // Optional: Reload list if on name page
+            if (typeof loadNames === "function" && safeGet("name-finder")) {
+                loadNames("Boy");
+            }
+        });
+    }
+
+    // --- 5. AURA (PRICING) CARDS TOGGLE ---
+    // Using Event Delegation for robustness
+    const pricingGrid = document.querySelector('.pricing-grid');
+    if (pricingGrid) {
+        pricingGrid.addEventListener('click', (e) => {
+            // Find closest header if clicked inside it
+            const header = e.target.closest('.pricing-card-header');
+            if (header) {
+                const card = header.closest('.pricing-card');
+                if (card) {
+                    card.classList.toggle('expanded');
+                }
+            }
+        });
+    }
+
+    // --- 6. TYPING EFFECT ---
     const typeElement = safeGet("naamin-main-title-typing");
     if (typeElement) {
         const text = "Naamin";
         let i = 0; let isDeleting = false;
-        function type() {
-            let currentText = text.substring(0, i);
-            let part1 = currentText.length > 4 ? "Naam" : currentText;
-            let part2 = currentText.length > 4 ? currentText.substring(4) : "";
-            typeElement.innerHTML = `<span class="header-naam">${part1}</span><span class="header-in">${part2}</span>`;
-            if (!isDeleting && i < text.length) { i++; setTimeout(type, 200); }
+        const type = () => {
+            let fullTxt = text;
+            let currentTxt = fullTxt.substring(0, i);
+            let p1 = currentTxt.length > 4 ? "Naam" : currentTxt;
+            let p2 = currentTxt.length > 4 ? currentTxt.substring(4) : "";
+            
+            typeElement.innerHTML = `<span class="header-naam">${p1}</span><span class="header-in">${p2}</span>`;
+
+            if (!isDeleting && i < fullTxt.length) { i++; setTimeout(type, 200); }
             else if (isDeleting && i > 0) { i--; setTimeout(type, 100); }
             else { isDeleting = !isDeleting; setTimeout(type, isDeleting ? 2000 : 500); }
-        }
+        };
         type();
     }
 
-    // --- 5. HEADER & SCROLL ---
-    const header = document.querySelector('header');
-    if (header) document.body.style.paddingTop = `${header.offsetHeight}px`;
-
-    const hamburger = safeGet("hamburger-menu");
-    const nav = safeGet("main-nav");
-    if(hamburger) {
-        hamburger.onclick = (e) => { e.stopPropagation(); hamburger.classList.toggle("active"); nav.classList.toggle("active"); };
-        document.onclick = (e) => { if(nav.classList.contains("active") && !nav.contains(e.target)) { hamburger.classList.remove("active"); nav.classList.remove("active"); }};
-    }
-
+    // --- 7. SCROLL TO TOP ---
     const scrollBtn = safeGet("scrollToTopBtn");
     if (scrollBtn) {
-        window.addEventListener("scroll", () => scrollBtn.classList.toggle("show", window.scrollY > 300));
-        scrollBtn.onclick = () => window.scrollTo({ top: 0, behavior: "smooth" });
+        window.addEventListener("scroll", () => {
+            scrollBtn.classList.toggle("show", window.scrollY > 300);
+        });
+        scrollBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
     }
 
-    // --- 6. NAME LOADER (Dynamic Files) ---
-    let currentGender = "Boy";
-    let currentLetter = "A";
-    const nameListContainer = document.querySelector('.name-list');
-    const nameDetailsBox = document.querySelector('.name-details');
+    // --- 8. NAME SEARCH LOGIC (Only runs if search bar exists) ---
+    const searchBtn = safeGet('hero-search-btn');
+    const searchInp = safeGet('hero-search-input');
     
-    async function loadNames(gender) {
-        if(!nameListContainer) return;
+    if (searchBtn && searchInp) {
+        const performSearch = async () => {
+            const term = searchInp.value.trim().toLowerCase();
+            if (!term) return;
 
-        // Logic: Filename Selection based on Lang
-        const lang = getLanguage();
-        // NOTE: Filenames must match exactly what you uploaded
-        const langSuffix = lang === 'hi' ? '_hin.json' : '_eng.json'; 
-        const prefix = (gender === "Boy") ? "boy_names" : "girl_names";
-        const fileName = prefix + langSuffix;
-        
-        // Anti-Cache
-        const timestamp = new Date().getTime();
+            // Scroll to Name Finder
+            const section = safeGet('name-finder');
+            const detailsBox = document.querySelector('.name-details');
+            const listContainer = document.querySelector('.name-list-container');
+            const detailsContainer = document.querySelector('.name-details-container');
 
-        try {
-            nameListContainer.innerHTML = '<div class="spinner">Loading...</div>';
-            
-            const response = await fetch(`${fileName}?t=${timestamp}`);
-            if (!response.ok) throw new Error(`File not found: ${fileName}`);
-            
-            let rawData = await response.json();
-            
-            // Gender Label for UI
-            const displayGender = (lang === 'hi') ? ((gender === "Boy") ? "लड़का" : "लड़की") : gender;
-            
-            let namesData = rawData.map(item => ({ ...item, gender: displayGender }));
+            if (section && detailsBox) {
+                window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
+                
+                // Toggle Views
+                if(listContainer) listContainer.style.display = 'none';
+                if(detailsContainer) detailsContainer.style.display = 'block';
+                
+                detailsBox.innerHTML = '<div style="padding:20px; text-align:center;">Searching...</div>';
 
-            // Filter
-            const filtered = namesData.filter(n => {
-                let nName = n.name || n.Name;
-                return nName && nName.toUpperCase().startsWith(currentLetter);
-            });
+                // Language Logic for Files
+                const lang = getLanguage();
+                const suffix = lang === 'hi' ? '_hin.json' : '_eng.json';
+                const bFile = 'boy_names' + suffix;
+                const gFile = 'girl_names' + suffix;
+                const timestamp = new Date().getTime(); // Cache Busting
 
-            nameListContainer.innerHTML = "";
-            
-            if (filtered.length === 0) {
-                nameListContainer.innerHTML = `<p style="width:100%; text-align:center;">No names found.</p>`;
-                return;
+                try {
+                    const [b, g] = await Promise.all([
+                        fetch(`${bFile}?t=${timestamp}`).then(r => r.json()),
+                        fetch(`${gFile}?t=${timestamp}`).then(r => r.json())
+                    ]);
+
+                    const isHi = lang === 'hi';
+                    const boys = b.map(x => ({ ...x, gender: isHi ? "लड़का" : "Boy" }));
+                    const girls = g.map(x => ({ ...x, gender: isHi ? "लड़की" : "Girl" }));
+                    const all = [...boys, ...girls];
+
+                    const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
+
+                    if (found) {
+                        // Render Details (Simple Version)
+                        detailsBox.innerHTML = `
+                            <h2>${found.name}</h2>
+                            <p><strong>${isHi ? "अर्थ" : "Meaning"}:</strong> ${found.meaning}</p>
+                            <p><strong>${isHi ? "लिंग" : "Gender"}:</strong> ${found.gender}</p>
+                            <div style="margin-top:15px; padding:10px; background:rgba(0,0,0,0.05); border-radius:10px;">
+                                <strong>${isHi ? "ज्योतिष सुझाव" : "Astrology Tip"}:</strong><br>
+                                ${isHi ? "यह एक बहुत ही शुभ नाम है।" : "This is a very auspicious name."}
+                            </div>
+                        `;
+                    } else {
+                        const msg = isHi ? "जल्दी आ रहा है..." : "Coming soon...";
+                        detailsBox.innerHTML = `<div style="text-align:center; padding:30px;"><h3>${isHi?"नाम नहीं मिला":"Not Found"}</h3><p>${msg}</p></div>`;
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    detailsBox.innerHTML = "<p>Data loading error.</p>";
+                }
             }
-
-            filtered.forEach(person => {
-                const div = document.createElement("div");
-                div.className = "name-item";
-                div.textContent = person.name;
-                div.onclick = () => {
-                    document.querySelector('.name-list-container').style.display = 'none';
-                    document.querySelector('.name-details-container').style.display = 'block';
-                    showDetails(nameDetailsBox, engine.processName(person, getLanguage()));
-                };
-                nameListContainer.appendChild(div);
-            });
-
-        } catch (error) {
-            console.error(error);
-            nameListContainer.innerHTML = `<p>Error loading data: ${fileName}</p>`;
-        }
-    }
-
-    // --- 7. SEARCH FUNCTIONALITY (Dynamic Files) ---
-    async function handleHeroSearch() {
-        const input = safeGet('hero-search-input');
-        if(!input.value.trim()) return;
-        const term = input.value.trim().toLowerCase();
-        
-        const section = safeGet('name-finder');
-        if(section) window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
-
-        document.querySelector('.name-list-container').style.display = 'none';
-        document.querySelector('.name-details-container').style.display = 'block';
-        nameDetailsBox.innerHTML = '<div class="spinner">Searching...</div>';
-
-        // Select files based on current language
-        const lang = getLanguage();
-        const langSuffix = lang === 'hi' ? '_hin.json' : '_eng.json';
-        const bFile = 'boy_names' + langSuffix;
-        const gFile = 'girl_names' + langSuffix;
-        const timestamp = new Date().getTime();
-
-        try {
-            const [b, g] = await Promise.all([
-                fetch(`${bFile}?t=${timestamp}`).then(r=>r.json()), 
-                fetch(`${gFile}?t=${timestamp}`).then(r=>r.json())
-            ]);
-            
-            const isHi = lang === 'hi';
-            const boys = b.map(i=>({...i, gender: isHi ? 'लड़का' : 'Boy'}));
-            const girls = g.map(i=>({...i, gender: isHi ? 'लड़की' : 'Girl'}));
-            
-            const all = [...boys, ...girls];
-            const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
-            
-            if(found) {
-                showDetails(nameDetailsBox, engine.processName(found, lang));
-            } else {
-                const msg = isHi ? "जल्दी आ रहा है, कृपया प्रतीक्षा करें..." : "Coming soon, please wait...";
-                nameDetailsBox.innerHTML = `
-                    <div style="text-align: center; padding: 40px;">
-                        <i class="fas fa-hourglass-half" style="font-size: 3rem; color: #F97316; margin-bottom: 20px;"></i>
-                        <h3 style="color: #1d1d2c;">${isHi ? "परिणाम नहीं मिला" : "No Result Found"}</h3>
-                        <p style="font-size: 1.2rem; color: #5a5a6e;">${msg}</p>
-                    </div>`;
-            }
-        } catch(e) { 
-            console.error(e); 
-            nameDetailsBox.innerHTML="<p>Search error.</p>"; 
-        }
-    }
-
-    const sBtn = safeGet('hero-search-btn');
-    if(sBtn) sBtn.onclick = handleHeroSearch;
-    const sInp = safeGet('hero-search-input');
-    if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
-
-
-    // --- 8. UI CONTROLS ---
-    const genderBtns = document.querySelectorAll('.gender-btn');
-    genderBtns.forEach(btn => {
-        btn.onclick = () => {
-            genderBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentGender = btn.dataset.gender;
-            loadNames(currentGender);
         };
-    });
 
-    const alphaBox = document.querySelector('.alphabet-selector');
-    if(alphaBox) {
-        alphaBox.innerHTML = "";
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(char => {
-            const btn = document.createElement("button");
-            btn.className = `alphabet-btn ${char === currentLetter ? 'active' : ''}`;
-            btn.textContent = char;
-            btn.onclick = () => {
-                document.querySelectorAll('.alphabet-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentLetter = char;
-                loadNames(currentGender);
-            };
-            alphaBox.appendChild(btn);
+        searchBtn.addEventListener('click', performSearch);
+        searchInp.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
         });
     }
 
-    const backBtn = document.querySelector('.back-btn');
-    if(backBtn) {
-        backBtn.onclick = () => {
-            document.querySelector('.name-details-container').style.display = 'none';
-            document.querySelector('.name-list-container').style.display = 'block';
-        };
-    }
-
-    // --- 9. EXTRAS ---
-    const pricingSection = document.querySelector('.pricing-grid'); 
-    if (pricingSection) {
-        pricingSection.addEventListener('click', function(e) {
-            const header = e.target.closest('.pricing-card-header');
-            if (header) {
-                const card = header.closest('.pricing-card');
-                if (card) card.classList.toggle('expanded');
-            }
-        });
-    }
-
-    const overlay = safeGet('coming-soon-overlay');
-    const featureBtn = safeGet('feature-btn-id');
-    if(featureBtn && overlay) {
-        featureBtn.onclick = (e) => {
-            e.preventDefault(); overlay.style.display = 'flex';
-            setTimeout(() => overlay.style.display = 'none', 3000);
-        }
-    }
-
-    // --- INITIAL LOAD ---
-    if(safeGet('name-finder')) {
-        loadNames("Boy");
-    }
 });
-
-// Helper
-function showDetails(box, data) {
-    if(!box || !data) return;
-    const L = data.labels;
-    box.innerHTML = `
-        <h2>${data.name}</h2>
-        <div class="detail-grid" style="text-align: left; margin-top: 20px;">
-            <p><strong>${L.meaning}:</strong> ${data.meaning}</p>
-            <p><strong>${L.gender}:</strong> ${data.gender}</p>
-            <p><strong>${L.origin}:</strong> ${data.origin}</p>
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-            <h3>${L.vedicTitle}</h3>
-            <p><strong>${L.rashi}:</strong> ${data.rashi}</p>
-            <p><strong>${L.nakshatra}:</strong> ${data.nakshatra}</p>
-            <p><strong>${L.personality}:</strong> ${data.phal}</p>
-            <p style="margin-top:10px; background: rgba(0,0,0,0.05); padding:10px; border-radius:8px;">
-                <strong>${L.rashiphalTitle}:</strong><br> ${data.rashiphal}
-            </p>
-            <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ddd;">
-            <h3>${L.numTitle}</h3>
-            <p><strong>${L.number}:</strong> ${data.num}</p>
-            <p><strong>${L.planet}:</strong> ${data.planet}</p>
-            <p><strong>${L.luckyColor}:</strong> ${data.color}</p>
-            <p><strong>${L.luckyNos}:</strong> ${data.luckyNumbers}</p>
-            <p style="margin-top:10px;">
-                <strong>${L.prediction}:</strong> ${data.numFal}
-            </p>
-        </div>
-    `;
-}
