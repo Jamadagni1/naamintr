@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi"> 
+<html lang="hi">
 <head>
     <meta charset="UTF-8" />
     <script>
@@ -17,6 +17,66 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Parent container relative hona chahiye taaki overlay iske andar fit ho */
+        .content-wrapper {
+            position: relative; 
+            overflow: hidden; /* Ensure overlay doesn't spill out */
+        }
+
+        /* Overlay jo screen ko block karega */
+        #coming-soon-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.65); /* Thoda safed transparent background */
+            backdrop-filter: blur(4px); /* Piche ka content dhundhla dikhega */
+            z-index: 1000; /* Sabse upar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: not-allowed; /* Click nahi karne dega */
+            border-radius: 12px; /* Agar wrapper rounded hai to ye bhi rounded hoga */
+        }
+
+        /* Typing Text Animation */
+        .coming-soon-text span {
+            display: inline-block;
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            border-right: 4px solid #ff6b6b; /* Cursor ka color */
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+            animation: typing 4s steps(30, end) infinite, blink-caret 0.75s step-end infinite;
+        }
+
+        /* Dark Mode support ke liye */
+        [data-theme="dark"] #coming-soon-overlay {
+            background: rgba(0, 0, 0, 0.7); /* Dark transparent */
+        }
+        [data-theme="dark"] .coming-soon-text span {
+            color: #fff;
+        }
+
+        /* Keyframes */
+        @keyframes typing {
+            0% { width: 0 }
+            50% { width: 280px; } /* Text ki lambai ke hisab se adjust karein */
+            90% { width: 280px; }
+            100% { width: 0; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #ff6b6b }
+        }
+    </style>
 </head>
 <body data-theme="light">
 
@@ -49,8 +109,12 @@
 <main>
     <section id="chatbot-section">
         <div class="content-wrapper">
-             
             
+            <div id="coming-soon-overlay">
+                <div class="coming-soon-text">
+                    <span>Coming Soon.........</span>
+                </div>
+            </div>
             <div class="chatbox" id="chatbox"></div>
 
             <div class="button-group" id="menuButtons">
@@ -70,11 +134,6 @@
                 <button id="sendBtn" aria-label="Send Message">
                     <i class="fas fa-paper-plane"></i>
                 </button>
-                <div id="coming-soon-overlay">
-    <div class="coming-soon-text">
-        <span>Coming Soon.........</span>
-    </div>
-</div>
             </div>
         </div>
     </section>
