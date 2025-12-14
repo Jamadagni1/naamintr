@@ -1,15 +1,17 @@
 /* ======================================================
-   SCRIPT.JS - FINAL UPDATE (Coming Soon Message for Unknown Names)
+   SCRIPT.JS - FINAL VERSION 
+   (With "Coming Soon" Message for Missing Names)
    ====================================================== */
 
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-// 🌟 ASTRO ENGINE
+// 🌟 ASTRO ENGINE (Calculation Logic)
 class AstroEngine {
     constructor() {
         this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
         
+        // Rashi Data (Bilingual)
         this.rashiMap = [
             { 
                 rashi_en: "Aries (Mesh)", rashi_hi: "मेष (Aries)", 
@@ -121,7 +123,7 @@ class AstroEngine {
             }
         ];
 
-        // Numerology Data
+        // Numerology Data (Bilingual)
         this.astroDetails = {
             1: { 
                 planet_en: "Sun", planet_hi: "सूर्य (Sun)", 
@@ -397,21 +399,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 const all = [].concat(boys, girls);
                 const found = all.find(n => (n.name || n.Name).toLowerCase() === term);
 
+                // ✅ UPDATED NOT FOUND LOGIC
                 if(found) {
                     const smartData = engine.processName(found, getLanguage());
                     showDetails(detailsBox, smartData);
                 } else {
-                    // --- NAME NOT FOUND MESSAGE ---
                     const isHindi = getLanguage() === 'hi';
                     const msg = isHindi 
                         ? "जल्दी आ रहा है, कृपया प्रतीक्षा करें, हम आपके धैर्य की सराहना करते हैं।"
                         : "Coming soon, please wait, we appreciate your patience.";
                     
                     detailsBox.innerHTML = `
-                        <div style="text-align: center; padding: 40px;">
-                            <i class="fas fa-hourglass-half" style="font-size: 3rem; color: var(--accent-primary); margin-bottom: 20px;"></i>
-                            <h3 style="color: var(--text-dark);">${isHindi ? "परिणाम नहीं मिला" : "No Result Found"}</h3>
-                            <p style="font-size: 1.2rem; color: var(--text-medium); margin-top: 10px;">${msg}</p>
+                        <div style="text-align: center; padding: 50px 20px;">
+                            <i class="fas fa-hourglass-half" style="font-size: 3.5rem; color: #F97316; margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--text-dark); margin-bottom: 10px;">
+                                ${isHindi ? "नाम उपलब्ध नहीं है" : "Name Not Found"}
+                            </h3>
+                            <p style="font-size: 1.2rem; color: var(--text-medium); font-weight: 500;">
+                                ${msg}
+                            </p>
                         </div>
                     `;
                 }
