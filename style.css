@@ -114,14 +114,14 @@ header {
 /* 🔥 HAMBURGER MENU FIX (CLICKABLE) */
 .hamburger-menu {
     display: none;
-    width: 45px; /* Thoda bada kiya */
+    width: 45px; 
     height: 45px;
     background: transparent; 
     border: none; 
     cursor: pointer;
     position: relative; 
-    z-index: 10002; /* Ye sabse upar rahega */
-    padding: 10px; /* Touch area badhaya */
+    z-index: 10002; 
+    padding: 10px; 
     margin-right: -10px;
 }
 .hamburger-menu .line {
@@ -150,6 +150,10 @@ section {
     background: var(--bg-card-light); backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px); border: 1px solid var(--border-color-light);
     box-shadow: var(--box-shadow-soft);
+    
+    /* UPDATED: Needed for absolute overlay */
+    position: relative; 
+    overflow: hidden; 
 }
 
 section h2 {
@@ -205,7 +209,6 @@ section h2::after {
 /* Services (Mobile Fix) */
 .services-grid {
     display: grid;
-    /* ✅ FIX: 260px min-width to prevent overflow */
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 40px; padding: 20px;
 }
@@ -301,17 +304,48 @@ footer {
 .scroll-to-top-btn.show { opacity: 1; visibility: visible; bottom: 95px; }
 .whatsapp-float { bottom: 30px; background: #25d366; color: white; text-decoration: none; font-size: 1.8rem; }
 
-/* Coming Soon Overlay */
+/* ================== UPDATED COMING SOON OVERLAY ================== */
 #coming-soon-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(5px);
-    display: none; justify-content: center; align-items: center; z-index: 2000;
+    position: absolute; /* Changed from fixed to absolute */
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.65); /* Transparent white */
+    backdrop-filter: blur(4px); /* Blur effect */
+    display: flex; /* Always visible */
+    justify-content: center; align-items: center;
+    z-index: 1000;
+    cursor: not-allowed;
+    border-radius: 24px; /* Matches content-wrapper border radius */
 }
+
+/* Dark Mode Support for Overlay */
+[data-theme="dark"] #coming-soon-overlay {
+    background: rgba(0, 0, 0, 0.7);
+}
+
 .coming-soon-text span {
-    font-family: 'Inter', sans-serif; font-size: 2rem; font-weight: 700; color: var(--accent-primary);
-    border-right: 3px solid var(--accent-primary); padding-right: 10px; animation: blink-caret 0.75s step-end infinite;
+    display: inline-block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 28px; /* Slightly larger */
+    font-weight: 700;
+    color: var(--text-dark); /* Theme aware color */
+    border-right: 4px solid var(--accent-primary); /* Cursor color matches theme */
+    white-space: nowrap;
+    overflow: hidden;
+    width: 0;
+    animation: typing 4s steps(30, end) infinite, blink-caret 0.75s step-end infinite;
 }
-@keyframes blink-caret { 50% { border-color: transparent; } }
+
+@keyframes typing {
+    0% { width: 0 }
+    50% { width: 300px; } /* Adjusted length */
+    90% { width: 300px; }
+    100% { width: 0; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--accent-primary); }
+}
 
 /* ================== 9. RESPONSIVE MEDIA QUERIES ================== */
 @media (max-width: 992px) {
@@ -378,4 +412,13 @@ footer {
     header { padding: 0 20px; }
     .header-logo { font-size: 2rem; }
     #hero-search-input { font-size: 1rem; }
+    
+    /* Small screen adjustment for typing text */
+    .coming-soon-text span { font-size: 20px; }
+    @keyframes typing {
+        0% { width: 0 }
+        50% { width: 220px; }
+        90% { width: 220px; }
+        100% { width: 0; }
+    }
 }
