@@ -1,5 +1,5 @@
 /* ======================================================
-   SCRIPT.JS - FINAL UPDATE (Added Typing Animation)
+   SCRIPT.JS - FINAL UPDATE (Looping Animation, No Cursor)
    ====================================================== */
 
 document.body.style.visibility = "visible";
@@ -570,28 +570,47 @@ document.addEventListener("DOMContentLoaded", () => {
         if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
     }
 
-    // --- NAAMIN TYPING ANIMATION (ADDED HERE) ---
+    // --- NAAMIN TYPING ANIMATION (ADDED HERE: LOOP & NO CURSOR) ---
     const typeNaam = document.getElementById("type-naam");
     const typeIn = document.getElementById("type-in");
     
     if(typeNaam && typeIn) {
         const text1 = "Naam";
         const text2 = "in";
-        const speed = 150;
-        let x = 0; 
-        let y = 0;
+        const typingSpeed = 200; // Likhne ki speed
+        const pauseTime = 2000;  // Pura hone ke baad 2 second rukega
 
-        function typeWriter() {
-            if (x < text1.length) {
-                typeNaam.innerHTML += text1.charAt(x);
-                x++;
-                setTimeout(typeWriter, speed);
-            } else if (y < text2.length) {
-                typeIn.innerHTML += text2.charAt(y);
-                y++;
-                setTimeout(typeWriter, speed);
+        function startTypingLoop() {
+            // 1. Reset Text
+            typeNaam.innerHTML = "";
+            typeIn.innerHTML = "";
+            
+            let x = 0; 
+            let y = 0;
+
+            function typeWriter() {
+                // Type "Naam" (Black)
+                if (x < text1.length) {
+                    typeNaam.innerHTML += text1.charAt(x);
+                    x++;
+                    setTimeout(typeWriter, typingSpeed);
+                } 
+                // Type "in" (Orange)
+                else if (y < text2.length) {
+                    typeIn.innerHTML += text2.charAt(y);
+                    y++;
+                    setTimeout(typeWriter, typingSpeed);
+                }
+                // Wait & Restart
+                else {
+                    setTimeout(startTypingLoop, pauseTime);
+                }
             }
+            
+            typeWriter();
         }
-        setTimeout(typeWriter, 500); // Start delay
+
+        // Start Loop
+        setTimeout(startTypingLoop, 500);
     }
 });
