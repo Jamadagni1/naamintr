@@ -1,29 +1,126 @@
 /* ======================================================
-   SCRIPT.JS - UPDATED (Shortlist Feature Added)
+   SCRIPT.JS - FINAL COMPLETE VERSION
+   (Includes: 2026 Horoscope, Favorites, Download Card, Typing Animation)
    ====================================================== */
 
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-// 🌟 ASTRO ENGINE (Same as before)
+// 🌟 ASTRO ENGINE
 class AstroEngine {
     constructor() {
         this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
         
-        // 2026 Horoscope Data
+        // --- 2026 FULL HOROSCOPE DATA (COMPLETE TEXT) ---
         this.rashiMap = [
-            { rashi_en: "Aries (Mesh)", rashi_hi: "मेष (Aries)", letters: ["chu","che","cho","la","li","lu","le","lo","a"], nakshatras: ["Ashwini","Bharani","Krittika"], phal_en: "Courageous...", phal_hi: "साहसी...", rashiphal_en: "2026 brings massive career growth...", rashiphal_hi: "2026 करियर में भारी वृद्धि लाएगा..." },
-            { rashi_en: "Taurus (Vrishabh)", rashi_hi: "वृषभ (Taurus)", letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], nakshatras: ["Krittika","Rohini","Mrigashira"], phal_en: "Calm...", phal_hi: "शांत...", rashiphal_en: "Financial stability improves...", rashiphal_hi: "आर्थिक स्थिरता बेहतर होगी..." },
-            { rashi_en: "Gemini (Mithun)", rashi_hi: "मिथुन (Gemini)", letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], nakshatras: ["Mrigashira","Ardra","Punarvasu"], phal_en: "Intelligent...", phal_hi: "बुद्धिमान...", rashiphal_en: "Great year for learning...", rashiphal_hi: "सीखने के लिए बेहतरीन वर्ष..." },
-            { rashi_en: "Cancer (Kark)", rashi_hi: "कर्क (Cancer)", letters: ["hi","hu","he","ho","da","di","du","de","do"], nakshatras: ["Punarvasu","Pushya","Ashlesha"], phal_en: "Emotional...", phal_hi: "भावुक...", rashiphal_en: "Focus on home and property...", rashiphal_hi: "घर और संपत्ति पर ध्यान..." },
-            { rashi_en: "Leo (Simha)", rashi_hi: "सिंह (Leo)", letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], phal_en: "Confident...", phal_hi: "आत्मविश्वासी...", rashiphal_en: "Leadership roles await...", rashiphal_hi: "नेतृत्व की भूमिकाएँ..." },
-            { rashi_en: "Virgo (Kanya)", rashi_hi: "कन्या (Virgo)", letters: ["to","pa","pi","pu","sha","na","th","pe","po"], nakshatras: ["Uttara Phalguni","Hasta","Chitra"], phal_en: "Analytical...", phal_hi: "विश्लेषणात्मक...", rashiphal_en: "Hard work pays off...", rashiphal_hi: "मेहनत का फल मिलेगा..." },
-            { rashi_en: "Libra (Tula)", rashi_hi: "तुला (Libra)", letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], nakshatras: ["Chitra","Swati","Vishakha"], phal_en: "Balanced...", phal_hi: "संतुलित...", rashiphal_en: "Balance in partnerships...", rashiphal_hi: "साझेदारी में संतुलन..." },
-            { rashi_en: "Scorpio (Vrishchik)", rashi_hi: "वृश्चिक (Scorpio)", letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], nakshatras: ["Vishakha","Anuradha","Jyeshtha"], phal_en: "Intense...", phal_hi: "तीव्र...", rashiphal_en: "Transformative year...", rashiphal_hi: "परिवर्तनकारी वर्ष..." },
-            { rashi_en: "Sagittarius (Dhanu)", rashi_hi: "धनु (Sagittarius)", letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], phal_en: "Optimistic...", phal_hi: "आशावादी...", rashiphal_en: "Luck favors you...", rashiphal_hi: "भाग्य साथ देगा..." },
-            { rashi_en: "Capricorn (Makar)", rashi_hi: "मकर (Capricorn)", letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], phal_en: "Ambitious...", phal_hi: "महत्वाकांक्षी...", rashiphal_en: "Career goals met...", rashiphal_hi: "करियर लक्ष्य पूरे..." },
-            { rashi_en: "Aquarius (Kumbh)", rashi_hi: "कुम्भ (Aquarius)", letters: ["gu","ge","go","sa","si","su","se","so","da"], nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], phal_en: "Innovative...", phal_hi: "नवीन...", rashiphal_en: "Innovation leads to success...", rashiphal_hi: "नवचार से सफलता..." },
-            { rashi_en: "Pisces (Meen)", rashi_hi: "मीन (Pisces)", letters: ["di","du","th","jha","yna","de","do","cha","chi"], nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], phal_en: "Compassionate...", phal_hi: "दयालु...", rashiphal_en: "Spiritual peace...", rashiphal_hi: "आध्यात्मिक शांति..." }
+            { 
+                rashi_en: "Aries (Mesh)", rashi_hi: "मेष (Aries)", 
+                letters: ["chu","che","cho","la","li","lu","le","lo","a"], 
+                nakshatras: ["Ashwini","Bharani","Krittika"], 
+                phal_en: "Courageous, energetic, and a born leader.", 
+                phal_hi: "साहसी, ऊर्जावान और नेतृत्व करने वाला।",
+                rashiphal_en: "2026 brings massive career growth and energy. Focus on health in the second half. New beginnings are favored.",
+                rashiphal_hi: "2026 करियर में भारी वृद्धि और ऊर्जा लाएगा। वर्ष के दूसरे भाग में स्वास्थ्य पर ध्यान दें। नई शुरुआत के लिए समय अनुकूल है।" 
+            },
+            { 
+                rashi_en: "Taurus (Vrishabh)", rashi_hi: "वृषभ (Taurus)", 
+                letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], 
+                nakshatras: ["Krittika","Rohini","Mrigashira"], 
+                phal_en: "Calm, reliable, and lover of arts.", 
+                phal_hi: "शांत, विश्वसनीय और कला प्रेमी।",
+                rashiphal_en: "Financial stability improves significantly in 2026. Relationships will deepen. Avoid stubbornness in family matters.",
+                rashiphal_hi: "2026 में आर्थिक स्थिरता काफी बेहतर होगी। रिश्ते गहरे होंगे। पारिवारिक मामलों में जिद्दी होने से बचें।" 
+            },
+            { 
+                rashi_en: "Gemini (Mithun)", rashi_hi: "मिथुन (Gemini)", 
+                letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], 
+                nakshatras: ["Mrigashira","Ardra","Punarvasu"], 
+                phal_en: "Intelligent, talkative, and versatile.", 
+                phal_hi: "बुद्धिमान, वाचाल और बहुमुखी प्रतिभा वाला।",
+                rashiphal_en: "A great year for learning, travel, and communication. New opportunities arise in business. Stay focused.",
+                rashiphal_hi: "सीखने, यात्रा और संचार के लिए यह एक बेहतरीन वर्ष है। व्यापार में नए अवसर मिलेंगे। अपने लक्ष्य पर केंद्रित रहें।" 
+            },
+            { 
+                rashi_en: "Cancer (Kark)", rashi_hi: "कर्क (Cancer)", 
+                letters: ["hi","hu","he","ho","da","di","du","de","do"], 
+                nakshatras: ["Punarvasu","Pushya","Ashlesha"], 
+                phal_en: "Emotional, sensitive, and family-oriented.", 
+                phal_hi: "भावुक, संवेदनशील और परिवार प्रेमी।",
+                rashiphal_en: "Focus on home and property in 2026. Emotional strength increases. Career stability is indicated mid-year.",
+                rashiphal_hi: "2026 में घर और संपत्ति पर ध्यान केंद्रित रहेगा। भावनात्मक शक्ति बढ़ेगी। वर्ष के मध्य में करियर में स्थिरता आएगी।" 
+            },
+            { 
+                rashi_en: "Leo (Simha)", rashi_hi: "सिंह (Leo)", 
+                letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], 
+                nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], 
+                phal_en: "Confident, generous, and regal nature.", 
+                phal_hi: "आत्मविश्वासी, उदार और राजा जैसा स्वभाव।",
+                rashiphal_en: "Leadership roles await you in 2026. Your creativity will shine. Recognition and fame are on the cards.",
+                rashiphal_hi: "2026 में नेतृत्व की भूमिकाएँ आपका इंतज़ार कर रही हैं। आपकी रचनात्मकता चमकेगी। मान-सम्मान और प्रसिद्धि मिलने के योग हैं।" 
+            },
+            { 
+                rashi_en: "Virgo (Kanya)", rashi_hi: "कन्या (Virgo)", 
+                letters: ["to","pa","pi","pu","sha","na","th","pe","po"], 
+                nakshatras: ["Uttara Phalguni","Hasta","Chitra"], 
+                phal_en: "Analytical, practical, and hardworking.", 
+                phal_hi: "विश्लेषण करने वाला, व्यावहारिक और मेहनती।",
+                rashiphal_en: "Hard work pays off this year. Excellent time for skill development and education. Health requires care.",
+                rashiphal_hi: "इस वर्ष कड़ी मेहनत का फल मिलेगा। कौशल विकास और शिक्षा के लिए उत्तम समय है। स्वास्थ्य का ध्यान रखने की आवश्यकता है।" 
+            },
+            { 
+                rashi_en: "Libra (Tula)", rashi_hi: "तुला (Libra)", 
+                letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], 
+                nakshatras: ["Chitra","Swati","Vishakha"], 
+                phal_en: "Fair, balanced, and social.", 
+                phal_hi: "न्यायप्रिय, संतुलित और मिलनसार।",
+                rashiphal_en: "Balance in partnerships is key in 2026. Artistic pursuits flourish. A good year for marriage or new alliances.",
+                rashiphal_hi: "2026 में साझेदारी में संतुलन महत्वपूर्ण रहेगा। कलात्मक कार्यों में सफलता मिलेगी। विवाह या नए गठबंधनों के लिए अच्छा वर्ष है।" 
+            },
+            { 
+                rashi_en: "Scorpio (Vrishchik)", rashi_hi: "वृश्चिक (Scorpio)", 
+                letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], 
+                nakshatras: ["Vishakha","Anuradha","Jyeshtha"], 
+                phal_en: "Intense, mysterious, and determined.", 
+                phal_hi: "तीव्र, रहस्यमयी और दृढ़ निश्चय वाला।",
+                rashiphal_en: "A transformative year. Trust your intuition and take calculated risks. Sudden gains are possible.",
+                rashiphal_hi: "यह एक परिवर्तनकारी वर्ष है। अपनी अंतर्ज्ञान पर भरोसा करें और सोच-समझकर जोखिम लें। अचानक धन लाभ संभव है।" 
+            },
+            { 
+                rashi_en: "Sagittarius (Dhanu)", rashi_hi: "धनु (Sagittarius)", 
+                letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], 
+                nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], 
+                phal_en: "Optimistic, philosophical, and independent.", 
+                phal_hi: "आशावादी, दार्शनिक और स्वतंत्र।",
+                rashiphal_en: "Luck favors you in 2026. Spiritual growth and long-distance travel are strongly indicated. Optimism returns.",
+                rashiphal_hi: "2026 में भाग्य आपका साथ देगा। आध्यात्मिक विकास और लंबी दूरी की यात्रा के प्रबल संकेत हैं। जीवन में आशावाद लौटेगा।" 
+            },
+            { 
+                rashi_en: "Capricorn (Makar)", rashi_hi: "मकर (Capricorn)", 
+                letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], 
+                nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], 
+                phal_en: "Ambitious, disciplined, and patient.", 
+                phal_hi: "महत्वाकांक्षी, अनुशासित और धैर्यवान।",
+                rashiphal_en: "Career goals will be met through discipline. 2026 rewards your patience. Real estate investments look good.",
+                rashiphal_hi: "अनुशासन के माध्यम से करियर के लक्ष्य पूरे होंगे। 2026 आपके धैर्य का फल देगा। अचल संपत्ति में निवेश शुभ रहेगा।" 
+            },
+            { 
+                rashi_en: "Aquarius (Kumbh)", rashi_hi: "कुम्भ (Aquarius)", 
+                letters: ["gu","ge","go","sa","si","su","se","so","da"], 
+                nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], 
+                phal_en: "Innovative, humanitarian, and friendly.", 
+                phal_hi: "नवीन सोच वाला, मानवीय और मित्रवत।",
+                rashiphal_en: "Innovation leads to success. Your social circle expands significantly in 2026. Financial gains from networks.",
+                rashiphal_hi: "नवचार से सफलता मिलेगी। 2026 में आपका सामाजिक दायरा काफी बढ़ेगा। नेटवर्किंग से आर्थिक लाभ होगा।" 
+            },
+            { 
+                rashi_en: "Pisces (Meen)", rashi_hi: "मीन (Pisces)", 
+                letters: ["di","du","th","jha","yna","de","do","cha","chi"], 
+                nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], 
+                phal_en: "Compassionate, spiritual, and imaginative.", 
+                phal_hi: "दयालु, आध्यात्मिक और कल्पनाशील।",
+                rashiphal_en: "Spiritual peace and overseas connections. Manage expenses wisely. Intuition will be your best guide.",
+                rashiphal_hi: "आध्यात्मिक शांति मिलेगी और विदेशी संबंध बनेंगे। खर्चों का प्रबंधन समझदारी से करें। अंतर्ज्ञान आपका सबसे अच्छा मार्गदर्शक होगा।" 
+            }
         ];
 
         this.astroDetails = {
@@ -106,6 +203,7 @@ class AstroEngine {
 
 const engine = new AstroEngine();
 let namesData = [];
+
 // --- FAVORITES MANAGER CLASS ---
 class FavoritesManager {
     constructor() {
@@ -231,7 +329,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Helper: Show Details UI (UPDATED WITH HEART BUTTON)
+    // Helper: Show Details UI (UPDATED WITH DOWNLOAD & HEART BUTTON)
     function showDetails(box, data) {
         if(!box || !data) return;
         const L = data.labels;
@@ -240,9 +338,14 @@ document.addEventListener("DOMContentLoaded", () => {
         box.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h2>${data.name}</h2>
-                <button class="card-heart-btn ${isFav ? 'active' : ''}" id="detail-heart-btn">
-                    <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
-                </button>
+                <div style="display:flex;">
+                    <button class="download-btn" id="dl-card-btn" title="Download Status Card">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="card-heart-btn ${isFav ? 'active' : ''}" id="detail-heart-btn" style="margin-left:10px;">
+                        <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
+                    </button>
+                </div>
             </div>
             <div class="detail-grid" style="text-align: left; margin-top: 20px;">
                 <p><strong>${L.meaning}:</strong> ${data.meaning}</p>
@@ -268,18 +371,51 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
         `;
 
-        // Add Event Listener to the new heart button inside details
+        // --- HEART BUTTON LOGIC ---
         const hb = document.getElementById('detail-heart-btn');
         if(hb) {
             hb.onclick = (e) => {
                 e.stopPropagation();
-                const added = favManager.toggle(data); // Pass full data
+                const added = favManager.toggle(data);
                 favManager.save();
                 hb.classList.toggle('active', added);
                 hb.querySelector('i').className = added ? 'fas fa-heart' : 'far fa-heart';
-                
-                // Refresh list if open behind (optional)
                 renderNames();
+            };
+        }
+
+        // --- DOWNLOAD CARD LOGIC (NEW) ---
+        const dlBtn = document.getElementById('dl-card-btn');
+        if(dlBtn) {
+            dlBtn.onclick = () => {
+                // 1. Change Button to Spinner
+                const originalIcon = dlBtn.innerHTML;
+                dlBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                
+                // 2. Fill Hidden Card
+                document.getElementById('card-name').textContent = data.name;
+                document.getElementById('card-meaning').textContent = data.meaning;
+                document.getElementById('card-rashi').textContent = data.rashi;
+                document.getElementById('card-nakshatra').textContent = data.nakshatra;
+                document.getElementById('card-num').textContent = data.num + " (" + data.planet + ")";
+
+                // 3. Generate Image
+                const cardElement = document.getElementById('download-card');
+                
+                html2canvas(cardElement, { scale: 1 }).then(canvas => {
+                    // Download
+                    const link = document.createElement('a');
+                    link.download = `Naamin_${data.name}.png`;
+                    link.href = canvas.toDataURL("image/png");
+                    link.click();
+                    
+                    // Reset Button
+                    dlBtn.innerHTML = originalIcon;
+                }).catch(err => {
+                    console.error("Card generation failed", err);
+                    dlBtn.innerHTML = originalIcon;
+                    alert("Error generating card. Please try again.");
+                });
             };
         }
     }
