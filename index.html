@@ -40,6 +40,10 @@
                 <li><a class="nav-items" href="contact.html" data-en="Contact" data-hi="संपर्क करें"></a></li>
             </ul>
             <div class="header-controls">
+                <button id="fav-view-btn" aria-label="View Shortlist" style="margin-right: 10px;">
+                    <i class="far fa-heart"></i> <span id="fav-count">0</span>
+                </button>
+
                 <button id="theme-toggle" aria-label="Toggle dark and light mode"><i class="fas fa-moon"></i></button>
                 <button id="language-toggle" aria-label="Toggle language">ENG/HIN</button>
             </div>
@@ -161,6 +165,21 @@
     <button id="scrollToTopBtn" class="scroll-to-top-btn" aria-label="Scroll to top">
         <i class="fas fa-arrow-up"></i>
     </button>
+
+    <div id="fav-overlay" class="fav-overlay" style="display: none;">
+        <div class="fav-modal">
+            <div class="fav-header">
+                <h3 data-en="Your Shortlist" data-hi="पसंदीदा नाम">Your Shortlist</h3>
+                <button id="close-fav-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="fav-body" id="fav-list-container">
+                <p style="text-align:center; color:var(--text-medium);">No names saved yet.</p>
+            </div>
+            <div class="fav-footer">
+                <button id="clear-fav-btn" data-en="Clear All" data-hi="सभी हटाएं">Clear All</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 
