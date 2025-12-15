@@ -12,52 +12,6 @@
     
     <link rel="stylesheet" href="style.css">
 
-    <style>
-        /* Animation Container Styling */
-        #naamin-main-title-typing {
-            font-family: 'Inter', sans-serif;
-            font-size: 4rem; /* Desktop size */
-            font-weight: 900; /* Boldest weight */
-            text-align: center;
-            margin: 10px 0 30px 0;
-            min-height: 80px; /* Layout shift rokne ke liye */
-            line-height: 1.2;
-            letter-spacing: -1px;
-        }
-
-        /* Colors */
-        .brand-black { color: #000000; }
-        .brand-orange { color: #FF5722; } /* Vibrant Orange */
-
-        /* Cursor Animation */
-        .cursor {
-            display: inline-block;
-            width: 4px;
-            height: 60px; /* Match text height */
-            background-color: #333;
-            margin-left: 5px;
-            vertical-align: middle;
-            animation: blink 0.7s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-            #naamin-main-title-typing {
-                font-size: 2.8rem; /* Mobile size */
-                min-height: 60px;
-            }
-            .cursor {
-                height: 40px;
-                width: 3px;
-            }
-        }
-    </style>
-
     <script>
         (() => {
             const preferredLang = localStorage.getItem("language") || "hi";
@@ -98,7 +52,7 @@
                 <h2 data-en="Naming Solutions" data-hi="नामकरण समाधान"></h2>
                 
                 <div class="hero-title" id="naamin-main-title-typing">
-                    <span id="type-naam" class="brand-black"></span><span id="type-in" class="brand-orange"></span><span class="cursor"></span>
+                    <span id="type-naam" class="brand-black"></span><span id="type-in" class="brand-orange"></span>
                 </div>
                 
                 <div class="hero-search-container">
@@ -209,37 +163,6 @@
     </button>
 
     <script src="script.js"></script>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const naamPart = "Naam";
-            const inPart = "in";
-            const speed = 150; // Typing speed
-            
-            let i = 0;
-            let j = 0;
-            
-            const spanNaam = document.getElementById("type-naam");
-            const spanIn = document.getElementById("type-in");
-
-            // Animation function
-            function typeWriter() {
-                if (i < naamPart.length) {
-                    spanNaam.innerHTML += naamPart.charAt(i);
-                    i++;
-                    setTimeout(typeWriter, speed);
-                } 
-                else if (j < inPart.length) {
-                    spanIn.innerHTML += inPart.charAt(j);
-                    j++;
-                    setTimeout(typeWriter, speed);
-                }
-            }
-            
-            // Start the animation with a small delay
-            setTimeout(typeWriter, 500);
-        });
-    </script>
 
 </body>
 </html>
