@@ -12,6 +12,8 @@
     
     <link rel="stylesheet" href="style.css">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <script>
         (() => {
             const preferredLang = localStorage.getItem("language") || "hi";
@@ -177,6 +179,33 @@
             </div>
             <div class="fav-footer">
                 <button id="clear-fav-btn" data-en="Clear All" data-hi="सभी हटाएं">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="card-generator-container" style="position: fixed; left: -9999px; top: -9999px;">
+        <div id="download-card" class="name-card-design">
+            <div class="card-top">
+                <span class="card-logo">Naam<span style="color:#F97316">in</span></span>
+            </div>
+            <div class="card-content">
+                <h1 id="card-name">Aarav</h1>
+                <p id="card-meaning" class="card-meaning">Peaceful; Wisdom; Musical Note</p>
+                
+                <div class="card-details">
+                    <div class="cd-row">
+                        <span>🔮 Rashi:</span> <span id="card-rashi">Mesh (Aries)</span>
+                    </div>
+                    <div class="cd-row">
+                        <span>⭐ Nakshatra:</span> <span id="card-nakshatra">Krittika</span>
+                    </div>
+                    <div class="cd-row">
+                        <span>🔢 Numerology:</span> <span id="card-num">1 (Sun)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-bottom">
+                <p>Find meaningful names at <strong>www.naamin.com</strong></p>
             </div>
         </div>
     </div>
