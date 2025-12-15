@@ -1,28 +1,29 @@
 /* ======================================================
-   SCRIPT.JS - FINAL FIXED (Guaranteed Looping Animation)
+   SCRIPT.JS - UPDATED (Shortlist Feature Added)
    ====================================================== */
 
 document.body.style.visibility = "visible";
 document.body.style.opacity = "1";
 
-// 🌟 ASTRO ENGINE
+// 🌟 ASTRO ENGINE (Same as before)
 class AstroEngine {
     constructor() {
         this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
         
+        // 2026 Horoscope Data
         this.rashiMap = [
-            { rashi_en: "Aries (Mesh)", rashi_hi: "मेष (Aries)", letters: ["chu","che","cho","la","li","lu","le","lo","a"], nakshatras: ["Ashwini","Bharani","Krittika"], phal_en: "Courageous...", phal_hi: "साहसी...", rashiphal_en: "Great day...", rashiphal_hi: "अच्छा दिन..." },
-            { rashi_en: "Taurus (Vrishabh)", rashi_hi: "वृषभ (Taurus)", letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], nakshatras: ["Krittika","Rohini","Mrigashira"], phal_en: "Calm...", phal_hi: "शांत...", rashiphal_en: "Be patient...", rashiphal_hi: "धैर्य रखें..." },
-            { rashi_en: "Gemini (Mithun)", rashi_hi: "मिथुन (Gemini)", letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], nakshatras: ["Mrigashira","Ardra","Punarvasu"], phal_en: "Intelligent...", phal_hi: "बुद्धिमान...", rashiphal_en: "Communication...", rashiphal_hi: "संचार..." },
-            { rashi_en: "Cancer (Kark)", rashi_hi: "कर्क (Cancer)", letters: ["hi","hu","he","ho","da","di","du","de","do"], nakshatras: ["Punarvasu","Pushya","Ashlesha"], phal_en: "Emotional...", phal_hi: "भावुक...", rashiphal_en: "Control emotions...", rashiphal_hi: "भावनाओं पर काबू..." },
-            { rashi_en: "Leo (Simha)", rashi_hi: "सिंह (Leo)", letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], phal_en: "Confident...", phal_hi: "आत्मविश्वासी...", rashiphal_en: "Confidence high...", rashiphal_hi: "आत्मविश्वास..." },
-            { rashi_en: "Virgo (Kanya)", rashi_hi: "कन्या (Virgo)", letters: ["to","pa","pi","pu","sha","na","th","pe","po"], nakshatras: ["Uttara Phalguni","Hasta","Chitra"], phal_en: "Analytical...", phal_hi: "विश्लेषणात्मक...", rashiphal_en: "Hard work...", rashiphal_hi: "मेहनत..." },
-            { rashi_en: "Libra (Tula)", rashi_hi: "तुला (Libra)", letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], nakshatras: ["Chitra","Swati","Vishakha"], phal_en: "Balanced...", phal_hi: "संतुलित...", rashiphal_en: "Balance...", rashiphal_hi: "संतुलन..." },
-            { rashi_en: "Scorpio (Vrishchik)", rashi_hi: "वृश्चिक (Scorpio)", letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], nakshatras: ["Vishakha","Anuradha","Jyeshtha"], phal_en: "Intense...", phal_hi: "तीव्र...", rashiphal_en: "Stalled work...", rashiphal_hi: "रुके काम..." },
-            { rashi_en: "Sagittarius (Dhanu)", rashi_hi: "धनु (Sagittarius)", letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], phal_en: "Optimistic...", phal_hi: "आशावादी...", rashiphal_en: "Luck favors...", rashiphal_hi: "भाग्य..." },
-            { rashi_en: "Capricorn (Makar)", rashi_hi: "मकर (Capricorn)", letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], phal_en: "Ambitious...", phal_hi: "महत्वाकांक्षी...", rashiphal_en: "Discipline...", rashiphal_hi: "अनुशासन..." },
-            { rashi_en: "Aquarius (Kumbh)", rashi_hi: "कुम्भ (Aquarius)", letters: ["gu","ge","go","sa","si","su","se","so","da"], nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], phal_en: "Innovative...", phal_hi: "नवीन...", rashiphal_en: "New ideas...", rashiphal_hi: "नए विचार..." },
-            { rashi_en: "Pisces (Meen)", rashi_hi: "मीन (Pisces)", letters: ["di","du","th","jha","yna","de","do","cha","chi"], nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], phal_en: "Compassionate...", phal_hi: "दयालु...", rashiphal_en: "Peace...", rashiphal_hi: "शांति..." }
+            { rashi_en: "Aries (Mesh)", rashi_hi: "मेष (Aries)", letters: ["chu","che","cho","la","li","lu","le","lo","a"], nakshatras: ["Ashwini","Bharani","Krittika"], phal_en: "Courageous...", phal_hi: "साहसी...", rashiphal_en: "2026 brings massive career growth...", rashiphal_hi: "2026 करियर में भारी वृद्धि लाएगा..." },
+            { rashi_en: "Taurus (Vrishabh)", rashi_hi: "वृषभ (Taurus)", letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], nakshatras: ["Krittika","Rohini","Mrigashira"], phal_en: "Calm...", phal_hi: "शांत...", rashiphal_en: "Financial stability improves...", rashiphal_hi: "आर्थिक स्थिरता बेहतर होगी..." },
+            { rashi_en: "Gemini (Mithun)", rashi_hi: "मिथुन (Gemini)", letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], nakshatras: ["Mrigashira","Ardra","Punarvasu"], phal_en: "Intelligent...", phal_hi: "बुद्धिमान...", rashiphal_en: "Great year for learning...", rashiphal_hi: "सीखने के लिए बेहतरीन वर्ष..." },
+            { rashi_en: "Cancer (Kark)", rashi_hi: "कर्क (Cancer)", letters: ["hi","hu","he","ho","da","di","du","de","do"], nakshatras: ["Punarvasu","Pushya","Ashlesha"], phal_en: "Emotional...", phal_hi: "भावुक...", rashiphal_en: "Focus on home and property...", rashiphal_hi: "घर और संपत्ति पर ध्यान..." },
+            { rashi_en: "Leo (Simha)", rashi_hi: "सिंह (Leo)", letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], phal_en: "Confident...", phal_hi: "आत्मविश्वासी...", rashiphal_en: "Leadership roles await...", rashiphal_hi: "नेतृत्व की भूमिकाएँ..." },
+            { rashi_en: "Virgo (Kanya)", rashi_hi: "कन्या (Virgo)", letters: ["to","pa","pi","pu","sha","na","th","pe","po"], nakshatras: ["Uttara Phalguni","Hasta","Chitra"], phal_en: "Analytical...", phal_hi: "विश्लेषणात्मक...", rashiphal_en: "Hard work pays off...", rashiphal_hi: "मेहनत का फल मिलेगा..." },
+            { rashi_en: "Libra (Tula)", rashi_hi: "तुला (Libra)", letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], nakshatras: ["Chitra","Swati","Vishakha"], phal_en: "Balanced...", phal_hi: "संतुलित...", rashiphal_en: "Balance in partnerships...", rashiphal_hi: "साझेदारी में संतुलन..." },
+            { rashi_en: "Scorpio (Vrishchik)", rashi_hi: "वृश्चिक (Scorpio)", letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], nakshatras: ["Vishakha","Anuradha","Jyeshtha"], phal_en: "Intense...", phal_hi: "तीव्र...", rashiphal_en: "Transformative year...", rashiphal_hi: "परिवर्तनकारी वर्ष..." },
+            { rashi_en: "Sagittarius (Dhanu)", rashi_hi: "धनु (Sagittarius)", letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], phal_en: "Optimistic...", phal_hi: "आशावादी...", rashiphal_en: "Luck favors you...", rashiphal_hi: "भाग्य साथ देगा..." },
+            { rashi_en: "Capricorn (Makar)", rashi_hi: "मकर (Capricorn)", letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], phal_en: "Ambitious...", phal_hi: "महत्वाकांक्षी...", rashiphal_en: "Career goals met...", rashiphal_hi: "करियर लक्ष्य पूरे..." },
+            { rashi_en: "Aquarius (Kumbh)", rashi_hi: "कुम्भ (Aquarius)", letters: ["gu","ge","go","sa","si","su","se","so","da"], nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], phal_en: "Innovative...", phal_hi: "नवीन...", rashiphal_en: "Innovation leads to success...", rashiphal_hi: "नवचार से सफलता..." },
+            { rashi_en: "Pisces (Meen)", rashi_hi: "मीन (Pisces)", letters: ["di","du","th","jha","yna","de","do","cha","chi"], nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], phal_en: "Compassionate...", phal_hi: "दयालु...", rashiphal_en: "Spiritual peace...", rashiphal_hi: "आध्यात्मिक शांति..." }
         ];
 
         this.astroDetails = {
@@ -90,8 +91,8 @@ class AstroEngine {
                 vedicTitle: isHindi ? "🔮 वैदिक ज्योतिष" : "🔮 Vedic Astrology",
                 rashi: isHindi ? "राशि" : "Rashi",
                 nakshatra: isHindi ? "नक्षत्र" : "Nakshatra",
-                personality: isHindi ? "व्यक्तित्व" : "Personality",
-                rashiphalTitle: isHindi ? "✨ राशिफल" : "✨ Horoscope",
+                personality: isHindi ? "2026 भविष्यवाणी" : "2026 Prediction",
+                rashiphalTitle: isHindi ? "✨ 2026 राशिफल" : "✨ 2026 Horoscope",
                 numTitle: isHindi ? "🔢 अंक ज्योतिष" : "🔢 Numerology",
                 number: isHindi ? "अंक" : "Number",
                 planet: isHindi ? "ग्रह" : "Planet",
@@ -105,6 +106,53 @@ class AstroEngine {
 
 const engine = new AstroEngine();
 let namesData = [];
+// --- FAVORITES MANAGER CLASS ---
+class FavoritesManager {
+    constructor() {
+        this.storageKey = 'naamin_favorites_v1';
+        this.favorites = this.load();
+        this.updateHeaderCount();
+    }
+
+    load() {
+        const data = localStorage.getItem(this.storageKey);
+        return data ? JSON.parse(data) : [];
+    }
+
+    save() {
+        localStorage.setItem(this.storageKey, JSON.stringify(this.favorites));
+        this.updateHeaderCount();
+    }
+
+    toggle(nameObj) {
+        const name = nameObj.name || nameObj.Name;
+        const exists = this.favorites.find(item => (item.name || item.Name) === name);
+        
+        if (exists) {
+            this.favorites = this.favorites.filter(item => (item.name || item.Name) !== name);
+            return false; // Removed
+        } else {
+            this.favorites.push(nameObj);
+            return true; // Added
+        }
+    }
+
+    isFavorite(name) {
+        return this.favorites.some(item => (item.name || item.Name) === name);
+    }
+
+    clear() {
+        this.favorites = [];
+        this.save();
+    }
+
+    updateHeaderCount() {
+        const countSpan = document.getElementById('fav-count');
+        if (countSpan) countSpan.textContent = this.favorites.length;
+    }
+}
+
+const favManager = new FavoritesManager();
 
 document.addEventListener("DOMContentLoaded", () => {
     
@@ -183,12 +231,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Helper: Show Details UI
+    // Helper: Show Details UI (UPDATED WITH HEART BUTTON)
     function showDetails(box, data) {
         if(!box || !data) return;
         const L = data.labels;
+        const isFav = favManager.isFavorite(data.name);
+        
         box.innerHTML = `
-            <h2>${data.name}</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>${data.name}</h2>
+                <button class="card-heart-btn ${isFav ? 'active' : ''}" id="detail-heart-btn">
+                    <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
+                </button>
+            </div>
             <div class="detail-grid" style="text-align: left; margin-top: 20px;">
                 <p><strong>${L.meaning}:</strong> ${data.meaning}</p>
                 <p><strong>${L.gender}:</strong> ${data.gender}</p> 
@@ -212,6 +267,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 </p>
             </div>
         `;
+
+        // Add Event Listener to the new heart button inside details
+        const hb = document.getElementById('detail-heart-btn');
+        if(hb) {
+            hb.onclick = (e) => {
+                e.stopPropagation();
+                const added = favManager.toggle(data); // Pass full data
+                favManager.save();
+                hb.classList.toggle('active', added);
+                hb.querySelector('i').className = added ? 'fas fa-heart' : 'far fa-heart';
+                
+                // Refresh list if open behind (optional)
+                renderNames();
+            };
+        }
     }
 
     // === SEARCH LOGIC ===
@@ -273,7 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(sBtn) sBtn.onclick = handleHeroSearch;
     if(sInp) sInp.onkeypress = (e) => { if(e.key==="Enter") handleHeroSearch(); };
 
-    // === A-Z LIST LOGIC ===
+    // === A-Z LIST LOGIC (UPDATED WITH HEARTS) ===
     const nameFinderSection = document.getElementById('name-finder');
     if (nameFinderSection) {
         const alphabetContainer = document.querySelector('.alphabet-selector');
@@ -331,6 +401,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
+        // Updated Render Names to include Heart Icon
         function renderNames() {
             if(!nameListContainer) return;
             nameListContainer.innerHTML = "";
@@ -351,9 +422,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             filtered.forEach(person => {
+                const pName = person.name || person.Name;
+                const isFav = favManager.isFavorite(pName);
+                
                 const div = document.createElement("div");
                 div.className = "name-item";
-                div.textContent = person.name || person.Name;
+                // Structure: Name text + Heart Button
+                div.innerHTML = `
+                    <span>${pName}</span>
+                    <button class="card-heart-btn ${isFav ? 'active' : ''}">
+                        <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
+                    </button>
+                `;
+
+                // Card Click -> Open Details
                 div.onclick = () => {
                     if(listSection) listSection.style.display = 'none';
                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
@@ -361,6 +443,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     const smartData = engine.processName(person, getLanguage());
                     showDetails(nameDetailsBox, smartData);
                 };
+
+                // Heart Click -> Toggle Save (Stop Propagation prevents opening details)
+                const heartBtn = div.querySelector('.card-heart-btn');
+                heartBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    const added = favManager.toggle(person);
+                    favManager.save();
+                    heartBtn.classList.toggle('active', added);
+                    heartBtn.querySelector('i').className = added ? 'fas fa-heart' : 'far fa-heart';
+                };
+
                 nameListContainer.appendChild(div);
             });
         }
@@ -378,41 +471,93 @@ document.addEventListener("DOMContentLoaded", () => {
             if(nameDetailsContainer) nameDetailsContainer.style.display = 'none';
             const listSection = document.querySelector('.name-list-container');
             if(listSection) listSection.style.display = 'block';
+            renderNames(); // Re-render to update hearts if changed inside details
         };
 
         generateAlphabet();
         loadNames("Boy");
     }
 
-    // --- COMING SOON OVERLAY ---
-    const featureBtn = document.getElementById('feature-btn-id'); 
-    const overlay = document.getElementById('coming-soon-overlay');
+    // --- FAVORITES MODAL LOGIC ---
+    const favBtn = document.getElementById('fav-view-btn');
+    const favOverlay = document.getElementById('fav-overlay');
+    const closeFavBtn = document.getElementById('close-fav-btn');
+    const clearFavBtn = document.getElementById('clear-fav-btn');
+    const favListContainer = document.getElementById('fav-list-container');
 
-    if(featureBtn && overlay) {
-        featureBtn.addEventListener('click', (e) => {
-            e.preventDefault(); 
-            overlay.style.display = 'flex'; 
-            
-            setTimeout(() => {
-                overlay.style.display = 'none';
-            }, 3000);
-        });
+    if(favBtn && favOverlay) {
+        favBtn.onclick = () => {
+            renderFavoritesList();
+            favOverlay.style.display = 'flex';
+        };
+
+        closeFavBtn.onclick = () => {
+            favOverlay.style.display = 'none';
+        };
+
+        // Close when clicking outside
+        favOverlay.onclick = (e) => {
+            if(e.target === favOverlay) favOverlay.style.display = 'none';
+        };
+
+        clearFavBtn.onclick = () => {
+            if(confirm("Are you sure you want to clear all favorites?")) {
+                favManager.clear();
+                renderFavoritesList();
+                renderNames(); // Update hearts in background list
+            }
+        };
     }
 
-    // --- CHATBOT ---
-    if(document.getElementById("chatbox")) {
-        const btn = document.getElementById("sendBtn");
-        const inp = document.getElementById("userInput");
-        const box = document.getElementById("chatbox");
-        const send = () => {
-            if(!inp.value.trim()) return;
-            box.innerHTML += `<div class="message user">${inp.value}</div>`;
-            inp.value = "";
-            box.scrollTop = box.scrollHeight;
-            box.innerHTML += `<div class="message bot">For AI chat, please add API Key.</div>`;
-        };
-        if(btn) btn.onclick = send;
-        if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
+    function renderFavoritesList() {
+        if(!favListContainer) return;
+        favListContainer.innerHTML = "";
+        const list = favManager.favorites;
+        
+        if(list.length === 0) {
+            favListContainer.innerHTML = '<p style="text-align:center; color:var(--text-medium);">No names saved yet.</p>';
+            return;
+        }
+
+        list.forEach(item => {
+            const name = item.name || item.Name;
+            const row = document.createElement('div');
+            row.className = 'fav-item-row';
+            row.innerHTML = `
+                <span>${name}</span>
+                <button class="fav-remove-btn"><i class="fas fa-trash"></i></button>
+            `;
+            
+            // Remove item
+            row.querySelector('.fav-remove-btn').onclick = (e) => {
+                e.stopPropagation();
+                favManager.toggle(item);
+                favManager.save();
+                renderFavoritesList(); // Re-render this list
+                renderNames(); // Update background list
+            };
+
+            // Click to view details
+            row.onclick = () => {
+                favOverlay.style.display = 'none'; // Close modal
+                
+                // Open details logic
+                const section = document.getElementById('name-finder');
+                const listSection = document.querySelector('.name-list-container');
+                const nameDetailsBox = document.querySelector('.name-details');
+                const nameDetailsContainer = document.querySelector('.name-details-container');
+
+                if(section) {
+                     window.scrollTo({ top: section.offsetTop - 100, behavior: 'smooth' });
+                     if(listSection) listSection.style.display = 'none';
+                     if(nameDetailsContainer) nameDetailsContainer.style.display = 'block';
+                     const smartData = engine.processName(item, getLanguage());
+                     showDetails(nameDetailsBox, smartData);
+                }
+            };
+
+            favListContainer.appendChild(row);
+        });
     }
 
     // --- NAAMIN TYPING ANIMATION (GUARANTEED LOOP) ---
@@ -425,9 +570,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const typeSpeed = 200;
         const delayBeforeRestart = 2000; // 2 seconds wait
 
-        // Main Animation Function
         const runAnimation = () => {
-            // 1. Instant Clean
             typeNaam.textContent = "";
             typeIn.textContent = "";
             
@@ -435,29 +578,22 @@ document.addEventListener("DOMContentLoaded", () => {
             let j = 0;
 
             const step = () => {
-                // Type "Naam"
                 if (i < text1.length) {
                     typeNaam.textContent += text1.charAt(i);
                     i++;
                     setTimeout(step, typeSpeed);
                 } 
-                // Type "in"
                 else if (j < text2.length) {
                     typeIn.textContent += text2.charAt(j);
                     j++;
                     setTimeout(step, typeSpeed);
                 } 
-                // Done? Wait then Restart
                 else {
                     setTimeout(runAnimation, delayBeforeRestart);
                 }
             };
-            
-            // Start stepping
             step();
         };
-
-        // Initialize
         runAnimation();
     }
 });
