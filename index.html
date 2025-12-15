@@ -12,6 +12,52 @@
     
     <link rel="stylesheet" href="style.css">
 
+    <style>
+        /* Animation Container Styling */
+        #naamin-main-title-typing {
+            font-family: 'Inter', sans-serif;
+            font-size: 4rem; /* Desktop size */
+            font-weight: 900; /* Boldest weight */
+            text-align: center;
+            margin: 10px 0 30px 0;
+            min-height: 80px; /* Layout shift rokne ke liye */
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        /* Colors */
+        .brand-black { color: #000000; }
+        .brand-orange { color: #FF5722; } /* Vibrant Orange */
+
+        /* Cursor Animation */
+        .cursor {
+            display: inline-block;
+            width: 4px;
+            height: 60px; /* Match text height */
+            background-color: #333;
+            margin-left: 5px;
+            vertical-align: middle;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            #naamin-main-title-typing {
+                font-size: 2.8rem; /* Mobile size */
+                min-height: 60px;
+            }
+            .cursor {
+                height: 40px;
+                width: 3px;
+            }
+        }
+    </style>
+
     <script>
         (() => {
             const preferredLang = localStorage.getItem("language") || "hi";
@@ -51,10 +97,9 @@
             <div class="content-wrapper">
                 <h2 data-en="Naming Solutions" data-hi="नामकरण समाधान"></h2>
                 
-                <h1 class="hero-typing-wrapper">
-                    <span data-en="Smart Naming Solutions by " data-hi="स्मार्ट नामकरण समाधान ">Smart Naming Solutions by </span>
-                    <span class="hero-typing">Naamin</span>
-                </h1>
+                <div class="hero-title" id="naamin-main-title-typing">
+                    <span id="type-naam" class="brand-black"></span><span id="type-in" class="brand-orange"></span><span class="cursor"></span>
+                </div>
                 
                 <div class="hero-search-container">
                     <input type="text" id="hero-search-input" placeholder="e.g., Aarav, Advik, Anika...">
@@ -115,11 +160,32 @@
         <section id="faq" class="section">
             <div class="content-wrapper">
                 <h2 data-en="Frequently Asked Questions" data-hi="अक्सर पूछे जाने वाले प्रश्न"></h2>
-                <details class="faq-item"><summary data-en="Can I get a name based on my astrological chart?" data-hi="क्या मैं अपनी ज्योतिषीय कुंडली के आधार पर नाम प्राप्त कर सकता हूँ?"></summary><div class="faq-content"><p data-en="Yes, we specialize in providing names that align with your birth star (Nakshatra) and other astrological parameters for maximum auspiciousness." data-hi="हाँ, हम ऐसे नाम प्रदान करने में विशेषज्ञ हैं जो अधिकतम शुभता के लिए आपके जन्म नक्षत्र (नक्षत्र) और अन्य ज्योतिषीय मापदंडों के साथ संरेखित होते हैं।"></p></div></details>
-                <details class="faq-item"><summary data-en="How long does it take to get a naming report?" data-hi="नामकरण रिपोर्ट प्राप्त करने में कितना समय लगता है?"></summary><div class="faq-content"><p data-en="Our detailed naming reports are typically delivered within 3-5 business days after all necessary information has been provided." data-hi="हमारी विस्तृत नामकरण रिपोर्ट आमतौर पर सभी आवश्यक जानकारी प्रदान करने के 3-5 व्यावसायिक दिनों के भीतर वितरित की जाती हैं।"></p></div></details>
-                <details class="faq-item"><summary data-en="What makes Naamin's naming service unique?" data-hi="नामिन की नामकरण सेवा को क्या अनोखा बनाता है?"></summary><div class="faq-content"><p data-en="We combine traditional Sanskrit wisdom, astrological insights, and modern branding principles to create names that are not just unique but also deeply meaningful and impactful." data-hi="हम पारंपरिक संस्कृत ज्ञान, ज्योतिषीय अंतर्दृष्टि और आधुनिक ब्रांडिंग सिद्धांतों को जोड़कर ऐसे नाम बनाते हैं जो न केवल अद्वितीय हैं बल्कि गहरे अर्थपूर्ण और प्रभावशाली भी हैं।"></p></div></details>
-                <details class="faq-item"><summary data-en="How do you ensure the authenticity of Sanskrit names and meanings?" data-hi="आप संस्कृत नामों और अर्थों की प्रामाणिकता कैसे सुनिश्चित करते हैं?"></summary><div class="faq-content"><p data-en="Our team includes Sanskrit scholars and linguists who meticulously research and verify the etymology, pronunciation, and spiritual significance of every name." data-hi="हमारी टीम में संस्कृत विद्वान और भाषाविद् शामिल हैं जो प्रत्येक नाम की व्युत्पत्ति, उच्चारण और आध्यात्मिक महत्व का सावधानीपूर्वक शोध और सत्यापन करते हैं।"></p></div></details>
-                <details class="faq-item"><summary data-en="What if I don't like the suggested names?" data-hi="अगर मुझे सुझाए गए नाम पसंद नहीं आते तो क्या होगा?"></summary><div class="faq-content"><p data-en="We offer revisions and work closely with you to understand your preferences better. Our goal is to ensure you are completely satisfied with the final name." data-hi="हम संशोधन प्रदान करते हैं और आपकी प्राथमिकताओं को बेहतर ढंग से समझने के लिए आपके साथ मिलकर काम करते हैं। हमारा लक्ष्य यह सुनिश्चित करना है कि आप अंतिम नाम से पूरी तरह संतुष्ट हों।"></p></div></details>
+                
+                <details class="faq-item">
+                    <summary data-en="Can I get a name based on my astrological chart?" data-hi="क्या मैं अपनी ज्योतिषीय कुंडली के आधार पर नाम प्राप्त कर सकता हूँ?"></summary>
+                    <div class="faq-content"><p data-en="Yes, we specialize in providing names that align with your birth star (Nakshatra) and other astrological parameters for maximum auspiciousness." data-hi="हाँ, हम ऐसे नाम प्रदान करने में विशेषज्ञ हैं जो अधिकतम शुभता के लिए आपके जन्म नक्षत्र (नक्षत्र) और अन्य ज्योतिषीय मापदंडों के साथ संरेखित होते हैं।"></p></div>
+                </details>
+
+                <details class="faq-item">
+                    <summary data-en="How long does it take to get a naming report?" data-hi="नामकरण रिपोर्ट प्राप्त करने में कितना समय लगता है?"></summary>
+                    <div class="faq-content"><p data-en="Our detailed naming reports are typically delivered within 3-5 business days after all necessary information has been provided." data-hi="हमारी विस्तृत नामकरण रिपोर्ट आमतौर पर सभी आवश्यक जानकारी प्रदान करने के 3-5 व्यावसायिक दिनों के भीतर वितरित की जाती हैं।"></p></div>
+                </details>
+
+                <details class="faq-item">
+                    <summary data-en="What makes Naamin's naming service unique?" data-hi="नामिन की नामकरण सेवा को क्या अनोखा बनाता है?"></summary>
+                    <div class="faq-content"><p data-en="We combine traditional Sanskrit wisdom, astrological insights, and modern branding principles to create names that are not just unique but also deeply meaningful and impactful." data-hi="हम पारंपरिक संस्कृत ज्ञान, ज्योतिषीय अंतर्दृष्टि और आधुनिक ब्रांडिंग सिद्धांतों को जोड़कर ऐसे नाम बनाते हैं जो न केवल अद्वितीय हैं बल्कि गहरे अर्थपूर्ण और प्रभावशाली भी हैं।"></p></div>
+                </details>
+
+                <details class="faq-item">
+                    <summary data-en="How do you ensure the authenticity of Sanskrit names and meanings?" data-hi="आप संस्कृत नामों और अर्थों की प्रामाणिकता कैसे सुनिश्चित करते हैं?"></summary>
+                    <div class="faq-content"><p data-en="Our team includes Sanskrit scholars and linguists who meticulously research and verify the etymology, pronunciation, and spiritual significance of every name." data-hi="हमारी टीम में संस्कृत विद्वान और भाषाविद् शामिल हैं जो प्रत्येक नाम की व्युत्पत्ति, उच्चारण और आध्यात्मिक महत्व का सावधानीपूर्वक शोध और सत्यापन करते हैं।"></p></div>
+                </details>
+
+                <details class="faq-item">
+                    <summary data-en="What if I don't like the suggested names?" data-hi="अगर मुझे सुझाए गए नाम पसंद नहीं आते तो क्या होगा?"></summary>
+                    <div class="faq-content"><p data-en="We offer revisions and work closely with you to understand your preferences better. Our goal is to ensure you are completely satisfied with the final name." data-hi="हम संशोधन प्रदान करते हैं और आपकी प्राथमिकताओं को बेहतर ढंग से समझने के लिए आपके साथ मिलकर काम करते हैं। हमारा लक्ष्य यह सुनिश्चित करना है कि आप अंतिम नाम से पूरी तरह संतुष्ट हों।"></p></div>
+                </details>
+
             </div>
         </section>
     </main>
@@ -143,6 +209,37 @@
     </button>
 
     <script src="script.js"></script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const naamPart = "Naam";
+            const inPart = "in";
+            const speed = 150; // Typing speed
+            
+            let i = 0;
+            let j = 0;
+            
+            const spanNaam = document.getElementById("type-naam");
+            const spanIn = document.getElementById("type-in");
+
+            // Animation function
+            function typeWriter() {
+                if (i < naamPart.length) {
+                    spanNaam.innerHTML += naamPart.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                } 
+                else if (j < inPart.length) {
+                    spanIn.innerHTML += inPart.charAt(j);
+                    j++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+            
+            // Start the animation with a small delay
+            setTimeout(typeWriter, 500);
+        });
+    </script>
 
 </body>
 </html>
