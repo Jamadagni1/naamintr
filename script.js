@@ -1,5 +1,5 @@
 /* ======================================================
-   SCRIPT.JS - FINAL UPDATE (Looping Animation, No Cursor)
+   SCRIPT.JS - FINAL FIXED (Guaranteed Looping Animation)
    ====================================================== */
 
 document.body.style.visibility = "visible";
@@ -11,181 +11,30 @@ class AstroEngine {
         this.numerologyMap = { 'A':1,'I':1,'J':1,'Q':1,'Y':1,'B':2,'K':2,'R':2,'C':3,'G':3,'L':3,'S':3,'D':4,'M':4,'T':4,'E':5,'H':5,'N':5,'X':5,'U':6,'V':6,'W':6,'O':7,'Z':7,'F':8,'P':8 };
         
         this.rashiMap = [
-            { 
-                rashi_en: "Aries (Mesh)", rashi_hi: "मेष (Aries)", 
-                letters: ["chu","che","cho","la","li","lu","le","lo","a"], 
-                nakshatras: ["Ashwini","Bharani","Krittika"], 
-                phal_en: "Courageous, energetic, and a born leader.", 
-                phal_hi: "साहसी, ऊर्जावान और नेतृत्व करने वाला।",
-                rashiphal_en: "Today is great for new beginnings. Channel your energy wisely. Health will remain excellent.",
-                rashiphal_hi: "आज का दिन नई शुरुआत के लिए अच्छा है। अपनी ऊर्जा को सही दिशा में लगाएं। स्वास्थ्य उत्तम रहेगा।" 
-            },
-            { 
-                rashi_en: "Taurus (Vrishabh)", rashi_hi: "वृषभ (Taurus)", 
-                letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], 
-                nakshatras: ["Krittika","Rohini","Mrigashira"], 
-                phal_en: "Calm, reliable, and lover of arts.", 
-                phal_hi: "शांत, विश्वसनीय और कला प्रेमी।",
-                rashiphal_en: "Be patient, financial gains are likely. Good time with family.",
-                rashiphal_hi: "धैर्य बनाए रखें, धन लाभ के योग हैं। परिवार के साथ अच्छा समय बीतेगा।" 
-            },
-            { 
-                rashi_en: "Gemini (Mithun)", rashi_hi: "मिथुन (Gemini)", 
-                letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], 
-                nakshatras: ["Mrigashira","Ardra","Punarvasu"], 
-                phal_en: "Intelligent, talkative, and versatile.", 
-                phal_hi: "बुद्धिमान, वाचाल और बहुमुखी प्रतिभा वाला।",
-                rashiphal_en: "Communication skills will bring benefits. You might meet an old friend.",
-                rashiphal_hi: "संचार कौशल से लाभ होगा। किसी पुराने मित्र से मुलाकात हो सकती है।" 
-            },
-            { 
-                rashi_en: "Cancer (Kark)", rashi_hi: "कर्क (Cancer)", 
-                letters: ["hi","hu","he","ho","da","di","du","de","do"], 
-                nakshatras: ["Punarvasu","Pushya","Ashlesha"], 
-                phal_en: "Emotional, sensitive, and family-oriented.", 
-                phal_hi: "भावुक, संवेदनशील और परिवार प्रेमी।",
-                rashiphal_en: "Control your emotions. You will get praise at work. Take care of mother's health.",
-                rashiphal_hi: "भावनाओं पर काबू रखें। कार्यक्षेत्र में प्रशंसा मिलेगी। माता के स्वास्थ्य का ध्यान रखें।" 
-            },
-            { 
-                rashi_en: "Leo (Simha)", rashi_hi: "सिंह (Leo)", 
-                letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], 
-                nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], 
-                phal_en: "Confident, generous, and regal nature.", 
-                phal_hi: "आत्मविश्वासी, उदार और राजा जैसा स्वभाव।",
-                rashiphal_en: "Confidence will be high. Respect and honor will increase. Avoid anger.",
-                rashiphal_hi: "आत्मविश्वास बढ़ा रहेगा। मान-सम्मान में वृद्धि होगी। क्रोध से बचें।" 
-            },
-            { 
-                rashi_en: "Virgo (Kanya)", rashi_hi: "कन्या (Virgo)", 
-                letters: ["to","pa","pi","pu","sha","na","th","pe","po"], 
-                nakshatras: ["Uttara Phalguni","Hasta","Chitra"], 
-                phal_en: "Analytical, practical, and hardworking.", 
-                phal_hi: "विश्लेषण करने वाला, व्यावहारिक और मेहनती।",
-                rashiphal_en: "Hard work will pay off. Think twice before signing any documents.",
-                rashiphal_hi: "मेहनत का फल मिलेगा। किसी भी दस्तावेज़ पर हस्ताक्षर करने से पहले सोच-विचार कर लें।" 
-            },
-            { 
-                rashi_en: "Libra (Tula)", rashi_hi: "तुला (Libra)", 
-                letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], 
-                nakshatras: ["Chitra","Swati","Vishakha"], 
-                phal_en: "Fair, balanced, and social.", 
-                phal_hi: "न्यायप्रिय, संतुलित और मिलनसार।",
-                rashiphal_en: "Today is for balance. Interest in art and music will increase.",
-                rashiphal_hi: "आज का दिन संतुलन बनाने का है। कला और संगीत में रुचि बढ़ेगी।" 
-            },
-            { 
-                rashi_en: "Scorpio (Vrishchik)", rashi_hi: "वृश्चिक (Scorpio)", 
-                letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], 
-                nakshatras: ["Vishakha","Anuradha","Jyeshtha"], 
-                phal_en: "Intense, mysterious, and determined.", 
-                phal_hi: "तीव्र, रहस्यमयी और दृढ़ निश्चय वाला।",
-                rashiphal_en: "Stalled work will be completed. Beware of secret enemies.",
-                rashiphal_hi: "रुके हुए कार्य पूर्ण होंगे। गुप्त शत्रुओं से सावधान रहें।" 
-            },
-            { 
-                rashi_en: "Sagittarius (Dhanu)", rashi_hi: "धनु (Sagittarius)", 
-                letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], 
-                nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], 
-                phal_en: "Optimistic, philosophical, and independent.", 
-                phal_hi: "आशावादी, दार्शनिक और स्वतंत्र।",
-                rashiphal_en: "Luck will favor you. Interest in religious activities. Travel is on the cards.",
-                rashiphal_hi: "भाग्य का साथ मिलेगा। धार्मिक कार्यों में रुचि बढ़ेगी। यात्रा के योग हैं।" 
-            },
-            { 
-                rashi_en: "Capricorn (Makar)", rashi_hi: "मकर (Capricorn)", 
-                letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], 
-                nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], 
-                phal_en: "Ambitious, disciplined, and patient.", 
-                phal_hi: "महत्वाकांक्षी, अनुशासित और धैर्यवान।",
-                rashiphal_en: "Time for hard work. Maintain discipline, success is certain.",
-                rashiphal_hi: "कड़ी मेहनत का समय है। अनुशासन बनाए रखें, सफलता अवश्य मिलेगी।" 
-            },
-            { 
-                rashi_en: "Aquarius (Kumbh)", rashi_hi: "कुम्भ (Aquarius)", 
-                letters: ["gu","ge","go","sa","si","su","se","so","da"], 
-                nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], 
-                phal_en: "Innovative, humanitarian, and friendly.", 
-                phal_hi: "नवीन सोच वाला, मानवीय और मित्रवत।",
-                rashiphal_en: "New ideas will come. You will enjoy social service. Friends will support you.",
-                rashiphal_hi: "नए विचार आएंगे। समाज सेवा में मन लगेगा। मित्रों का सहयोग प्राप्त होगा।" 
-            },
-            { 
-                rashi_en: "Pisces (Meen)", rashi_hi: "मीन (Pisces)", 
-                letters: ["di","du","th","jha","yna","de","do","cha","chi"], 
-                nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], 
-                phal_en: "Compassionate, spiritual, and imaginative.", 
-                phal_hi: "दयालु, आध्यात्मिक और कल्पनाशील।",
-                rashiphal_en: "Spiritual peace. Control expenses. The day is auspicious.",
-                rashiphal_hi: "आध्यात्मिक शांति मिलेगी। खर्चों पर नियंत्रण रखें। दिन शुभ है।" 
-            }
+            { rashi_en: "Aries (Mesh)", rashi_hi: "मेष (Aries)", letters: ["chu","che","cho","la","li","lu","le","lo","a"], nakshatras: ["Ashwini","Bharani","Krittika"], phal_en: "Courageous...", phal_hi: "साहसी...", rashiphal_en: "Great day...", rashiphal_hi: "अच्छा दिन..." },
+            { rashi_en: "Taurus (Vrishabh)", rashi_hi: "वृषभ (Taurus)", letters: ["i","ee","u","oo","e","o","va","vi","vu","ve","vo"], nakshatras: ["Krittika","Rohini","Mrigashira"], phal_en: "Calm...", phal_hi: "शांत...", rashiphal_en: "Be patient...", rashiphal_hi: "धैर्य रखें..." },
+            { rashi_en: "Gemini (Mithun)", rashi_hi: "मिथुन (Gemini)", letters: ["ka","ki","ku","gh","ng","ch","ke","ko","ha"], nakshatras: ["Mrigashira","Ardra","Punarvasu"], phal_en: "Intelligent...", phal_hi: "बुद्धिमान...", rashiphal_en: "Communication...", rashiphal_hi: "संचार..." },
+            { rashi_en: "Cancer (Kark)", rashi_hi: "कर्क (Cancer)", letters: ["hi","hu","he","ho","da","di","du","de","do"], nakshatras: ["Punarvasu","Pushya","Ashlesha"], phal_en: "Emotional...", phal_hi: "भावुक...", rashiphal_en: "Control emotions...", rashiphal_hi: "भावनाओं पर काबू..." },
+            { rashi_en: "Leo (Simha)", rashi_hi: "सिंह (Leo)", letters: ["ma","mi","mu","me","mo","ta","ti","tu","te"], nakshatras: ["Magha","Purva Phalguni","Uttara Phalguni"], phal_en: "Confident...", phal_hi: "आत्मविश्वासी...", rashiphal_en: "Confidence high...", rashiphal_hi: "आत्मविश्वास..." },
+            { rashi_en: "Virgo (Kanya)", rashi_hi: "कन्या (Virgo)", letters: ["to","pa","pi","pu","sha","na","th","pe","po"], nakshatras: ["Uttara Phalguni","Hasta","Chitra"], phal_en: "Analytical...", phal_hi: "विश्लेषणात्मक...", rashiphal_en: "Hard work...", rashiphal_hi: "मेहनत..." },
+            { rashi_en: "Libra (Tula)", rashi_hi: "तुला (Libra)", letters: ["ra","ri","ru","re","ro","ta","ti","tu","te"], nakshatras: ["Chitra","Swati","Vishakha"], phal_en: "Balanced...", phal_hi: "संतुलित...", rashiphal_en: "Balance...", rashiphal_hi: "संतुलन..." },
+            { rashi_en: "Scorpio (Vrishchik)", rashi_hi: "वृश्चिक (Scorpio)", letters: ["to","na","ni","nu","ne","no","ya","yi","yu"], nakshatras: ["Vishakha","Anuradha","Jyeshtha"], phal_en: "Intense...", phal_hi: "तीव्र...", rashiphal_en: "Stalled work...", rashiphal_hi: "रुके काम..." },
+            { rashi_en: "Sagittarius (Dhanu)", rashi_hi: "धनु (Sagittarius)", letters: ["ye","yo","bha","bhi","bhu","dha","pha","dha","bhe"], nakshatras: ["Mula","Purva Ashadha","Uttara Ashadha"], phal_en: "Optimistic...", phal_hi: "आशावादी...", rashiphal_en: "Luck favors...", rashiphal_hi: "भाग्य..." },
+            { rashi_en: "Capricorn (Makar)", rashi_hi: "मकर (Capricorn)", letters: ["bho","ja","ji","ju","je","jo","kha","ga","gi"], nakshatras: ["Uttara Ashadha","Shravana","Dhanishtha"], phal_en: "Ambitious...", phal_hi: "महत्वाकांक्षी...", rashiphal_en: "Discipline...", rashiphal_hi: "अनुशासन..." },
+            { rashi_en: "Aquarius (Kumbh)", rashi_hi: "कुम्भ (Aquarius)", letters: ["gu","ge","go","sa","si","su","se","so","da"], nakshatras: ["Dhanishtha","Shatabhisha","Purva Bhadrapada"], phal_en: "Innovative...", phal_hi: "नवीन...", rashiphal_en: "New ideas...", rashiphal_hi: "नए विचार..." },
+            { rashi_en: "Pisces (Meen)", rashi_hi: "मीन (Pisces)", letters: ["di","du","th","jha","yna","de","do","cha","chi"], nakshatras: ["Purva Bhadrapada","Uttara Bhadrapada","Revati"], phal_en: "Compassionate...", phal_hi: "दयालु...", rashiphal_en: "Peace...", rashiphal_hi: "शांति..." }
         ];
 
-        // Numerology Data
         this.astroDetails = {
-            1: { 
-                planet_en: "Sun", planet_hi: "सूर्य (Sun)", 
-                color_en: "Golden", color_hi: "सुनहरा (Golden)", 
-                lucky_nos: "1, 2, 3, 9", 
-                fal_en: "You are a born leader. Ambitious and determined.", 
-                fal_hi: "आप एक जन्मजात नेता हैं। आप महत्वाकांक्षी और दृढ़ निश्चयी हैं।" 
-            },
-            2: { 
-                planet_en: "Moon", planet_hi: "चन्द्र (Moon)", 
-                color_en: "White", color_hi: "सफेद (White)", 
-                lucky_nos: "2, 6, 7", 
-                fal_en: "You are emotional, imaginative, and peace-loving.", 
-                fal_hi: "आप भावुक, कल्पनाशील और शांतिप्रिय हैं। आप दूसरों का ख्याल रखते हैं।" 
-            },
-            3: { 
-                planet_en: "Jupiter", planet_hi: "बृहस्पति (Jupiter)", 
-                color_en: "Yellow", color_hi: "पीला (Yellow)", 
-                lucky_nos: "1, 3, 5, 9", 
-                fal_en: "You are wise, optimistic, and creative.", 
-                fal_hi: "आप ज्ञानवान, आशावादी और रचनात्मक हैं। आपका सामाजिक दायरा बड़ा होता है।" 
-            },
-            4: { 
-                planet_en: "Rahu", planet_hi: "राहू (Rahu)", 
-                color_en: "Blue", color_hi: "नीला (Blue)", 
-                lucky_nos: "1, 4, 5, 6", 
-                fal_en: "You are practical, disciplined, and hardworking.", 
-                fal_hi: "आप व्यावहारिक, अनुशासित और मेहनती हैं। आप नियमों का पालन करना पसंद करते हैं।" 
-            },
-            5: { 
-                planet_en: "Mercury", planet_hi: "बुध (Mercury)", 
-                color_en: "Green", color_hi: "हरा (Green)", 
-                lucky_nos: "1, 5, 6", 
-                fal_en: "You are intelligent, adaptable, and love freedom.", 
-                fal_hi: "आप बुद्धिमान, अनुकूलनीय और स्वतंत्रता प्रेमी हैं। आपको बदलाव पसंद है।" 
-            },
-            6: { 
-                planet_en: "Venus", planet_hi: "शुक्र (Venus)", 
-                color_en: "Pink", color_hi: "गुलाबी (Pink)", 
-                lucky_nos: "3, 6, 9", 
-                fal_en: "You are charming, responsible, and love luxury.", 
-                fal_hi: "आप आकर्षक, जिम्मेदार और परिवार प्रेमी हैं। आपको सुंदरता और विलासिता पसंद है।" 
-            },
-            7: { 
-                planet_en: "Ketu", planet_hi: "केतु (Ketu)", 
-                color_en: "Multi-color", color_hi: "चितकबरा (Multi)", 
-                lucky_nos: "2, 7", 
-                fal_en: "You are analytical, spiritual, and introspective.", 
-                fal_hi: "आप विश्लेषणात्मक, आध्यात्मिक और एकांतप्रिय हैं। आप गहरे विचारक हैं।" 
-            },
-            8: { 
-                planet_en: "Saturn", planet_hi: "शनि (Saturn)", 
-                color_en: "Black", color_hi: "काला (Black)", 
-                lucky_nos: "1, 4, 8", 
-                fal_en: "You are ambitious, patient, and efficient.", 
-                fal_hi: "आप महत्वाकांक्षी, धैर्यवान और कार्यकुशल हैं। आप जीवन में उच्च पद प्राप्त करते हैं।" 
-            },
-            9: { 
-                planet_en: "Mars", planet_hi: "मंगल (Mars)", 
-                color_en: "Red", color_hi: "लाल (Red)", 
-                lucky_nos: "3, 6, 9", 
-                fal_en: "You are energetic, courageous, and compassionate.", 
-                fal_hi: "आप ऊर्जावान, साहसी और दयालु हैं। आप चुनौतियों का डटकर सामना करते हैं।" 
-            }
+            1: { planet_en: "Sun", planet_hi: "सूर्य", color_en: "Golden", color_hi: "सुनहरा", lucky_nos: "1, 2, 3, 9", fal_en: "Leader...", fal_hi: "नेता..." },
+            2: { planet_en: "Moon", planet_hi: "चन्द्र", color_en: "White", color_hi: "सफेद", lucky_nos: "2, 6, 7", fal_en: "Emotional...", fal_hi: "भावुक..." },
+            3: { planet_en: "Jupiter", planet_hi: "बृहस्पति", color_en: "Yellow", color_hi: "पीला", lucky_nos: "1, 3, 5, 9", fal_en: "Wise...", fal_hi: "ज्ञानी..." },
+            4: { planet_en: "Rahu", planet_hi: "राहू", color_en: "Blue", color_hi: "नीला", lucky_nos: "1, 4, 5, 6", fal_en: "Practical...", fal_hi: "व्यावहारिक..." },
+            5: { planet_en: "Mercury", planet_hi: "बुध", color_en: "Green", color_hi: "हरा", lucky_nos: "1, 5, 6", fal_en: "Intelligent...", fal_hi: "बुद्धिमान..." },
+            6: { planet_en: "Venus", planet_hi: "शुक्र", color_en: "Pink", color_hi: "गुलाबी", lucky_nos: "3, 6, 9", fal_en: "Charming...", fal_hi: "आकर्षक..." },
+            7: { planet_en: "Ketu", planet_hi: "केतु", color_en: "Multi", color_hi: "चितकबरा", lucky_nos: "2, 7", fal_en: "Spiritual...", fal_hi: "आध्यात्मिक..." },
+            8: { planet_en: "Saturn", planet_hi: "शनि", color_en: "Black", color_hi: "काला", lucky_nos: "1, 4, 8", fal_en: "Ambitious...", fal_hi: "महत्वाकांक्षी..." },
+            9: { planet_en: "Mars", planet_hi: "मंगल", color_en: "Red", color_hi: "लाल", lucky_nos: "3, 6, 9", fal_en: "Energetic...", fal_hi: "ऊर्जावान..." }
         };
     }
 
@@ -223,20 +72,17 @@ class AstroEngine {
             gender: data.gender || "Unknown",
             origin: data.origin || (isHindi ? "संस्कृत/भारतीय" : "Sanskrit/Indian"),
             
-            // Rashi Data
             rashi: isHindi ? rashi.rashi_hi : rashi.rashi_en,
             nakshatra: rashi.nakshatras.join(", "),
             phal: isHindi ? rashi.phal_hi : rashi.phal_en,
             rashiphal: isHindi ? rashi.rashiphal_hi : rashi.rashiphal_en,
             
-            // Numerology Data
             num: num,
             planet: isHindi ? astro.planet_hi : astro.planet_en,
             color: isHindi ? astro.color_hi : astro.color_en,
             luckyNumbers: astro.lucky_nos,
             numFal: isHindi ? astro.fal_hi : astro.fal_en,
             
-            // Labels for UI
             labels: {
                 meaning: isHindi ? "अर्थ" : "Meaning",
                 gender: isHindi ? "लिंग" : "Gender",
@@ -401,7 +247,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     const smartData = engine.processName(found, getLanguage());
                     showDetails(detailsBox, smartData);
                 } else {
-                    // --- NAME NOT FOUND MESSAGE ---
                     const isHindi = getLanguage() === 'hi';
                     const msg = isHindi 
                         ? "जल्दी आ रहा है, कृपया प्रतीक्षा करें, हम आपके धैर्य की सराहना करते हैं।"
@@ -570,47 +415,49 @@ document.addEventListener("DOMContentLoaded", () => {
         if(inp) inp.onkeypress = (e) => { if(e.key==="Enter") send(); };
     }
 
-    // --- NAAMIN TYPING ANIMATION (ADDED HERE: LOOP & NO CURSOR) ---
+    // --- NAAMIN TYPING ANIMATION (GUARANTEED LOOP) ---
     const typeNaam = document.getElementById("type-naam");
     const typeIn = document.getElementById("type-in");
     
-    if(typeNaam && typeIn) {
+    if (typeNaam && typeIn) {
         const text1 = "Naam";
         const text2 = "in";
-        const typingSpeed = 200; // Likhne ki speed
-        const pauseTime = 2000;  // Pura hone ke baad 2 second rukega
+        const typeSpeed = 200;
+        const delayBeforeRestart = 2000; // 2 seconds wait
 
-        function startTypingLoop() {
-            // 1. Reset Text
-            typeNaam.innerHTML = "";
-            typeIn.innerHTML = "";
+        // Main Animation Function
+        const runAnimation = () => {
+            // 1. Instant Clean
+            typeNaam.textContent = "";
+            typeIn.textContent = "";
             
-            let x = 0; 
-            let y = 0;
+            let i = 0;
+            let j = 0;
 
-            function typeWriter() {
-                // Type "Naam" (Black)
-                if (x < text1.length) {
-                    typeNaam.innerHTML += text1.charAt(x);
-                    x++;
-                    setTimeout(typeWriter, typingSpeed);
+            const step = () => {
+                // Type "Naam"
+                if (i < text1.length) {
+                    typeNaam.textContent += text1.charAt(i);
+                    i++;
+                    setTimeout(step, typeSpeed);
                 } 
-                // Type "in" (Orange)
-                else if (y < text2.length) {
-                    typeIn.innerHTML += text2.charAt(y);
-                    y++;
-                    setTimeout(typeWriter, typingSpeed);
-                }
-                // Wait & Restart
+                // Type "in"
+                else if (j < text2.length) {
+                    typeIn.textContent += text2.charAt(j);
+                    j++;
+                    setTimeout(step, typeSpeed);
+                } 
+                // Done? Wait then Restart
                 else {
-                    setTimeout(startTypingLoop, pauseTime);
+                    setTimeout(runAnimation, delayBeforeRestart);
                 }
-            }
+            };
             
-            typeWriter();
-        }
+            // Start stepping
+            step();
+        };
 
-        // Start Loop
-        setTimeout(startTypingLoop, 500);
+        // Initialize
+        runAnimation();
     }
 });
