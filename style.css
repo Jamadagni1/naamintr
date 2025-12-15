@@ -199,7 +199,6 @@ section {
     padding: 120px 40px 80px;
     position: relative;
     z-index: 1;
-    /* FIX: Force visibility so page is never blank */
     opacity: 1 !important; 
     transform: none !important;
     visibility: visible !important;
@@ -287,30 +286,19 @@ section h2::after {
     -webkit-text-fill-color: transparent;
 }
 
-/* --- NEW TYPING ANIMATION STYLES (Added for Naamin Animation) --- */
-#type-naam {
+/* --- NEW TYPING ANIMATION STYLES (Clean Loop) --- */
+#naamin-main-title-typing {
+    min-height: 1.3em; /* Prevents layout jump when text clears */
+}
+
+.brand-black {
     color: var(--text-dark);
 }
 
-#type-in {
+.brand-orange {
     color: var(--accent-primary);
 }
-
-.cursor {
-    display: inline-block;
-    width: 5px;
-    background-color: var(--text-dark);
-    margin-left: 5px;
-    vertical-align: text-bottom;
-    animation: blink 0.75s step-end infinite;
-    height: 0.8em; /* Responsive height relative to font size */
-}
-
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-}
-/* ---------------------------------------------------------------- */
+/* -------------------------------------------------- */
 
 #hero p {
     font-size: 1.3rem;
